@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <model name="Tray">
+    <link name="base_link">
+      <inertial>
+        <mass>0.063</mass>
+        <inertia>
+          <ixx>0.000050028</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000068415</iyy>
+          <iyz>0</iyz>
+          <izz>0.000097543</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual_1">
+        <geometry>
+          <mesh>
+            <uri>tray.glb</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="box_collider_box">
+        <pose>0.0 -0.033847 0.02 0.0 0.0 0.0</pose>
+        <geometry>
+          <box>
+            <size>0.086 0.003 0.04</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="box_collider_box.001">
+        <pose>0.0415 -0.001173 0.02 0.0 0.0 0.0</pose>
+        <geometry>
+          <box>
+            <size>0.003 0.068347 0.04</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="box_collider_box.002">
+        <pose>0.0 -0.001173 0.0015 0.0 0.0 0.0</pose>
+        <geometry>
+          <box>
+            <size>0.086 0.068347 0.003</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="box_collider_box.003">
+        <pose>0.0 0.0315 0.02 0.0 0.0 0.0</pose>
+        <geometry>
+          <box>
+            <size>0.086 0.003 0.04</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="box_collider_box.004">
+        <pose>-0.0415 -0.001173 0.02 0.0 0.0 0.0</pose>
+        <geometry>
+          <box>
+            <size>0.003 0.068347 0.04</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>

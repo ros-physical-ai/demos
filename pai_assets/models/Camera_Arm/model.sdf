@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="Camera_Arm">
+    <link name="camera_arm_link">
+      <visual name="camera_arm_visual">
+        <geometry>
+          <mesh>
+            <uri>camera_arm_visual.glb</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.1 0.1 0.1</diffuse>
+          <specular>1.0 1.0 1.0</specular>
+          <pbr>
+            <metal>
+              <roughness>0.2</roughness>
+            </metal>
+          </pbr>
+      </material>
+      </visual>
+      <collision name="arm_base_collider_box">
+        <pose>0.000302 0.002826 0.0036 1.570796 -0.0 1.570796</pose>
+        <geometry>
+          <box>
+            <size>0.0896 0.0072 0.129977</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="arm_base_collider_box.001">
+        <pose>0.041515 -0.023274 0.0036 1.570796 -0.0 1.570796</pose>
+        <geometry>
+          <box>
+            <size>0.037401 0.0072 0.24207</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="cam_mount_bottom_collider_box">
+        <pose>0.116034 -0.023268 0.232682 1.570796 -0.0 4.712389</pose>
+        <geometry>
+          <box>
+            <size>0.02541 0.465364 0.036632</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>

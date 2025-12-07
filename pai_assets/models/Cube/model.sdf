@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <model name="Cube">
+    <link name="base_link">
+      <inertial>
+        <mass>0.01953125</mass>
+        <inertia>
+          <ixx>0.000002035</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000002035</iyy>
+          <iyz>0</iyz>
+          <izz>0.000002035</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual_1">
+        <geometry>
+          <mesh>
+            <uri>cube.glb</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name ="collision_1">
+        <pose>0.0 -0.0125 0.0 0.0 0.0 0.0</pose>
+        <geometry>
+          <box>
+            <size>0.025 0.025 0.025</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>

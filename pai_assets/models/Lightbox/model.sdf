@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="Lightbox">
+    <link name="lightbox_link">
+      <visual name="lightbox_visual">
+        <geometry>
+          <mesh>
+            <uri>lightbox_visual.glb</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="cube_collider_box">
+        <pose>0.0 0.503174 0.508 0.0 0.0 0.0</pose>
+        <geometry>
+          <box>
+            <size>1.016 0.009652 1.016</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="cube_collider_box.001">
+        <pose>0.0 0.0 0.005 0.0 0.0 0.0</pose>
+        <geometry>
+          <box>
+            <size>1.021 1.026 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="cube_collider_box.002">
+        <pose>-0.50165 0.0 0.508 0.0 0.0 0.0</pose>
+        <geometry>
+          <box>
+            <size>0.0127 1.016 1.016</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="cube_collider_box.003">
+        <pose>0.0 -0.503174 0.508 0.0 0.0 0.0</pose>
+        <geometry>
+          <box>
+            <size>1.016 0.009652 1.016</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="cube_collider_box.004">
+        <pose>0.0 0.0 1.016 0.0 0.0 0.0</pose>
+        <geometry>
+          <box>
+            <size>1.021 1.026 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="cube_collider_box.005">
+        <pose>-0.437799 0.0 0.070301 0.0 -0.785398 0.0</pose>
+        <geometry>
+          <box>
+            <size>0.0127 1.016 0.184146</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>
