@@ -42,7 +42,7 @@ A simple demonstration of training and running a policy with an SO-ARM in sim an
 
 ```bash
 source ~/ws_pai/install/setup.bash
-ros2 launch pai_bringup so101_gz_bringup.launch.py
+ros2 launch pai_bringup so_arm_gz_bringup.launch.py
 ```
 
 For instructions on training a policy and running inference see [this guide](./docs/so_arm_demo.md).
