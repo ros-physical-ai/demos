@@ -34,8 +34,7 @@ conda create -n lerobot_ros2 -c conda-forge -c robostack-kilted ros-kilted-deskt
 conda install ffmpeg -c conda-forge
 conda activate lerobot_ros2
 pip install torch==2.7.0+cu128 torchaudio==2.7.0+cu128 torchcodec==0.4.0 torchvision==0.22.0+cu128 --index-url https://download.pytorch.org/whl/cu128
-cd ~/ws_pai/src/huggingface/lerobot
-pip install 'lerobot[all]'
+pip install lerobot==0.3.3
 ```
 
 #### Calibration
@@ -143,7 +142,7 @@ python3 src/lerobot/record.py \
 ## Inference in Gazebo
 
 ```python
-python3 pai_bringup/scripts/lerobot_inference_node --ros-args   -p policy_path:=huggingface/lerobot/outputs/train/act_move_to_cube_2/checkpoints/last/pretrained_model   -p camera_topic:=/camera   -p command_topic:=/forward_position_controller/commands   -p task:="Move to blue cube"   -p device:=cpu
+python3 pai_bringup/scripts/lerobot_inference_node --ros-args   -p policy_path:=huggingface/lerobot/outputs/train/act_move_to_cube_2/checkpoints/last/pretrained_model   -p camera_topic:=/camera   -p command_topic:=/forward_position_controller/commands   -p task:="Move to blue cube"   -p device:=gpu
 
 ```
 
