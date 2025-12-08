@@ -29,19 +29,13 @@ To achieve this, it's strongly recommended to rely on `conda` to manage a virtua
 In addition, ensure to install the exact versions of pip packages above.
 
 ```
-# create conda enviroment for Lerobot
-conda create -y -n lerobot python=3.11
-conda activate lerobot
+# create conda enviroment for ROS 2 and Lerobot
+conda create -n lerobot_ros2 -c conda-forge -c robostack-kilted ros-kilted-desktop
 conda install ffmpeg -c conda-forge
+conda activate lerobot_ros2
 pip install torch==2.7.0+cu128 torchaudio==2.7.0+cu128 torchcodec==0.4.0 torchvision==0.22.0+cu128 --index-url https://download.pytorch.org/whl/cu128
+cd ~/ws_pai/src/huggingface/lerobot
 pip install 'lerobot[all]'
-
-# Configure ROS 2 Kilted
-conda config --add channels conda-forge
-conda config --add channels robostack-kilted
-conda config --set channel_priority strict
-conda install ros-kilted-desktop -c robostack-kilted
-
 ```
 
 #### Calibration
