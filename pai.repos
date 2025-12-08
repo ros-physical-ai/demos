@@ -3,6 +3,10 @@ repositories:
     type: git
     url: https://github.com/yadunund/ros2_so_arm100.git
     version: gazebo
+  SO-ARM100/feetech_ros2_driver:
+    type: git
+    url: https://github.com/JafarAbdi/feetech_ros2_driver.git
+    version: main
   huggingface/lerobot:
     type: git
     url: https://github.com/huggingface/lerobot.git

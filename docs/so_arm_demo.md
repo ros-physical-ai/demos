@@ -36,7 +36,7 @@ conda install ffmpeg -c conda-forge
 pip install torch==2.7.0+cu128 torchaudio==2.7.0+cu128 torchcodec==0.4.0 torchvision==0.22.0+cu128 --index-url https://download.pytorch.org/whl/cu128
 pip install 'lerobot[all]'
 
-# Configure ROS2 Kilted
+# Configure ROS 2 Kilted
 conda config --add channels conda-forge
 conda config --add channels robostack-kilted
 conda config --set channel_priority strict

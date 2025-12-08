@@ -15,7 +15,7 @@ sudo apt update && sudo apt install upgrade -y
 mkdir ~/ws_pai/src -p && cd ~/ws_pai/src
 git clone https://github.com/ros-physical-ai/demos
 vcs import . < demos/pai.repos --recursive
-cd ~/ws_pai/src
+cd ~/ws_pai
 rosdep install --from-paths src --ignore-src --rosdistro kilted -yir
 source /opt/ros/kilted/setup.bash
 colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
