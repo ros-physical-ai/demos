@@ -31,8 +31,8 @@ In addition, ensure to install the exact versions of pip packages above.
 ```
 # create conda enviroment for ROS 2 and Lerobot
 conda create -n lerobot_ros2 -c conda-forge -c robostack-kilted ros-kilted-desktop
-conda install ffmpeg -c conda-forge
 conda activate lerobot_ros2
+conda install ffmpeg -c conda-forge
 pip install torch==2.7.0+cu128 torchaudio==2.7.0+cu128 torchcodec==0.4.0 torchvision==0.22.0+cu128 --index-url https://download.pytorch.org/whl/cu128
 pip install lerobot==0.3.3
 ```
@@ -48,31 +48,31 @@ cp config/lerobot/leader_arm.json ~/.cache/huggingface/lerobot/calibration/teleo
 
 ```bash
 python3 src/lerobot/teleoperate.py \
-	--robot.type=so101_follower \
-	--robot.port=/dev/ttyACM1 \
-	--robot.id=follower_arm \
-	--teleop.type=so101_leader \
-	--teleop.port=/dev/ttyACM0 \
-	--teleop.id=leader_arm
+    --robot.type=so101_follower \
+    --robot.port=/dev/ttyACM1 \
+    --robot.id=follower_arm \
+    --teleop.type=so101_leader \
+    --teleop.port=/dev/ttyACM0 \
+    --teleop.id=leader_arm
 ```
 
 With camera
 
 ```bash
 python3 src/lerobot/teleoperate.py \
-	--robot.type=so101_follower \
-	--robot.port=/dev/ttyACM1 \
-	--robot.id=follower_arm \
-	--teleop.type=so101_leader \
-	--teleop.port=/dev/ttyACM0 \
-	--teleop.id=leader_arm \
-	--robot.cameras="{overhead: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30}}" \
-	--display_data=true
+    --robot.type=so101_follower \
+    --robot.port=/dev/ttyACM1 \
+    --robot.id=follower_arm \
+    --teleop.type=so101_leader \
+    --teleop.port=/dev/ttyACM0 \
+    --teleop.id=leader_arm \
+    --robot.cameras="{overhead: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30}}" \
+    --display_data=true
 ```
 
 #### Record
 
-First, set your Hugging Face username automatically:
+First, set your Hugging Face username automatically using the [Hugging Face CLI](https://huggingface.co/docs/huggingface_hub/en/guides/cli):
 ```bash
 export HF_USER=$(hf auth whoami | head -n 1)
 ```
@@ -85,65 +85,69 @@ export HF_USER=your_username_here
 Then run the record command:
 ```bash
 python3 src/lerobot/record.py \
-	--robot.type=so101_follower \
-	--robot.port=/dev/ttyACM1 \
-	--robot.id=follower_arm \
-	--teleop.type=so101_leader \
-	--teleop.port=/dev/ttyACM0 \
-	--teleop.id=leader_arm \
-	--robot.cameras="{overhead: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30}}" \
-	--display_data=true \
-	--dataset.repo_id=${HF_USER}/record-test \
-	--dataset.num_episodes=1 \
-	--dataset.single_task="Pick up the blue cube" \
-	--dataset.push_to_hub=false
+    --robot.type=so101_follower \
+    --robot.port=/dev/ttyACM1 \
+    --robot.id=follower_arm \
+    --teleop.type=so101_leader \
+    --teleop.port=/dev/ttyACM0 \
+    --teleop.id=leader_arm \
+    --robot.cameras="{overhead: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30}}" \
+    --display_data=true \
+    --dataset.repo_id=${HF_USER}/record-test \
+    --dataset.num_episodes=1 \
+    --dataset.single_task="Pick up the blue cube" \
+    --dataset.push_to_hub=false
 ```
 
 #### Replay
 ```bash
 python3 src/lerobot/replay.py \
-	--robot.type=so101_follower \
-	--robot.port=/dev/ttyACM1 \
-	--robot.id=follower_arm \
-	--dataset.repo_id=${HF_USER}/record-test \
-	--dataset.episode=0 # choose the episode you want to replay
+    --robot.type=so101_follower \
+    --robot.port=/dev/ttyACM1 \
+    --robot.id=follower_arm \
+    --dataset.repo_id=${HF_USER}/record-test \
+    --dataset.episode=0 # choose the episode you want to replay
 ```
 
 #### Train
 ```bash
 python3 src/lerobot/scripts/train.py \
-  --dataset.repo_id=${HF_USER}/move_to_cube \
-  --policy.type=act \
-  --output_dir=outputs/train/act_move_to_cube \
-  --job_name=act_move_to_cube \
-  --policy.device=cuda \
-  --wandb.enable=false \
-  --policy.repo_id=${HF_USER}/move_to_cube_policy \
-	--policy.push_to_hub=false
+    --dataset.repo_id=${HF_USER}/move_to_cube \
+    --policy.type=act \
+    --output_dir=outputs/train/act_move_to_cube \
+    --job_name=act_move_to_cube \
+    --policy.device=cuda \
+    --wandb.enable=false \
+    --policy.repo_id=${HF_USER}/move_to_cube_policy \
+    --policy.push_to_hub=false
 ```
 
 #### Evaluate
 ```bash
 python3 src/lerobot/record.py \
-	--robot.type=so101_follower \
-	--robot.port=/dev/ttyACM1 \
-	--robot.id=follower_arm \
-	--teleop.type=so101_leader \
-	--teleop.port=/dev/ttyACM0 \
-	--teleop.id=leader_arm \
-	--robot.cameras="{overhead: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30}}" \
-  --dataset.repo_id=${HF_USER}/eval_move_to_cube \
-  --dataset.single_task="Pick up the blue cube" \
-	--display_data=true \
-	--policy.push_to_hub=false \
-  --policy.path=outputs/train/act_move_to_cube/checkpoints/040000/pretrained_model
+    --robot.type=so101_follower \
+    --robot.port=/dev/ttyACM1 \
+    --robot.id=follower_arm \
+    --teleop.type=so101_leader \
+    --teleop.port=/dev/ttyACM0 \
+    --teleop.id=leader_arm \
+    --robot.cameras="{overhead: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30}}" \
+    --dataset.repo_id=${HF_USER}/eval_move_to_cube \
+    --dataset.single_task="Pick up the blue cube" \
+    --display_data=true \
+    --policy.push_to_hub=false \
+    --policy.path=outputs/train/act_move_to_cube/checkpoints/040000/pretrained_model
 ```
 
 ## Inference in Gazebo
 
 ```python
-python3 pai_bringup/scripts/lerobot_inference_node --ros-args   -p policy_path:=huggingface/lerobot/outputs/train/act_move_to_cube_2/checkpoints/last/pretrained_model   -p camera_topic:=/camera   -p command_topic:=/forward_position_controller/commands   -p task:="Move to blue cube"   -p device:=gpu
-
+python3 pai_bringup/scripts/lerobot_inference_node --ros-args \
+    -p policy_path:=huggingface/lerobot/outputs/train/act_move_to_cube_2/checkpoints/last/pretrained_model \
+    -p camera_topic:=/camera \
+    -p command_topic:=/forward_position_controller/commands \
+    -p task:="Move to blue cube" \
+    -p device:=cuda
 ```
 
 ### Parameters
