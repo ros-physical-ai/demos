@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<package format="3">
+  <name>pai_mujoco</name>
+  <version>0.0.0</version>
+  <description>
+    ROS 2 Physical AI examples with MuJoco
+  </description>
+  <maintainer email="sebas.a.castro@gmail.com">Sebastian Castro</maintainer>
+  <license>BSD</license>
+
+  <exec_depend>mujoco_ros2_simulation</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+  <exec_depend>joint_trajectory_controller</exec_depend>
+  <exec_depend>parallel_gripper_controller</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
