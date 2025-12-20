@@ -32,6 +32,8 @@ def generate_launch_description():
         PathJoinSubstitution([FindPackageShare("pai_mujoco"), "config", "ros2_controllers.yaml"]),
     )
 
+    controller_parameters_file = PathJoinSubstitution([FindPackageShare("pai_mujoco"), "config", "ros2_controllers.yaml"])
+
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -43,7 +45,7 @@ def generate_launch_description():
     )
 
     control_node = Node(
-        package="mujoco_ros2_simulation",
+        package="mujoco_ros2_control",
         executable="ros2_control_node",
         output="both",
         parameters=[
@@ -58,6 +60,8 @@ def generate_launch_description():
         name="spawn_joint_state_broadcaster",
         arguments=[
             "joint_state_broadcaster",
+            "--param-file",
+            controller_parameters_file,
         ],
         output="both",
     )
@@ -68,6 +72,8 @@ def generate_launch_description():
         name="spawn_joint_trajectory_controller",
         arguments=[
             "joint_trajectory_controller",
+            "--param-file",
+            controller_parameters_file,
         ],
         output="both",
     )
@@ -78,6 +84,8 @@ def generate_launch_description():
         name="spawn_gripper_controller",
         arguments=[
             "gripper_controller",
+            "--param-file",
+            controller_parameters_file,
         ],
         output="both",
     )

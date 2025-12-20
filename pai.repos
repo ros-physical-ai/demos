@@ -11,7 +11,7 @@ repositories:
     type: git
     url: https://github.com/huggingface/lerobot.git
     version: v0.3.3
-  mujoco_ros2_simulation:
+  mujoco_ros2_control:
     type: git
-    url: https://github.com/ros-controls/mujoco_ros2_simulation.git
+    url: https://github.com/ros-controls/mujoco_ros2_control.git
     version: main
