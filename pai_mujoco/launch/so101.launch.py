@@ -28,10 +28,6 @@ def generate_launch_description():
 
     robot_description = {"robot_description": ParameterValue(value=robot_description_content, value_type=str)}
 
-    controller_parameters = ParameterFile(
-        PathJoinSubstitution([FindPackageShare("pai_mujoco"), "config", "ros2_controllers.yaml"]),
-    )
-
     controller_parameters_file = PathJoinSubstitution([FindPackageShare("pai_mujoco"), "config", "ros2_controllers.yaml"])
 
     robot_state_publisher_node = Node(
@@ -50,7 +46,7 @@ def generate_launch_description():
         output="both",
         parameters=[
             {"use_sim_time": True},
-            controller_parameters,
+            controller_parameters_file,
         ],
     )
 
