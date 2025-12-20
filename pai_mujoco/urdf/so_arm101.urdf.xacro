@@ -462,7 +462,7 @@
   <!-- ros2_control description -->
   <ros2_control name="MujocoSystem" type="system">
     <hardware>
-      <plugin>mujoco_ros2_simulation/MujocoSystemInterface</plugin>
+      <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
       <param name="mujoco_model">$(find pai_mujoco)/urdf/SO101/scene.xml</param>
 
       <param name="sim_speed_factor">1.0</param>
