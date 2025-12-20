@@ -29,10 +29,15 @@ Also ensure the Zenoh router is started by running `ros2 run rmw_zenoh_cpp rmw_z
 
 ## Demos
 
+To run any of the demos, first source the ROS workspace.
+
+```bash
+source ~/ws_pai/install/setup.bash
+```
+
 ### Demo 1: Pick and Place with SO-ARM
 
 ![](../media/so_arm_demo.gif)
-
 
 A simple demonstration of training and running a policy with an SO-ARM in sim and real.
 
@@ -41,8 +46,13 @@ A simple demonstration of training and running a policy with an SO-ARM in sim an
 ![](./docs/media/so_arm_gz.png)
 
 ```bash
-source ~/ws_pai/install/setup.bash
 ros2 launch pai_bringup so_arm_gz_bringup.launch.py
 ```
 
 For instructions on training a policy and running inference see [this guide](./docs/so_arm_demo.md).
+
+#### Launch the MuJoCo world
+
+```bash
+ros2 launch pai_mujoco so101.launch.py
+```

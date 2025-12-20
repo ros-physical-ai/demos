@@ -1,0 +1,28 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 50  # Hz
+
+gripper_controller:
+  ros__parameters:
+    type: parallel_gripper_action_controller/GripperActionController
+    joint: gripper
+    allow_stalling: true
+
+joint_state_broadcaster:
+  ros__parameters:
+    type: joint_state_broadcaster/JointStateBroadcaster
+
+joint_trajectory_controller:
+  ros__parameters:
+    type: joint_trajectory_controller/JointTrajectoryController
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    joints:
+      - shoulder_pan
+      - shoulder_lift
+      - elbow_flex
+      - wrist_flex
+      - wrist_roll
