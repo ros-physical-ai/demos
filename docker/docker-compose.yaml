@@ -1,0 +1,24 @@
+services:
+  pai-demo:
+    image: pai_demo:latest
+    depends_on:
+      zenoh-router:
+        condition: service_started
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ~/.Xauthority:/root/.Xauthority
+      # If rviz and gazebo windows don't open, run these commands:
+      # export XAUTHORITY=$HOME/.Xauthority
+      # chmod 755 $HOME/.Xauthority
+      # xhost +si:localuser:root
+    network_mode: host
+    restart: "no"
+    command: /bin/bash -lc "source install/setup.bash && ros2 launch pai_bringup so_arm_gz_bringup.launch.py"
+
+  zenoh-router:
+    image: pai_demo:latest
+    network_mode: host
+    restart: "no"
+    command: ros2 run rmw_zenoh_cpp rmw_zenohd
