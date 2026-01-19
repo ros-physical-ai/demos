@@ -1,0 +1,12 @@
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+*.egg-info
+
+# Python
+*.pyc
+
+# Build output
+build/*
+install/*
+log/*

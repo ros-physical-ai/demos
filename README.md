@@ -4,6 +4,9 @@
 - [Ubuntu 24.04](https://ubuntu.com/download/desktop)
 - [ROS 2 Kilted Kaiju](https://docs.ros.org/en/kilted/)
 - [Gazebo Ionic](https://gazebosim.org/docs/ionic/getstarted/)
+- **NVIDIA GPU** (for ML inference):
+  - RTX 5090: NVIDIA driver 570 and CUDA 12.8
+  - Other GPUs: Compatible driver and CUDA version
 
 > [!NOTE]
 > ROS 2 `Jazzy Jalisco` is also supported but we recommend `Kilted` to benefit from simulation improvements in `Gazebo Ionic` which pairs with `Kilted` together with improvements in `ros2_control`.

@@ -1,0 +1,54 @@
+[workspace]
+authors = ["juliaj <juliajster@gmail.com>"]
+channels = ["conda-forge", "robostack-kilted"]
+name = "demos"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[activation.env]
+CMAKE_INSTALL_MODE = "SYMLINK"
+COLCON_DEFAULT_OUTPUT_STYLE = "catkin_tools"
+ROS_DISTRO = "kilted"
+PKG_CONFIG_PATH = "/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig"
+
+[tasks]
+# GPU detection and PyTorch setup
+detect-gpu = "bash scripts/detect_gpu_env.sh"
+install-rtx5090-pytorch = "pip install torch==2.7.0+cu128 torchaudio==2.7.0+cu128 torchcodec==0.4.0 torchvision==0.22.0+cu128 --index-url https://download.pytorch.org/whl/cu128"
+install-standard-pytorch = "pip install torch torchvision torchaudio"
+install-lerobot = "pip install lerobot==0.3.3"
+
+# ROS setup
+setup-ros = "bash -lc 'source /opt/ros/kilted/setup.bash && cd \"$HOME/ws_pai\" && rosdep install --from-paths src --ignore-src --rosdistro kilted -yir && sudo apt update && sudo apt install -y ros-kilted-ros-gz-sim'"
+setup-so-arm100 = "sudo apt update && sudo apt install -y libserial-dev"
+
+# Demo launch
+so-arm-gz-kilted = "bash -lc 'source /opt/ros/kilted/setup.bash && source \"$HOME/ws_pai/install/setup.bash\" && ros2 launch pai_bringup so_arm_gz_bringup.launch.py'"
+lerobot-inference = "bash -lc 'source /opt/ros/kilted/setup.bash && source \"$HOME/ws_pai/install/setup.bash\" && cd \"$HOME/ws_pai\" && python3 src/demos/pai_bringup/scripts/lerobot_inference_node --ros-args -p policy_path:=huggingface/lerobot/outputs/train/act_move_to_cube_2/checkpoints/last/pretrained_model -p camera_topic:=/camera -p command_topic:=/forward_position_controller/commands -p task:=\"Move to blue cube\" -p device:=cuda'"
+
+# Build tool setup - one time (optional)
+setup-colcon = "bash -lc 'pip install colcon-mixin && cd \"$HOME/ws_pai\" && colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml && colcon mixin update default'"
+
+# Build
+build = "bash -lc 'source /opt/ros/kilted/setup.bash && cd \"$HOME/ws_pai\" && colcon build --build-base build_${ROS_DISTRO} --install-base install_${ROS_DISTRO} --cmake-args -DCMAKE_BUILD_TYPE=Release'"
+
+# Test
+test-joint-commands = "bash -lc 'source /opt/ros/kilted/setup.bash && source \"$HOME/ws_pai/install/setup.bash\" && ros2 topic pub /forward_position_controller/commands std_msgs/msg/Float64MultiArray \"{layout: {dim: [{label: joint, size: 6, stride: 1}]}, data: [0.2,-0.4,0,0,0,0.4]}\" --rate 10'"
+
+[dependencies]
+python = "3.12.*"
+pip = "*"
+cmake = "*"
+ninja = "*"
+pkg-config = "*"
+colcon-core = "*"
+colcon-common-extensions = "*"
+vcstool = "*"
+rosdep = "*"
+ffmpeg = "*"
+
+[pypi-dependencies]
+huggingface-hub = "*"
+opencv-python = "*"
+numpy = "*"
+
