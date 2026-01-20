@@ -50,57 +50,40 @@ pixi run setup-so-arm100
 
 ### 2. Build
 
-Launch an interactive shell environment and build as usual:
+Build the workspace directly from the demos folder:
 
 ```bash
 # Navigate to the demos folder (where pixi.toml is located)
 cd ~/ws_pai/src/demos
 
 # Make sure SO-ARM100 dependencies are installed (if not done in Step 5)
-# This must be run BEFORE entering pixi shell
+# This must be run BEFORE building
 pixi run setup-so-arm100
 
 # Build the workspace using Pixi task
 pixi run build
 ```
 
-Or set up colcon mixins first (optional):
+Optional: Set up colcon mixins for additional build configurations:
 ```bash
 pixi run setup-colcon
-pixi run build
 ```
 
 ### 3. Run Demo
 
-Launch the Gazebo simulation:
+Launch the Gazebo simulation (ROS environment is automatically sourced):
 ```bash
 pixi run so-arm-gz-kilted
 ```
 
-Or manually:
-```bash
-source ~/ws_pai/install/setup.bash
-ros2 launch pai_bringup so_arm_gz_bringup.launch.py
-```
-
 ### 4. Run LeRobot Inference
 
-After launching the simulation, run the inference node in a separate terminal:
+After launching the simulation, run the inference node in a separate terminal (ROS environment is automatically sourced):
 ```bash
+cd ~/ws_pai/src/demos
 pixi run lerobot-inference
 ```
 
-This runs the LeRobot inference node with default parameters. To customize parameters, modify the task in `pixi.toml` or run the command directly:
-```bash
-source ~/ws_pai/install/setup.bash
-python3 src/demos/pai_bringup/scripts/lerobot_inference_node --ros-args \
-    -p policy_path:=<your_policy_path> \
-    -p camera_topic:=/camera \
-    -p command_topic:=/forward_position_controller/commands \
-    -p task:="Move to blue cube" \
-    -p device:=cuda
-```
-
-For more details on inference parameters and usage, see [so_arm_demo.md](./so_arm_demo.md#inference-in-gazebo).
+To customize parameters, modify the task in `pixi.toml`. For more details on inference parameters and usage, see [so_arm_demo.md](./so_arm_demo.md#inference-in-gazebo).
 
 Additional resources for using Pixi can be found at this [blog](https://jafarabdi.github.io/blog/2025/ros2-pixi-dev/). 
