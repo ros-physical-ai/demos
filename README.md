@@ -14,6 +14,9 @@
 sudo apt update && sudo apt install upgrade -y
 mkdir ~/ws_pai/src -p && cd ~/ws_pai/src
 git clone https://github.com/ros-physical-ai/demos
+cd demos
+git submodule update --init --recursive
+cd ..
 vcs import . < demos/pai.repos --recursive
 cd ~/ws_pai
 rosdep install --from-paths src --ignore-src --rosdistro kilted -yir
