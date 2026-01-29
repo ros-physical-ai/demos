@@ -7,6 +7,7 @@ We use [Pixi](https://pixi.sh/latest/installation/) to create an isolated worksp
 The following must be installed system-wide. See [README.md](../README.md) for installation instructions:
 
 _Gazebo Ionic_: Installed system-wide
+
 _libserial-dev_: Required for feetech_ros2_driver. Install via:
   ```bash
   sudo apt update && sudo apt install -y libserial-dev
