@@ -1,57 +1,155 @@
 [workspace]
-authors = ["juliaj <juliajster@gmail.com>"]
-channels = ["conda-forge", "robostack-kilted"]
+authors = ["Julia Jia <juliajster@gmail.com>"]
+channels = ["conda-forge", "https://prefix.dev/robostack-kilted"]
 name = "demos"
-platforms = ["linux-64"]
+platforms = ["linux-64", "linux-aarch64"]
 version = "0.1.0"
 
-[activation.env]
-CMAKE_INSTALL_MODE = "SYMLINK"
-COLCON_DEFAULT_OUTPUT_STYLE = "catkin_tools"
-ROS_DISTRO = "kilted"
-PKG_CONFIG_PATH = "/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig"
-
-[activation]
-scripts = ["/opt/ros/kilted/setup.bash", "../../install/setup.bash"]
-
 [tasks]
-# GPU detection
+# GPU detection - one time
 detect-gpu = { cmd = "bash scripts/detect_gpu_env.sh" }
 
-# PyTorch and ML dependencies
-install-rtx5090-pytorch = { cmd = "pip install torch==2.7.0+cu128 torchaudio==2.7.0+cu128 torchcodec==0.4.0 torchvision==0.22.0+cu128 --index-url https://download.pytorch.org/whl/cu128" }
-install-standard-pytorch = { cmd = "pip install torch torchvision torchaudio" }
-install-lerobot = { cmd = "pip install lerobot==0.3.3" }
-
-# System setup
-setup-ros = { cmd = "rosdep install --from-paths ../../src --ignore-src --rosdistro kilted -yir && sudo apt update && sudo apt install -y ros-kilted-ros-gz-sim" }
-setup-so-arm100 = { cmd = "sudo apt update && sudo apt install -y libserial-dev" }
-setup-colcon = { cmd = "pip install colcon-mixin && colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml && colcon mixin update default", cwd = "../.." }
+# PyTorch and ML dependencies - one time
+# Task due to PyTorch 2.7.0+cu128 only available from PyTorch nightly index
+install-rtx5090-pytorch = { cmd = [
+  "pip",
+  "install",
+  "torch==2.7.0+cu128",
+  "torchaudio==2.7.0+cu128",
+  "torchcodec==0.4.0",
+  "torchvision==0.22.0+cu128",
+  "--index-url",
+  "https://download.pytorch.org/whl/cu128",
+]}
+# Task due to version conflicts with LeRobot requirements
+install-standard-pytorch = { cmd = [
+  "pip",
+  "install",
+  "torch",
+  "torchvision",
+  "torchaudio",
+]}
+# Task due to rerun-sdk wheel compatibility issues with pixi pypi-dependencies
+install-lerobot = { cmd = [
+  "pip",
+  "install",
+  "lerobot==0.3.3",
+]}
 
 # Build
-build = { cmd = "colcon build --build-base build_${ROS_DISTRO} --install-base install_${ROS_DISTRO} --cmake-args -DCMAKE_BUILD_TYPE=Release", cwd = "../.." }
+build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"]}
+clean = { cmd = "rm -rf build install log" }
 
-# Run
-so-arm-gz-kilted = { cmd = "ros2 launch pai_bringup so_arm_gz_bringup.launch.py" }
-lerobot-inference = { cmd = "python3 src/demos/pai_bringup/scripts/lerobot_inference_node --ros-args -p policy_path:=huggingface/lerobot/outputs/train/act_move_to_cube_2/checkpoints/last/pretrained_model -p camera_topic:=/camera -p command_topic:=/forward_position_controller/commands -p task:=\"Move to blue cube\" -p device:=cuda", cwd = "../.." }
-
-# Test command
-test-joint-commands = { cmd = "ros2 topic pub /forward_position_controller/commands std_msgs/msg/Float64MultiArray \"{layout: {dim: [{label: joint, size: 6, stride: 1}]}, data: [0.2,-0.4,0,0,0,0.4]}\" --rate 10" }
+# Run Demos
+start_zenoh = { cmd = [
+  "ros2",
+  "run",
+  "rmw_zenoh_cpp",
+  "rmw_zenohd",
+]}
+so-arm-gz = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_gz_bringup.launch.py"] }
+# Run LeRobot inference node
+# Note: policy_path defaults to 'outputs/train/act_move_to_cube/checkpoints/040000/pretrained_model'
+# Override it via: pixi run lerobot-inference --ros-args -p policy_path:=/path/to/your/model
+lerobot-inference = { cmd = [
+  "python3",
+  "pai_bringup/scripts/lerobot_inference_node",
+  "--ros-args",
+  "-p",
+  "camera_topic:=/camera",
+  "-p",
+  "command_topic:=/forward_position_controller/commands",
+  "-p",
+  "task:=Move to blue cube",
+  "-p",
+  "device:=cuda",
+]}
+test-joints = { cmd = [
+  "ros2",
+  "topic",
+  "pub",
+  "/forward_position_controller/commands",
+  "std_msgs/msg/Float64MultiArray",
+  "{layout: {dim: [{label: joint, size: 6, stride: 1}]}, data: [0.2,-0.4,0,0,0,0.4]}",
+  "--rate",
+  "10",
+]}
 
 [dependencies]
-python = "3.12.*"
-pip = "*"
-cmake = "*"
-ninja = "*"
+# Build deps
+colcon-common-extensions = ">=0.3.0,<0.4"
+colcon-mixin = ">=0.2.3,<0.3"
+cmake = ">=3.30.5,<4"
+ninja = ">=1.13.1,<2"
 pkg-config = "*"
-colcon-core = "*"
-colcon-common-extensions = "*"
 vcstool = "*"
 rosdep = "*"
 ffmpeg = "*"
 
+# Common base deps
+python = "3.12.*"
+pip = "*"
+numpy = ">=1.26.4,<3"
+
+# ROS dependencies
+ros-kilted-ros-core = "*"
+ros-kilted-ament-cmake = "*"
+# From pai_bringup
+ros-kilted-controller-manager = "*"
+ros-kilted-cv-bridge = "*"
+ros-kilted-launch = "*"
+ros-kilted-launch-ros = "*"
+ros-kilted-rclpy = "*"
+ros-kilted-robot-state-publisher = "*"
+ros-kilted-ros-gz-bridge = "*"
+ros-kilted-ros-gz-sim = "*"
+ros-kilted-rviz2 = "*"
+ros-kilted-sensor-msgs = "*"
+ros-kilted-std-msgs = "*"
+ros-kilted-xacro = "*"
+# From so_arm100_description
+ros-kilted-joint-state-broadcaster = "*"
+ros-kilted-joint-trajectory-controller = "*"
+ros-kilted-parallel-gripper-controller = "*"
+ros-kilted-position-controllers = "*"
+ros-kilted-hardware-interface = "*"
+ros-kilted-ament-index-python = "*"
+ros-kilted-nav2-common = "*"
+ros-kilted-gz-ros2-control = "*"
+# From so_arm100_moveit_config
+ros-kilted-moveit-ros-move-group = "*"
+ros-kilted-moveit-kinematics = "*"
+ros-kilted-moveit-planners = "*"
+ros-kilted-moveit-simple-controller-manager = "*"
+ros-kilted-joint-state-publisher = "*"
+ros-kilted-joint-state-publisher-gui = "*"
+ros-kilted-tf2-ros = "*"
+ros-kilted-moveit-ros-control-interface = "*"
+ros-kilted-moveit-ros-visualization = "*"
+ros-kilted-moveit-ros-warehouse = "*"
+ros-kilted-moveit-setup-assistant = "*"
+ros-kilted-rviz-common = "*"
+ros-kilted-rviz-default-plugins = "*"
+# From feetech_ros2_driver
+ros-kilted-rclcpp = "*"
+ros-kilted-pluginlib = "*"
+# Zenoh middleware
+ros-kilted-rmw-zenoh-cpp = "*"
+
 [pypi-dependencies]
 huggingface-hub = "*"
 opencv-python = "*"
-numpy = "*"
 
+[activation]
+scripts = ["install/setup.bash"]
+
+[activation.env]
+# Ensures the linker knows where to look for conda managed packages
+LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LIBRARY_PATH}"
+LD_LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
+# CMake needs this to find ROS 2 packages installed by robostack
+CMAKE_PREFIX_PATH = "${CONDA_PREFIX}"
+# pkg-config needs this to find system-installed packages like libserial-dev
+# Supports both x86_64 and aarch64 architectures
+PKG_CONFIG_PATH = "/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig:${PKG_CONFIG_PATH}"
+ROS_DISTRO = "kilted"

@@ -1,51 +1,41 @@
 # Development Guide
 
+We use [Pixi](https://pixi.sh/latest/installation/) to create an isolated workspace that doesn't depend on system-wide ROS installations or external colcon build/install directories. ROS 2 Kilted dependencies are automatically installed when you run `pixi install`. Install Pixi first by following its official documentation.
+
 ## Prerequisites
 
-### System-Level Requirements (Global Installation)
+The following must be installed system-wide. See [README.md](../README.md) for installation instructions:
 
-These must be installed on your system before using the demo:
+_Gazebo Ionic_: Installed system-wide
+_libserial-dev_: Required for feetech_ros2_driver. Install via:
+  ```bash
+  sudo apt update && sudo apt install -y libserial-dev
+  ```
 
-- **NVIDIA GPU Driver**: 
-  - RTX 5090: Driver version 570 (not 580) required
-  - Other GPUs: Compatible driver for your GPU model
-- **CUDA Toolkit**: 
-  - RTX 5090: CUDA 12.8 required
-  - Other GPUs: Compatible CUDA version for your GPU
-- **ROS 2 Kilted**: Installed system-wide (see [README.md](../README.md))
-- **Gazebo Ionic**: Installed system-wide (see [README.md](../README.md))
+NVIDIA drivers and CUDA toolkit are also system components. Pixi tasks are provided to facilitate their installation (see instructions below). ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pixi install`. 
 
-> Note: NVIDIA drivers and CUDA toolkit are system-level dependencies and cannot be installed in virtual environments. PyTorch (installed in the Pixi environment) links against these system libraries.
 
 ## Quick Start
 
-### 1. Setup Development Environment via Pixi
-
-Even though this package can be built in a colcon workspace on any compatible system, we introduce a workflow that enables developers to work in a completely isolated system environment via [Pixi](https://pixi.sh/latest/installation/). Pixi's strength is its ability to create reproducible, powerful, and flexible workspaces. This ensures consistency with the supported workflows and obviates the need to install any specific ROS, apt, or pip dependencies locally. Install Pixi by following its official documentation before running any instructions below.
+### 1. Setup Development Environment
 
 Detect your GPU and install appropriate dependencies:
 
 ```bash
-# Step 1: Detect GPU and get installation recommendations
-pixi run detect-gpu
-
-# Step 2: Install base environment
+# Step 1: Install base environment (includes ROS 2 Kilted dependencies)
 pixi install
 
-# Step 3: Install PyTorch and LeRobot (choose ONE based on your GPU)
+# Step 2: Detect GPU and get installation recommendations
+pixi run detect-gpu
+
+# Step 3: Install PyTorch (choose ONE based on your GPU)
 # For RTX 5090 (Blackwell):
 pixi run install-rtx5090-pytorch
-pixi run install-lerobot
 # For standard GPU (RTX 30xx, 40xx, etc.):
 # pixi run install-standard-pytorch
-# pixi run install-lerobot
 
-# Step 4: Install ROS dependencies
-pixi run setup-ros
-
-# Step 5: Install SO-ARM100 dependencies (libserial-dev for feetech_ros2_driver)
-# This must be run BEFORE entering pixi shell
-pixi run setup-so-arm100
+# Step 4, Install LeRobot
+pixi run install-lerobot
 ```
 
 ### 2. Build
@@ -54,36 +44,42 @@ Build the workspace directly from the demos folder:
 
 ```bash
 # Navigate to the demos folder (where pixi.toml is located)
-cd ~/ws_pai/src/demos
-
-# Make sure SO-ARM100 dependencies are installed (if not done in Step 5)
-# This must be run BEFORE building
-pixi run setup-so-arm100
+cd demos
 
 # Build the workspace using Pixi task
 pixi run build
 ```
 
-Optional: Set up colcon mixins for additional build configurations:
-```bash
-pixi run setup-colcon
-```
-
 ### 3. Run Demo
+
+Start the Zenoh router (recommended middleware, run in a separate terminal):
+```bash
+pixi run start_zenoh
+```
 
 Launch the Gazebo simulation (ROS environment is automatically sourced):
 ```bash
-pixi run so-arm-gz-kilted
+pixi run so-arm-gz
 ```
 
-### 4. Run LeRobot Inference
+### 4. Interactive Mode with Pixi Shell
 
-After launching the simulation, run the inference node in a separate terminal (ROS environment is automatically sourced):
+For interactive development, you can use `pixi shell` to enter an interactive shell with the environment activated:
+
 ```bash
-cd ~/ws_pai/src/demos
-pixi run lerobot-inference
+cd demos
+pixi shell
 ```
 
-To customize parameters, modify the task in `pixi.toml`. For more details on inference parameters and usage, see [so_arm_demo.md](./so_arm_demo.md#inference-in-gazebo).
+Once in the shell, the ROS environment is automatically sourced and you can run commands (e.g., colcon build, Python scripts) directly. This is useful for interactive debugging, testing, and running multiple commands. For example, to launch the LeRobot inference node:
+
+```bash
+pixi shell
+
+# Replace the model path to match your environment
+python3 pai_bringup/scripts/lerobot_inference_node --ros-args \  -p policy_path:=outputs/train/act_move_to_cube/checkpoints/last/pretrained_model
+```
+
+For more details on training models, inference parameters, and usage, see [so_arm_demo.md](./so_arm_demo.md).
 
 Additional resources for using Pixi can be found at this [blog](https://jafarabdi.github.io/blog/2025/ros2-pixi-dev/). 
