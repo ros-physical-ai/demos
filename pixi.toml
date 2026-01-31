@@ -103,6 +103,13 @@ ros-kilted-rclpy = "*"
 ros-kilted-robot-state-publisher = "*"
 ros-kilted-ros-gz-bridge = "*"
 ros-kilted-ros-gz-sim = "*"
+# Gazebo Sim (provides gz CLI and simulation engine)
+# Using version 9 to match ROS Kilted compatibility
+gz-sim9 = "*"
+# Gazebo GUI (required for gz sim -g)
+gz-gui9 = "*"
+# Gazebo Rendering (required for ogre2 render engine plugin)
+gz-rendering9 = "*"
 ros-kilted-rviz2 = "*"
 ros-kilted-sensor-msgs = "*"
 ros-kilted-std-msgs = "*"
@@ -152,4 +159,6 @@ CMAKE_PREFIX_PATH = "${CONDA_PREFIX}"
 # pkg-config needs this to find system-installed packages like libserial-dev
 # Supports both x86_64 and aarch64 architectures
 PKG_CONFIG_PATH = "/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig:${PKG_CONFIG_PATH}"
+# Gazebo rendering engine plugin path
+GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-9/engine-plugins"
 ROS_DISTRO = "kilted"

@@ -11,8 +11,6 @@ See [README.md](../README.md) for installation instructions:
 
 _Dependent repos_: Installed via `vcs import . < pai.repos --recursive`
 
-_Gazebo Ionic_: Installed system-wide
-
 _libserial-dev_: Required for feetech_ros2_driver. Install via:
   ```bash
   sudo apt update && sudo apt install -y libserial-dev
@@ -95,3 +93,24 @@ python3 pai_bringup/scripts/lerobot_inference_node \
 For more details on training models, inference parameters, and usage, see [so_arm_demo.md](./so_arm_demo.md).
 
 Additional resources for using Pixi can be found at this [blog](https://jafarabdi.github.io/blog/2025/ros2-pixi-dev/).
+
+## FAQ
+
+### Warning: "Could not find activation scripts: install/setup.bash"
+
+This warning appears on initial setup because `install/setup.bash` is created by `colcon build`. It's harmless and will disappear after running `pixi run build`.
+
+### Gazebo Warnings and Errors
+
+Common Gazebo-specific warnings and errors that may appear during simulation:
+
+**"Trying to set debug visualization mode while GI is disabled"**: This error occurs when Gazebo's Global Illumination (GI) system tries to set debug visualization before GI is fully initialized. 
+
+**"libEGL warning: egl: failed to create dri2 screen"**: This warning appears when Gazebo cannot access the GPU directly. 
+
+The simulation will still run using software rendering, but without hardware acceleration.
+
+For resolution steps for these, see:
+- [Gazebo Rendering Plugin Documentation](https://gazebosim.org/api/rendering/3/renderingplugin.html)
+- [Gazebo Rendering Documentation](https://gazebosim.org/api/rendering/)
+- [Gazebo Sim Troubleshooting](https://gazebosim.org/docs/citadel/troubleshooting)
