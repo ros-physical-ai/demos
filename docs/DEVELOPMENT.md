@@ -1,10 +1,15 @@
 # Development Guide
 
-We use [Pixi](https://pixi.sh/latest/installation/) to create an isolated workspace that doesn't depend on system-wide ROS installations or external colcon build/install directories. ROS 2 Kilted dependencies are automatically installed when you run `pixi install`. Install Pixi first by following its official documentation.
+You can use [Pixi](https://pixi.sh/latest/installation/) to create an isolated workspace that doesn't depend on system-wide ROS installations or external colcon build/install directories.
+
+Install Pixi first by following [its official documentation](https://pixi.prefix.dev/latest/installation/).
 
 ## Prerequisites
 
-The following must be installed system-wide. See [README.md](../README.md) for installation instructions:
+The following must be installed system-wide. 
+See [README.md](../README.md) for installation instructions:
+
+_Dependent repos_: Installed via `vcs import . < pai.repos --recursive`
 
 _Gazebo Ionic_: Installed system-wide
 
@@ -13,7 +18,10 @@ _libserial-dev_: Required for feetech_ros2_driver. Install via:
   sudo apt update && sudo apt install -y libserial-dev
   ```
 
-NVIDIA drivers and CUDA toolkit are also system components. Pixi tasks are provided to facilitate their installation (see instructions below). ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pixi install`. 
+NVIDIA drivers and CUDA toolkit are also system components.
+Pixi tasks are provided to facilitate their installation (see instructions below).
+
+ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pixi install`. 
 
 
 ## Quick Start
@@ -41,10 +49,10 @@ pixi run install-lerobot
 
 ### 2. Build
 
-Build the workspace directly from the demos folder:
+Build the workspace directly from the repository root folder:
 
 ```bash
-# Navigate to the demos folder (where pixi.toml is located)
+# Navigate to the repository root (where pixi.toml is located)
 cd demos
 
 # Build the workspace using Pixi task
@@ -72,15 +80,18 @@ cd demos
 pixi shell
 ```
 
-Once in the shell, the ROS environment is automatically sourced and you can run commands (e.g., colcon build, Python scripts) directly. This is useful for interactive debugging, testing, and running multiple commands. For example, to launch the LeRobot inference node:
+Once in the shell, the ROS environment is automatically sourced and you can run commands (e.g., `colcon build`, Python scripts) directly.
+This is useful for interactive debugging, testing, and running multiple commands.
+For example, to launch the LeRobot inference node:
 
 ```bash
 pixi shell
 
 # Replace the model path to match your environment
-python3 pai_bringup/scripts/lerobot_inference_node --ros-args \  -p policy_path:=outputs/train/act_move_to_cube/checkpoints/last/pretrained_model
+python3 pai_bringup/scripts/lerobot_inference_node \ 
+  --ros-args-p policy_path:=outputs/train/act_move_to_cube/checkpoints/last/pretrained_model
 ```
 
 For more details on training models, inference parameters, and usage, see [so_arm_demo.md](./so_arm_demo.md).
 
-Additional resources for using Pixi can be found at this [blog](https://jafarabdi.github.io/blog/2025/ros2-pixi-dev/). 
+Additional resources for using Pixi can be found at this [blog](https://jafarabdi.github.io/blog/2025/ros2-pixi-dev/).
