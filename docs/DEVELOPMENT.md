@@ -26,24 +26,20 @@ ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pix
 
 ### 1. Setup Development Environment
 
-Detect your GPU and install appropriate dependencies:
+Install base environment and ML dependencies:
 
 ```bash
 # Step 1: Install base environment (includes ROS 2 Kilted dependencies)
 pixi install
 
-# Step 2: Detect GPU and get installation recommendations
-pixi run detect-gpu
-
-# Step 3: Install PyTorch (choose ONE based on your GPU)
-# For RTX 5090 (Blackwell):
-pixi run install-rtx5090-pytorch
-# For standard GPU (RTX 30xx, 40xx, etc.):
-# pixi run install-standard-pytorch
-
-# Step 4, Install LeRobot
-pixi run install-lerobot
+# Step 2: Install ML dependencies (automatically detects GPU and installs appropriate PyTorch + lerobot)
+pixi run install-ml-deps
 ```
+
+The `install-ml-deps` task automatically:
+- Detects your GPU (RTX 5090 or standard)
+- Installs the appropriate PyTorch version
+- Installs lerobot
 
 ### 2. Build
 
@@ -131,6 +127,5 @@ Common Gazebo-specific warnings and errors that may appear during simulation:
 The simulation will still run using software rendering, but without hardware acceleration.
 
 For resolution steps for these, see:
-- [Gazebo Rendering Plugin Documentation](https://gazebosim.org/api/rendering/3/renderingplugin.html)
-- [Gazebo Rendering Documentation](https://gazebosim.org/api/rendering/)
-- [Gazebo Sim Troubleshooting](https://gazebosim.org/docs/citadel/troubleshooting)
+- [Gazebo Rendering Plugin Documentation](https://gazebosim.org/api/rendering/9/renderingplugin.html)
+- [Gazebo Sim Troubleshooting](https://gazebosim.org/docs/ionic/troubleshooting/)

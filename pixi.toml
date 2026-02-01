@@ -6,35 +6,9 @@ platforms = ["linux-64", "linux-aarch64"]
 version = "0.1.0"
 
 [tasks]
-# GPU detection - one time
-detect-gpu = { cmd = "bash scripts/detect_gpu_env.sh" }
-
-# PyTorch and ML dependencies - one time
-# Task due to PyTorch 2.7.0+cu128 only available from PyTorch nightly index
-install-rtx5090-pytorch = { cmd = [
-  "pip",
-  "install",
-  "torch==2.7.0+cu128",
-  "torchaudio==2.7.0+cu128",
-  "torchcodec==0.4.0",
-  "torchvision==0.22.0+cu128",
-  "--index-url",
-  "https://download.pytorch.org/whl/cu128",
-]}
-# Task due to version conflicts with LeRobot requirements
-install-standard-pytorch = { cmd = [
-  "pip",
-  "install",
-  "torch",
-  "torchvision",
-  "torchaudio",
-]}
-# Task due to rerun-sdk wheel compatibility issues with pixi pypi-dependencies
-install-lerobot = { cmd = [
-  "pip",
-  "install",
-  "lerobot==0.3.3",
-]}
+# ML dependencies - consolidated installation (recommended)
+# Automatically detects GPU, installs appropriate PyTorch, and installs lerobot
+install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh" }
 
 # Build
 build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"]}
