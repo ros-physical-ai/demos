@@ -59,14 +59,16 @@ pixi run build
 
 ### 3. Run Demo
 
-Start the Zenoh router (recommended middleware, run in a separate terminal):
-```bash
-pixi run start_zenoh
-```
+The workspace is configured to use Zenoh middleware automatically. The `RMW_IMPLEMENTATION` environment variable is set to `rmw_zenoh_cpp`, and tasks will automatically start the Zenoh router if it's not already running.
 
-Launch the Gazebo simulation (ROS environment is automatically sourced):
+Launch the Gazebo simulation (ROS environment is automatically sourced, Zenoh router started automatically if needed):
 ```bash
 pixi run so-arm-gz
+```
+
+Optionally, you can start the Zenoh router manually in a separate terminal if you prefer:
+```bash
+pixi run start_zenoh
 ```
 
 ### 4. Interactive Mode with Pixi Shell
@@ -78,16 +80,30 @@ cd demos
 pixi shell
 ```
 
-Once in the shell, the ROS environment is automatically sourced and you can run commands (e.g., `colcon build`, Python scripts) directly.
+Once in the shell, the ROS environment is automatically sourced and `RMW_IMPLEMENTATION=rmw_zenoh_cpp` is set. You can run commands (e.g., `colcon build`, Python scripts) directly.
 This is useful for interactive debugging, testing, and running multiple commands.
+
+Note: When running ROS 2 commands manually in the shell, ensure the Zenoh router is running (use `pixi run start_zenoh` in another terminal, or use `bash scripts/run_with_zenoh.sh <command>`).
+
 For example, to launch the LeRobot inference node:
 
+Terminal 1 (start Zenoh router):
+```bash
+pixi run start_zenoh
+```
+
+Terminal 2 (run inference node):
 ```bash
 pixi shell
 
 # Replace the model path to match your environment
 python3 pai_bringup/scripts/lerobot_inference_node \ 
   --ros-args-p policy_path:=outputs/train/act_move_to_cube/checkpoints/last/pretrained_model
+```
+
+Alternatively, use the pixi task which automatically ensures Zenoh is running:
+```bash
+pixi run lerobot-inference
 ```
 
 For more details on training models, inference parameters, and usage, see [so_arm_demo.md](./so_arm_demo.md).
