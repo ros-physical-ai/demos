@@ -21,13 +21,11 @@ start_zenoh = { cmd = [
   "rmw_zenoh_cpp",
   "rmw_zenohd",
 ]}
-so-arm-gz = { cmd = ["bash", "scripts/run_with_zenoh.sh", "ros2", "launch", "pai_bringup", "so_arm_gz_bringup.launch.py"] }
+so-arm-gz = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_gz_bringup.launch.py"] }
 # Run LeRobot inference node
 # Note: policy_path defaults to 'outputs/train/act_move_to_cube/checkpoints/040000/pretrained_model'
 # Override it via: pixi run lerobot-inference --ros-args -p policy_path:=/path/to/your/model
 lerobot-inference = { cmd = [
-  "bash",
-  "scripts/run_with_zenoh.sh",
   "python3",
   "pai_bringup/scripts/lerobot_inference_node",
   "--ros-args",
@@ -41,8 +39,6 @@ lerobot-inference = { cmd = [
   "device:=cuda",
 ]}
 test-joints = { cmd = [
-  "bash",
-  "scripts/run_with_zenoh.sh",
   "ros2",
   "topic",
   "pub",

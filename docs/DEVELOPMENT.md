@@ -15,9 +15,8 @@ _libserial-dev_: Required for feetech_ros2_driver. Install via:
   ```bash
   sudo apt update && sudo apt install -y libserial-dev
   ```
-
-NVIDIA drivers and CUDA toolkit are also system components.
-Pixi tasks are provided to facilitate their installation (see instructions below).
+  
+_NVIDIA drivers and CUDA toolkit_: Required for GPU acceleration (system components)
 
 ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pixi install`. 
 
@@ -55,31 +54,36 @@ pixi run build
 
 ### 3. Run Demo
 
-The workspace is configured to use Zenoh middleware automatically. The `RMW_IMPLEMENTATION` environment variable is set to `rmw_zenoh_cpp`, and tasks will automatically start the Zenoh router if it's not already running.
+The workspace is configured to use Zenoh middleware automatically.
+The `RMW_IMPLEMENTATION` environment variable is set to `rmw_zenoh_cpp` via the Pixi activation environment.
 
-Launch the Gazebo simulation (ROS environment is automatically sourced, Zenoh router started automatically if needed):
-```bash
-pixi run so-arm-gz
-```
+Before running any ROS 2 commands, start the Zenoh router in a separate terminal.
 
-Optionally, you can start the Zenoh router manually in a separate terminal if you prefer:
+Terminal 1 (start Zenoh router):
 ```bash
 pixi run start_zenoh
 ```
 
+Terminal 2 (launch Gazebo simulation):
+```bash
+pixi run so-arm-gz
+```
+
 ### 4. Interactive Mode with Pixi Shell
 
-For interactive development, you can use `pixi shell` to enter an interactive shell with the environment activated:
+For interactive development, you can use `pixi shell` to enter an interactive shell with the environment activated.
 
 ```bash
 cd demos
 pixi shell
 ```
 
-Once in the shell, the ROS environment is automatically sourced and `RMW_IMPLEMENTATION=rmw_zenoh_cpp` is set. You can run commands (e.g., `colcon build`, Python scripts) directly.
+Once in the shell, the ROS environment is automatically sourced and `RMW_IMPLEMENTATION=rmw_zenoh_cpp` is set.
+You can run commands (e.g., `colcon build`, Python scripts) directly.
 This is useful for interactive debugging, testing, and running multiple commands.
 
-Note: When running ROS 2 commands manually in the shell, ensure the Zenoh router is running (use `pixi run start_zenoh` in another terminal, or use `bash scripts/run_with_zenoh.sh <command>`).
+Note: When running ROS 2 commands manually in the shell, ensure the Zenoh router is running.
+Start it in a separate terminal using `pixi run start_zenoh`.
 
 For example, to launch the LeRobot inference node:
 
@@ -93,13 +97,8 @@ Terminal 2 (run inference node):
 pixi shell
 
 # Replace the model path to match your environment
-python3 pai_bringup/scripts/lerobot_inference_node \ 
+python3 pai_bringup/scripts/lerobot_inference_node \
   --ros-args-p policy_path:=outputs/train/act_move_to_cube/checkpoints/last/pretrained_model
-```
-
-Alternatively, use the pixi task which automatically ensures Zenoh is running:
-```bash
-pixi run lerobot-inference
 ```
 
 For more details on training models, inference parameters, and usage, see [so_arm_demo.md](./so_arm_demo.md).
@@ -110,7 +109,8 @@ Additional resources for using Pixi can be found at this [blog](https://jafarabd
 
 ### Warning: "Could not find activation scripts: install/setup.bash"
 
-This warning appears on initial setup because `install/setup.bash` is created by `colcon build`. It's harmless and will disappear after running `pixi run build`.
+This warning appears on initial setup because `install/setup.bash` is created by `colcon build`.
+It's harmless and will disappear after running `pixi run build`.
 
 ### After updating pixi.toml
 
