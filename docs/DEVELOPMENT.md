@@ -100,6 +100,10 @@ Additional resources for using Pixi can be found at this [blog](https://jafarabd
 
 This warning appears on initial setup because `install/setup.bash` is created by `colcon build`. It's harmless and will disappear after running `pixi run build`.
 
+### After updating pixi.toml
+
+After modifying `pixi.toml` to add or update dependencies, run `pixi install` to install the new dependencies before building or running tasks.
+
 ### Gazebo Warnings and Errors
 
 Common Gazebo-specific warnings and errors that may appear during simulation:
