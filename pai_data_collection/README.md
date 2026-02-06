@@ -1,14 +1,19 @@
 # pai_data_collection
 
-Data collection tools for Physical AI demos using rosetta.
+Data collection tools for Physical AI demos using [rosetta](https://github.com/iblnkn/rosetta).
 
 ## Requirements
 
-Bring necessary repos at the workspace:
+This project uses [Pixi](https://pixi.sh/) for environment management. Make sure the workspace is set up following the [Development Guide](../docs/DEVELOPMENT.md).
+
+The required repos (`rosetta` and `rosetta_interfaces`) are included in `pai.repos` and will be fetched automatically during workspace setup:
 ```bash
-git clone https://github.com/francocipollone/rosetta # Note this is forked from original repo.
-git clone https://github.com/iblnkn/rosetta_interfaces
+vcs import repos < pai.repos --recursive
 ```
+
+> [!NOTE]
+> The following commands assume you are inside a `pixi shell` session or that you are running via `pixi run`.
+>  See the [Development Guide](../docs/DEVELOPMENT.md) for details.
 
 ## Recording Rosbag
 
@@ -21,7 +26,7 @@ ros2 launch pai_bringup so_arm_gz_bringup.launch.py
 
 2. Start recording:
 ```bash
-ros2 launch pai_data_collection so_arm_record.launch.py bag_base_dir:=/ros_ws/src/datasets/so_arm100/bags
+ros2 launch pai_data_collection so_arm_record.launch.py bag_base_dir:=datasets/so_arm100/bags
 ```
 
 3. Start episode:
@@ -70,21 +75,15 @@ actions:
 
 Run conversion:
 ```bash
-python3 src/rosetta/scripts/bag_to_lerobot.py \
-    --out src/datasets_lerobot/move_arm \
+python3 repos/rosetta/scripts/bag_to_lerobot.py \
+    --out datasets_lerobot/move_arm \
     --contract=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm100.yaml \
-    --bags src/datasets/so_arm100/bags/<episode_dir1>/ src/datasets/so_arm100/bags/<episode_dir2>/
+    --bags datasets/so_arm100/bags/<episode_dir1>/ datasets/so_arm100/bags/<episode_dir2>/
 ```
 
 ## Replay Dataset on Real Robot using LeRobot
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install lerobot[feetech]  # Tested in 0.4.3
-```
-
-Using local LeRobot dataset:
+Using local LeRobot dataset (from within the pixi environment):
 ```bash
 lerobot-replay \
     --robot.type=so101_follower \

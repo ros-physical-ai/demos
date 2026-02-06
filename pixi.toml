@@ -80,6 +80,9 @@ ros-kilted-rclpy = "*"
 ros-kilted-robot-state-publisher = "*"
 ros-kilted-ros-gz-bridge = "*"
 ros-kilted-ros-gz-sim = "*"
+# From pai_data_collection
+ros-kilted-rosbag2-py = "*"
+ros-kilted-rosbag2-storage-mcap = "*"
 # Gazebo Sim (provides gz CLI and simulation engine)
 # Using version 9 to match ROS Kilted compatibility
 gz-sim9 = "*"

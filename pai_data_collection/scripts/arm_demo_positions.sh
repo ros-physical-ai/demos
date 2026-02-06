@@ -1,9 +1,9 @@
 #!/bin/bash
 # Script to move SO-ARM100 through various positions
-# Each position is held for 3 seconds before moving to the next
+# Each position is held for 4 seconds before moving to the next
 
-SLEEP_TIME=4
-RATE=20
+SLEEP_TIME=4 # seconds to hold each position
+RATE=20 # publish rate in Hz
 
 echo "Starting arm demo sequence..."
 echo "Press Ctrl+C to stop"

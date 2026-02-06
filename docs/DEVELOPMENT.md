@@ -9,16 +9,16 @@ Install Pixi first by following [its official documentation](https://pixi.prefix
 The following must be installed system-wide. 
 See [README.md](../README.md) for installation instructions:
 
-_Dependent repos_: Installed via `vcs import . < pai.repos --recursive`
+_Dependent repos_: Installed via `vcs import repos < pai.repos --recursive`
 
 _libserial-dev_: Required for feetech_ros2_driver. Install via:
   ```bash
   sudo apt update && sudo apt install -y libserial-dev
   ```
-  
+
 _NVIDIA drivers and CUDA toolkit_: Required for GPU acceleration (system components)
 
-ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pixi install`. 
+ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pixi install`.
 
 
 ## Quick Start

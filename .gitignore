@@ -12,5 +12,4 @@ install/*
 log/*
 
 # External repos imported via vcs
-SO-ARM100/
-huggingface/
+repos/*
