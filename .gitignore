@@ -13,3 +13,7 @@ log/*
 
 # External repos imported via vcs
 repos/*
+
+# Recorded datasets
+datasets/*
+datasets_lerobot/*

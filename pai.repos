@@ -2,7 +2,7 @@ repositories:
   SO-ARM100/ros2_so_arm100:
     type: git
     url: https://github.com/yadunund/ros2_so_arm100.git
-    version: gazebo
+    version: ce990f5
   SO-ARM100/feetech_ros2_driver:
     type: git
     url: https://github.com/JafarAbdi/feetech_ros2_driver.git
@@ -10,12 +10,12 @@ repositories:
   huggingface/lerobot:
     type: git
     url: https://github.com/huggingface/lerobot.git
-    version: v0.3.3
+    version: v0.4.3
   rosetta:
     type: git
     url: https://github.com/francocipollone/rosetta.git
-    version: main
+    version: rospai
   rosetta_interfaces:
     type: git
     url: https://github.com/iblnkn/rosetta_interfaces.git
-    version: 19b32e3
+    version: 3bdfa63

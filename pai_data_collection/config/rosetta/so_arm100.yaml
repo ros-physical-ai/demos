@@ -1,11 +1,7 @@
-name: so_arm100_gz
-version: 1
-
-# Robot type for LeRobot dataset metadata
 robot_type: so_arm100
 
 # Recording parameters
-rate_hz: 50  # Matches controller update rate
+fps: 50  # Matches controller update rate
 max_duration_s: 120.0
 
 observations:
@@ -30,15 +26,11 @@ observations:
         position.wrist_pitch_joint,
         position.wrist_roll_joint,
         position.jaw_joint,
-        # velocity.shoulder_pan_joint,
-        # velocity.shoulder_lift_joint,
-        # velocity.elbow_joint,
-        # velocity.wrist_pitch_joint,
-        # velocity.wrist_roll_joint,
-        # velocity.jaw_joint
       ]
     align: {strategy: hold, stamp: header, tol_ms: 100}
     qos: {reliability: reliable, history: keep_last, depth: 50}
+    # Convert radians (ROS) to degrees (LeRobot)
+    unit_conversion: rad2deg
 
 actions:
   - key: action
@@ -60,11 +52,11 @@ actions:
         wrist_roll.pos,
         gripper.pos
       ]
+    # Convert radians (ROS) to degrees (LeRobot)
+    unit_conversion: rad2deg
     from_tensor:
       # Clamp to safe joint limits (radians)
       clamp: [-3.14159, 3.14159]
-      # Convert radians (ROS) to degrees (LeRobot)
-      unit_conversion: rad2deg
     safety_behavior: hold  # Maintain last position when stopped
 
 recording:

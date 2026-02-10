@@ -17,6 +17,9 @@ vcs import repos < pai.repos --recursive
 
 ## Recording Rosbag
 
+This package provides a rosetta contract for the SO-ARM100 robot (`config/rosetta/so_arm100.yaml`).
+Recording uses rosetta's `episode_recorder_launch.py` directly.
+
 ### Workflow
 
 1. Start simulation:
@@ -24,14 +27,17 @@ vcs import repos < pai.repos --recursive
 ros2 launch pai_bringup so_arm_gz_bringup.launch.py
 ```
 
-2. Start recording:
+2. Start the episode recorder (using rosetta's launch file with our contract):
 ```bash
-ros2 launch pai_data_collection so_arm_record.launch.py bag_base_dir:=datasets/so_arm100/bags
+ros2 launch rosetta episode_recorder_launch.py \
+    contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm100.yaml \
+    bag_base_dir:=datasets/so_arm100/bags
 ```
 
 3. Start episode:
 ```bash
-ros2 action send_goal /record_episode rosetta_interfaces/action/RecordEpisode "{prompt: 'move arm'}"
+ros2 action send_goal /record_episode \
+    rosetta_interfaces/action/RecordEpisode "{prompt: 'move arm'}" --feedback
 ```
 
 4. Move the arm:
@@ -50,10 +56,7 @@ There is simple script to run some of these commands sequentially:
 $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/scripts/arm_demo_positions.sh
 ```
 
-5. Finish episode:
-```bash
-ros2 service call /record_episode/cancel std_srvs/srv/Trigger "{}"
-```
+5. Finish episode: Cancel the action goal (Ctrl+C in the terminal where `send_goal` was run, or use an action client to cancel).
 
 This will save a rosbag that corresponds to that episode.
 
@@ -75,11 +78,23 @@ actions:
 
 Run conversion:
 ```bash
-python3 repos/rosetta/scripts/bag_to_lerobot.py \
-    --out datasets_lerobot/move_arm \
-    --contract=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm100.yaml \
-    --bags datasets/so_arm100/bags/<episode_dir1>/ datasets/so_arm100/bags/<episode_dir2>/
+python -m rosetta.port_bags \
+    --raw-dir datasets/so_arm100/bags \
+    --contract $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm100.yaml \
+    --repo-id move_arm \
+    --root datasets_lerobot
 ```
+
+### port_bags arguments
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `--raw-dir` | Yes | Directory containing bag subdirectories (each with `metadata.yaml`) |
+| `--contract` | Yes | Path to rosetta contract YAML |
+| `--repo-id` | No | Dataset name. Defaults to `--raw-dir` directory name |
+| `--root` | No | Parent directory for datasets. Dataset saved to `root/repo-id` |
+| `--push-to-hub` | No | Upload to HuggingFace Hub after conversion |
+| `--vcodec` | No | Video codec (default: `libsvtav1`). Use `libx264` for faster encoding |
 
 ## Replay Dataset on Real Robot using LeRobot
 
@@ -90,7 +105,7 @@ lerobot-replay \
     --robot.port=/dev/ttyACM0 \
     --robot.id=my_awesome_arm \
     --dataset.repo_id=move_arm \
-    --dataset.root=/ros_ws/src/datasets_lerobot/move_arm \
+    --dataset.root=datasets_lerobot/move_arm \
     --dataset.episode=0 \
     --robot.use_degrees=true \
     --play_sounds=false

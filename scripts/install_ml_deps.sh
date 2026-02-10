@@ -51,9 +51,9 @@ echo ""
 
 # Step 3: Install lerobot
 # Note: Installed via pip due to rerun-sdk wheel compatibility issues with pixi pypi-dependencies
-# Version 0.3.3 is pinned to match the lerobot repository version (v0.3.3) used in this project
+# Version 0.4.3 is pinned to match the lerobot repository version (v0.4.3) used in this project
 echo "Step 3: Installing lerobot..."
-pip install lerobot==0.3.3
+pip install lerobot==0.4.3
 
 echo ""
 echo "=== Installation Complete ==="
