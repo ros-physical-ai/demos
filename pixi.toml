@@ -67,6 +67,11 @@ range-v3 = ">=0.12.0,<0.13"
 python = "3.12.*"
 pip = "*"
 numpy = ">=1.26.4,<3"
+# Explicitly installing pillow through Conda (rather that letting pip pull it an as transitive dependency)
+# to avoid related issue to: libtiff.so.6: undefined symbol: jpeg12_write_raw_data, version LIBJPEG_8.0.
+pillow = "*"
+# Pinned to <26 to satisfy lerobot==0.4.3 requirement (packaging>=24.2,<26.0)
+packaging = ">=24.2,<26"
 
 # ROS dependencies
 ros-kilted-ros-core = "*"
@@ -122,7 +127,7 @@ ros-kilted-rmw-zenoh-cpp = "*"
 
 [pypi-dependencies]
 huggingface-hub = "*"
-opencv-python = "*"
+lerobot = { version = "==0.4.3", extras = ["feetech"] }
 
 [activation]
 scripts = ["install/setup.bash"]

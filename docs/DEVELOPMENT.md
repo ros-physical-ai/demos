@@ -31,14 +31,13 @@ Install base environment and ML dependencies:
 # Step 1: Install base environment (includes ROS 2 Kilted dependencies)
 pixi install
 
-# Step 2: Install ML dependencies (automatically detects GPU and installs appropriate PyTorch + lerobot)
+# Step 2: Install ML dependencies (automatically detects GPU and installs appropriate PyTorch)
 pixi run install-ml-deps
 ```
 
 The `install-ml-deps` task automatically:
 - Detects your GPU (RTX 5090 or standard)
 - Installs the appropriate PyTorch version
-- Installs lerobot
 
 ### 2. Build
 
