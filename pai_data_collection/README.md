@@ -6,9 +6,9 @@ Data collection tools for Physical AI demos using [rosetta](https://github.com/i
 
 This project uses [Pixi](https://pixi.sh/) for environment management. Make sure the workspace is set up following the [Development Guide](../docs/DEVELOPMENT.md).
 
-The required repos (`rosetta` and `rosetta_interfaces`) are included in `pai.repos` and will be fetched automatically during workspace setup:
+The required external repos (`rosetta` and `rosetta_interfaces`) are included in `pai.repos` and will be fetched automatically during workspace setup:
 ```bash
-vcs import repos < pai.repos --recursive
+vcs import external < pai.repos --recursive
 ```
 
 > [!NOTE]
@@ -22,25 +22,30 @@ Recording uses rosetta's `episode_recorder_launch.py` directly.
 
 ### Workflow
 
-1. Start simulation:
+1. Run zenoh router on a separate terminal:
 ```bash
-ros2 launch pai_bringup so_arm_gz_bringup.launch.py
+pixi run start_zenoh # ros2 run rmw_zenoh_cpp rmw_zenohd
 ```
 
-2. Start the episode recorder (using rosetta's launch file with our contract):
+2. Start simulation:
+```bash
+pixi run so-arm-gz # ros2 launch pai_bringup so_arm_gz_bringup.launch.py
+```
+
+3. Start the episode recorder (using rosetta's launch file with our contract):
 ```bash
 ros2 launch rosetta episode_recorder_launch.py \
     contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm100.yaml \
     bag_base_dir:=datasets/so_arm100/bags
 ```
 
-3. Start episode:
+4. Start episode:
 ```bash
 ros2 action send_goal /record_episode \
     rosetta_interfaces/action/RecordEpisode "{prompt: 'move arm'}" --feedback
 ```
 
-4. Move the arm:
+5. Move the arm:
 
 You can directly use the forward position controller via topic:
 ```bash
@@ -56,11 +61,32 @@ There is simple script to run some of these commands sequentially:
 $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/scripts/arm_demo_positions.sh
 ```
 
-5. Finish episode: Cancel the action goal (Ctrl+C in the terminal where `send_goal` was run, or use an action client to cancel).
+6. Finish episode: Cancel the action goal (Ctrl+C in the terminal where `send_goal` was run, or use an action client to cancel).
 
 This will save a rosbag that corresponds to that episode.
 
-6. Record more episodes: Repeat steps 3, 4, 5.
+7. Record more episodes: Repeat steps 4, 5, 6.
+
+#### Workflow Overview
+
+
+```mermaid
+flowchart LR
+    A["1. Start Zenoh Router
+    pixi run start_zenoh"] --> B["2. Start Simulation
+    pixi run so-arm-gz"]
+    B --> C["3. Start Episode Recorder
+    ros2 launch rosetta episode_recorder_launch.py ..."]
+    C --> D["4. Start Episode
+    ros2 action send_goal /record_episode ..."]
+    D --> E["5. Move the Arm
+    ros2 topic pub ..."]
+    E --> F["6. Finish Episode / Cancel action goal
+    Ctrl+C"]
+    F --> G{More episodes?}
+    G -- Yes --> D
+    G -- No --> H["Done Recording Rosbags"]
+```
 
 ## Convert Rosbag to LeRobot
 

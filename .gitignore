@@ -12,7 +12,7 @@ install/*
 log/*
 
 # External repos imported via vcs
-repos/*
+external/*
 
 # Recorded datasets
 datasets/*

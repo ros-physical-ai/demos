@@ -19,7 +19,7 @@ sudo apt install -y libserial-dev
 mkdir ~/ws_pai/src -p && cd ~/ws_pai/src
 git clone https://github.com/ros-physical-ai/demos
 cd demos
-vcs import repos < pai.repos --recursive
+vcs import external < pai.repos --recursive
 cd ~/ws_pai
 rosdep install --from-paths src --ignore-src --rosdistro kilted -yir
 source /opt/ros/kilted/setup.bash

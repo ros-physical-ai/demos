@@ -9,7 +9,7 @@ Install Pixi first by following [its official documentation](https://pixi.prefix
 The following must be installed system-wide. 
 See [README.md](../README.md) for installation instructions:
 
-_Dependent repos_: Installed via `vcs import repos < pai.repos --recursive`
+_Dependent repos_: Installed via `vcs import external < pai.repos --recursive`
 
 _libserial-dev_: Required for feetech_ros2_driver. Install via:
   ```bash
