@@ -13,9 +13,9 @@ repositories:
     version: v0.4.3
   rosetta:
     type: git
-    url: https://github.com/francocipollone/rosetta.git
-    version: rospai
+    url: https://github.com/iblnkn/rosetta.git
+    version: a52589b957f318c3577d7b663db4d8f192435b84
   rosetta_interfaces:
     type: git
     url: https://github.com/iblnkn/rosetta_interfaces.git
-    version: 3bdfa63
+    version: 3bdfa6316c31bcaedc52b57c77258c090bf33463
