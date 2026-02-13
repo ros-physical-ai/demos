@@ -2,6 +2,9 @@ repositories:
   SO-ARM100/ros2_so_arm100:
     type: git
     url: https://github.com/yadunund/ros2_so_arm100.git
+    # TODO(francocipollone): Point to latest stable commit once that
+    # - https://github.com/JafarAbdi/ros2_so_arm100/pull/25 is merged.
+    # - https://github.com/ros-physical-ai/demos/pull/3 is merged.
     version: ce990f5
   SO-ARM100/feetech_ros2_driver:
     type: git
