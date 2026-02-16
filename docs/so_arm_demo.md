@@ -177,10 +177,10 @@ python3 pai_bringup/scripts/lerobot_inference_node --ros-args \
 The `Float64MultiArray` contains joint positions in the following order:
 1. `shoulder_pan_joint`
 2. `shoulder_lift_joint`
-3. `elbow_joint`
+3. `elbow_flex_joint`
 4. `wrist_pitch_joint`
 5. `wrist_roll_joint`
-6. `jaw_joint`
+6. `gripper_joint`
 
 ## Implementation Notes
 
@@ -213,10 +213,10 @@ LeRobot SO101 training uses different units than ROS 2:
 joint_limits_deg = {
     'shoulder_pan_joint': (-180, 180),      # Full rotation
     'shoulder_lift_joint': (-90, 90),       # Shoulder lift range
-    'elbow_joint': (-135, 135),              # Elbow range
+    'elbow_flex_joint': (-135, 135),        # Elbow range
     'wrist_pitch_joint': (-90, 90),         # Wrist pitch
     'wrist_roll_joint': (-180, 180),        # Wrist roll full rotation
-    'jaw_joint': (0, 100)                   # Gripper 0-100%
+    'gripper_joint': (0, 100)               # Gripper 0-100%
 }
 ```
 

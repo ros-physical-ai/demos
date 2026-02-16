@@ -197,7 +197,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "controllers_file",
             default_value=PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "config", "ros2_control", "so_arm_ros2_controllers.yaml"]
+                [FindPackageShare("so_arm100_description"), "control", "ros2_controllers.yaml"]
             ),
             description="Absolute path to YAML file with the controllers configuration.",
         )
@@ -241,7 +241,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "rviz_config_file",
             default_value=PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "config", "rviz", "so_arm.rviz"]
+                [FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_gz.rviz"]
             ),
             description="Rviz config file (absolute path) to use when launching rviz.",
         )

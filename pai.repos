@@ -1,8 +1,8 @@
 repositories:
   SO-ARM100/ros2_so_arm100:
     type: git
-    url: https://github.com/JafarAbdi/ros2_so_arm100.git
-    version: 8e861f36ade97db73038981f0e0c2dc9cc39945c
+    url: https://github.com/JafarAbdi/ros2_so_arm.git
+    version: 18eb3aecaf7ec327d99a7a9d23a906072944ce81
   SO-ARM100/feetech_ros2_driver:
     type: git
     url: https://github.com/JafarAbdi/feetech_ros2_driver.git

@@ -22,10 +22,10 @@ observations:
       names: [
         position.shoulder_pan_joint,
         position.shoulder_lift_joint,
-        position.elbow_joint,
+        position.elbow_flex_joint,
         position.wrist_pitch_joint,
         position.wrist_roll_joint,
-        position.jaw_joint,
+        position.gripper_joint,
       ]
     align: {strategy: hold, stamp: header, tol_ms: 100}
     qos: {reliability: reliable, history: keep_last, depth: 50}
@@ -45,12 +45,12 @@ actions:
     selector:
       # Joint names matching LeRobot so101_follower motor names (with .pos suffix)
       names: [
-        shoulder_pan.pos,
-        shoulder_lift.pos,
-        elbow_flex.pos,
-        wrist_flex.pos,
-        wrist_roll.pos,
-        gripper.pos
+        shoulder_pan_joint.pos,
+        shoulder_lift_joint.pos,
+        elbow_flex_joint.pos,
+        wrist_flex_joint.pos,
+        wrist_roll_joint.pos,
+        gripper_joint.pos
       ]
     # Convert radians (ROS) to degrees (LeRobot)
     unit_conversion: rad2deg

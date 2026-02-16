@@ -83,7 +83,7 @@ def generate_launch_description():
     )
 
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare("pai_bringup"), "rviz", "so_arm_mujoco.rviz"]
+        [FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_mujoco.rviz"]
     )
     rviz_node = Node(
         package="rviz2",
