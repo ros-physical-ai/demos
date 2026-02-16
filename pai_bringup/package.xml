@@ -3,8 +3,9 @@
 <package format="3">
   <name>pai_bringup</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>ROS 2 Physical AI example bringup package</description>
   <maintainer email="yadunund@gmail.com">Yadunund Vijay</maintainer>
+  <maintainer email="sebas.a.castro@gmail.com">Sebastian Castro</maintainer>
   <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
@@ -12,10 +13,12 @@
   <exec_depend>controller_manager</exec_depend>
   <exec_depend>cv_bridge</exec_depend>
   <exec_depend>feetech_ros2_driver</exec_depend>
-  <exec_depend>pai_assets</exec_depend>
-  <exec_depend>pai_description</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+  <exec_depend>joint_trajectory_controller</exec_depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
+  <exec_depend>mujoco_ros2_control</exec_depend>
+  <exec_depend>parallel_gripper_controller</exec_depend>
   <exec_depend>rclpy</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>ros_gz_bridge</exec_depend>
@@ -23,6 +26,8 @@
   <exec_depend>rviz2</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>so_arm100_description</exec_depend>
+  <exec_depend>so_arm101_description</exec_depend>
+  <exec_depend>so_arm_gz</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>xacro</exec_depend>
 

@@ -18,9 +18,9 @@ def generate_launch_description():
             " ",
             PathJoinSubstitution(
                 [
-                    FindPackageShare("pai_mujoco"),
+                    FindPackageShare("pai_bringup"),
                     "urdf",
-                    "so_arm101.urdf.xacro",
+                    "so_arm101_mujoco.urdf.xacro",
                 ]
             ),
         ]
@@ -83,7 +83,7 @@ def generate_launch_description():
     )
 
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare("pai_mujoco"), "rviz", "so_arm.rviz"]
+        [FindPackageShare("pai_bringup"), "rviz", "so_arm_mujoco.rviz"]
     )
     rviz_node = Node(
         package="rviz2",

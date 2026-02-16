@@ -23,7 +23,7 @@
   <ros2_control name="MujocoSystem" type="system">
     <hardware>
       <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
-      <param name="mujoco_model">$(find pai_mujoco)/urdf/scene.xml</param>
+      <param name="mujoco_model">$(find pai_bringup)/mjcf/scene.xml</param>
       <param name="sim_speed_factor">1.0</param>
       <param name="camera_publish_rate">10.0</param>
     </hardware>

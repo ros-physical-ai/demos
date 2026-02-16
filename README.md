@@ -58,8 +58,10 @@ For instructions on training a policy and running inference see [this guide](./d
 
 #### Launch the MuJoCo world
 
+![](./docs/media/so_arm_mujoco.png)
+
 ```bash
-ros2 launch pai_mujoco so101.launch.py
+ros2 launch pai_bringup so_arm_mujoco_bringup.launch.py
 ```
 
 ## Pixi Development
