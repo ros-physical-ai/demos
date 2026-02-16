@@ -4,6 +4,9 @@
 - [Ubuntu 24.04](https://ubuntu.com/download/desktop)
 - [ROS 2 Kilted Kaiju](https://docs.ros.org/en/kilted/)
 - [Gazebo Ionic](https://gazebosim.org/docs/ionic/getstarted/)
+- **NVIDIA GPU** (for ML inference):
+  - RTX 5090 (Blackwell): Check NVIDIA's latest driver requirements. As of January 2026, driver version 570+ and CUDA 12.8+ are recommended.
+  - Other GPUs: Compatible driver and CUDA version
 
 > [!NOTE]
 > ROS 2 `Jazzy Jalisco` is also supported but we recommend `Kilted` to benefit from simulation improvements in `Gazebo Ionic` which pairs with `Kilted` together with improvements in `ros2_control`.
@@ -12,9 +15,11 @@
 
 ```bash
 sudo apt update && sudo apt install upgrade -y
+sudo apt install -y libserial-dev
 mkdir ~/ws_pai/src -p && cd ~/ws_pai/src
 git clone https://github.com/ros-physical-ai/demos
-vcs import . < demos/pai.repos --recursive
+cd demos
+vcs import external < pai.repos --recursive
 cd ~/ws_pai
 rosdep install --from-paths src --ignore-src --rosdistro kilted -yir
 source /opt/ros/kilted/setup.bash
@@ -56,3 +61,7 @@ For instructions on training a policy and running inference see [this guide](./d
 ```bash
 ros2 launch pai_mujoco so101.launch.py
 ```
+
+## Pixi Development
+
+For a more isolated and reproducible development environment, we recommend using [Pixi](https://pixi.sh/). See [DEVELOPMENT.md](./docs/DEVELOPMENT.md) for the Pixi-based workflow.

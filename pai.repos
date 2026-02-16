@@ -1,17 +1,21 @@
 repositories:
   SO-ARM100/ros2_so_arm100:
     type: git
-    url: https://github.com/yadunund/ros2_so_arm100.git
-    version: gazebo
+    url: https://github.com/JafarAbdi/ros2_so_arm100.git
+    version: 8e861f36ade97db73038981f0e0c2dc9cc39945c
   SO-ARM100/feetech_ros2_driver:
     type: git
     url: https://github.com/JafarAbdi/feetech_ros2_driver.git
     version: main
-  huggingface/lerobot:
+  mujoco_ros2_control:
     type: git
-    url: https://github.com/huggingface/lerobot.git
-    version: v0.3.3
-  mujoco_ros2_simulation:
+    url: https://github.com/ros-controls/mujoco_ros2_control.git
+    version: cd4340cc3878142def1f88845518f2b29647c7c2
+  rosetta:
     type: git
-    url: https://github.com/ros-controls/mujoco_ros2_simulation.git
-    version: main
+    url: https://github.com/iblnkn/rosetta.git
+    version: a52589b957f318c3577d7b663db4d8f192435b84
+  rosetta_interfaces:
+    type: git
+    url: https://github.com/iblnkn/rosetta_interfaces.git
+    version: 3bdfa6316c31bcaedc52b57c77258c090bf33463

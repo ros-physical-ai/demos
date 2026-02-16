@@ -1,0 +1,19 @@
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+*.egg-info
+
+# Python
+*.pyc
+
+# Build output
+build/*
+install/*
+log/*
+
+# External repos imported via vcs
+external/*
+
+# Recorded datasets
+datasets/*
+datasets_lerobot/*

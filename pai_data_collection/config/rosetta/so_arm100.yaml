@@ -1,0 +1,63 @@
+robot_type: so_arm100
+
+# Recording parameters
+fps: 50  # Matches controller update rate
+max_duration_s: 120.0
+
+observations:
+  - key: observation.images.wrist
+    topic: /camera
+    type: sensor_msgs/msg/Image
+    image:
+      # Resize for neural network input
+      resize: [480, 480]
+    align: {strategy: hold, stamp: header, tol_ms: 100}
+    qos: {reliability: best_effort, history: keep_last, depth: 10}
+
+  - key: observation.state
+    topic: /joint_states
+    type: sensor_msgs/msg/JointState
+    selector:
+      # All 6 joints: 5 arm joints + 1 gripper jaw
+      names: [
+        position.shoulder_pan_joint,
+        position.shoulder_lift_joint,
+        position.elbow_joint,
+        position.wrist_pitch_joint,
+        position.wrist_roll_joint,
+        position.jaw_joint,
+      ]
+    align: {strategy: hold, stamp: header, tol_ms: 100}
+    qos: {reliability: reliable, history: keep_last, depth: 50}
+    # Convert radians (ROS) to degrees (LeRobot)
+    unit_conversion: rad2deg
+
+actions:
+  - key: action
+    publish:
+      topic: /forward_position_controller/commands
+      type: std_msgs/msg/Float64MultiArray
+      layout: flat
+      qos: {reliability: reliable, history: keep_last, depth: 10}
+      strategy:
+        mode: nearest
+        tolerance_ms: 100
+    selector:
+      # Joint names matching LeRobot so101_follower motor names (with .pos suffix)
+      names: [
+        shoulder_pan.pos,
+        shoulder_lift.pos,
+        elbow_flex.pos,
+        wrist_flex.pos,
+        wrist_roll.pos,
+        gripper.pos
+      ]
+    # Convert radians (ROS) to degrees (LeRobot)
+    unit_conversion: rad2deg
+    from_tensor:
+      # Clamp to safe joint limits (radians)
+      clamp: [-3.14159, 3.14159]
+    safety_behavior: hold  # Maintain last position when stopped
+
+recording:
+  storage: mcap
