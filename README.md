@@ -64,6 +64,8 @@ For instructions on training a policy and running inference see [this guide](./d
 ros2 launch pai_bringup so_arm_mujoco_bringup.launch.py
 ```
 
+With Pixi: `pixi run so-arm-mujoco`
+
 ## Pixi Development
 
 For a more isolated and reproducible development environment, we recommend using [Pixi](https://pixi.sh/). See [DEVELOPMENT.md](./docs/DEVELOPMENT.md) for the Pixi-based workflow.

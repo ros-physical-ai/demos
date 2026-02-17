@@ -68,6 +68,11 @@ Terminal 2 (launch Gazebo simulation):
 pixi run so-arm-gz
 ```
 
+MuJoCo simulation (SO-ARM in MuJoCo):
+```bash
+pixi run so-arm-mujoco
+```
+
 ### 4. Interactive Mode with Pixi Shell
 
 For interactive development, you can use `pixi shell` to enter an interactive shell with the environment activated.

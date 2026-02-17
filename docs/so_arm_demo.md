@@ -37,6 +37,23 @@ pip install torch==2.7.0+cu128 torchaudio==2.7.0+cu128 torchcodec==0.4.0 torchvi
 pip install lerobot==0.3.3
 ```
 
+Using Pixi (recommended for this repo)
+
+Pixi provides an isolated environment with ROS 2 Kilted and LeRobot. From the repo root:
+
+```bash
+# Install base environment (ROS 2 Kilted, colcon, etc.)
+pixi install
+
+# Install ML dependencies (detects RTX 5090 and installs PyTorch cu128)
+pixi run install-ml-deps
+
+# Build the workspace
+pixi run build
+```
+
+The `install-ml-deps` task detects your GPU and installs the appropriate PyTorch (e.g. cu128 for RTX 5090). See [DEVELOPMENT.md](DEVELOPMENT.md) for more details.
+
 #### Calibration
 
 ```bash
