@@ -17,7 +17,7 @@ vcs import external < pai.repos --recursive
 
 ## Recording Rosbag
 
-This package provides a rosetta contract for the SO-ARM100 robot (`config/rosetta/so_arm100.yaml`).
+This package provides a rosetta contract for the SO-ARM101 robot (`config/rosetta/so_arm101.yaml`).
 Recording uses rosetta's `episode_recorder_launch.py` directly.
 
 ### Workflow
@@ -35,8 +35,8 @@ pixi run so-arm-gz # ros2 launch pai_bringup so_arm_gz_bringup.launch.py
 3. Start the episode recorder (using rosetta's launch file with our contract):
 ```bash
 ros2 launch rosetta episode_recorder_launch.py \
-    contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm100.yaml \
-    bag_base_dir:=datasets/so_arm100/bags
+    contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
+    bag_base_dir:=datasets/so_arm101/bags
 ```
 
 4. Start episode:
@@ -88,12 +88,23 @@ flowchart LR
     G -- No --> H["Done Recording Rosbags"]
 ```
 
+### MuJoCo-based data collection
+
+Use MuJoCo simulation with the same `so_arm101.yaml` contract.
+
+1. Start zenoh router: `pixi run start_zenoh`
+2. Start MuJoCo + camera relay: `pixi run so-arm-mujoco`
+3. Start rosetta recorder: `pixi run rosetta-record-mujoco`
+4. Start episode: `ros2 action send_goal /record_episode rosetta_interfaces/action/RecordEpisode "{prompt: 'move arm'}" --feedback`
+5. Move the arm: `$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/scripts/arm_demo_positions.sh` (or `ros2 topic pub`; MuJoCo must already be running from step 2)
+6. Cancel the action goal to finish the episode
+
 ## Convert Rosbag to LeRobot
 
-The contract (`so_arm100.yaml`) specifies `unit_conversion: rad2deg` in the action's `from_tensor` section, which automatically converts ROS radians to LeRobot degrees during conversion.
+The contract (`so_arm101.yaml`) specifies `unit_conversion: rad2deg` in the action's `from_tensor` section, which automatically converts ROS radians to LeRobot degrees during conversion.
 
 ```yaml
-# In the contract (config/rosetta/so_arm100.yaml):
+# In the contract (config/rosetta/so_arm101.yaml):
 actions:
   - key: action
     ...
@@ -102,12 +113,20 @@ actions:
       unit_conversion: rad2deg  # Converts radians → degrees for LeRobot
 ```
 
-Run conversion:
+Run conversion (Gazebo bags use `datasets/so_arm101/bags`; MuJoCo bags use `datasets/so_arm101_mujoco/bags`):
 ```bash
+# Gazebo
 python -m rosetta.port_bags \
-    --raw-dir datasets/so_arm100/bags \
-    --contract $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm100.yaml \
+    --raw-dir datasets/so_arm101/bags \
+    --contract $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     --repo-id move_arm \
+    --root datasets_lerobot
+
+# MuJoCo
+python -m rosetta.port_bags \
+    --raw-dir datasets/so_arm101_mujoco/bags \
+    --contract $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
+    --repo-id move_arm_mujoco \
     --root datasets_lerobot
 ```
 
