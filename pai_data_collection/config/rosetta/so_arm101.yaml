@@ -1,4 +1,4 @@
-robot_type: so_arm100
+robot_type: so_arm101
 
 # Recording parameters
 fps: 50  # Matches controller update rate
@@ -23,7 +23,7 @@ observations:
         position.shoulder_pan_joint,
         position.shoulder_lift_joint,
         position.elbow_flex_joint,
-        position.wrist_pitch_joint,
+        position.wrist_flex_joint,
         position.wrist_roll_joint,
         position.gripper_joint,
       ]

@@ -17,6 +17,7 @@ install(
 install(
   PROGRAMS
     scripts/lerobot_inference_node
+    scripts/camera_relay_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

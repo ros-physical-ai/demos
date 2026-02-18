@@ -28,9 +28,10 @@ def generate_launch_description():
     )
     robot_description = {"robot_description": ParameterValue(value=robot_description_content, value_type=str)}
 
-    # Apply empty namespaces to controller parameters file.
+    # MuJoCo config: forward_position_controller with 6 joints (incl. gripper_joint)
+    # for arm_demo_positions.sh, rosetta, and inference (so_arm101 has 5 joints only).
     ros2_controllers_file = PathJoinSubstitution(
-        [FindPackageShare("so_arm101_description"), "control", "ros2_controllers.yaml"]
+        [FindPackageShare("pai_bringup"), "config", "ros2_controllers_mujoco.yaml"]
     )
     ros2_controllers_file = ReplaceString(
         source_file=ros2_controllers_file,
@@ -76,24 +77,25 @@ def generate_launch_description():
         output="both",
     )
 
-    spawn_jtc = Node(
+    spawn_forward_position_controller = Node(
         package="controller_manager",
         executable="spawner",
-        name="spawn_joint_trajectory_controller",
+        name="spawn_forward_position_controller",
         arguments=[
-            "joint_trajectory_controller",
+            "forward_position_controller",
         ],
         output="both",
     )
 
-    spawn_gripper_controller = Node(
-        package="controller_manager",
-        executable="spawner",
-        name="spawn_gripper_controller",
-        arguments=[
-            "gripper_controller",
-        ],
+    camera_relay = Node(
+        package="pai_bringup",
+        executable="camera_relay_node",
+        name="camera_relay_node",
         output="both",
+        parameters=[
+            {"input_topic": "/camera/color/image_raw"},
+            {"output_topic": "/camera"},
+        ],
     )
 
     rviz_config_file = PathJoinSubstitution(
@@ -112,8 +114,8 @@ def generate_launch_description():
             robot_state_publisher_node,
             control_node,
             spawn_joint_state_broadcaster,
-            spawn_jtc,
-            spawn_gripper_controller,
+            spawn_forward_position_controller,
+            camera_relay,
             rviz_node,
         ]
     )
