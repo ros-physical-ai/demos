@@ -25,11 +25,12 @@ def generate_launch_description():
             ),
         ]
     )
-
     robot_description = {"robot_description": ParameterValue(value=robot_description_content, value_type=str)}
 
     controller_parameters = ParameterFile(
-        PathJoinSubstitution([FindPackageShare("so_arm101_description"), "control", "ros2_controllers.yaml"]),
+        PathJoinSubstitution(
+            [FindPackageShare("pai_bringup"), "config", "ros2_control", "so_arm_mujoco_controllers.yaml"]
+        ),
     )
 
     robot_state_publisher_node = Node(
