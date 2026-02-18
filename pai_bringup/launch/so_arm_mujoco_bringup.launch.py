@@ -9,6 +9,7 @@ from launch.substitutions import (
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue, ParameterFile
 from launch_ros.substitutions import FindPackageShare
+from nav2_common.launch import ReplaceString, RewrittenYaml
 
 
 def generate_launch_description():
@@ -27,10 +28,22 @@ def generate_launch_description():
     )
     robot_description = {"robot_description": ParameterValue(value=robot_description_content, value_type=str)}
 
+    # Apply empty namespaces to controller parameters file.
+    ros2_controllers_file = PathJoinSubstitution(
+        [FindPackageShare("so_arm101_description"), "control", "ros2_controllers.yaml"]
+    )
+    ros2_controllers_file = ReplaceString(
+        source_file=ros2_controllers_file,
+        replacements={"<robot_namespace>": ("")},
+    )
     controller_parameters = ParameterFile(
-        PathJoinSubstitution(
-            [FindPackageShare("pai_bringup"), "config", "ros2_control", "so_arm_mujoco_controllers.yaml"]
+        RewrittenYaml(
+            source_file=ros2_controllers_file,
+            root_key="",
+            param_rewrites={},
+            convert_types=True,
         ),
+        allow_substs=True,
     )
 
     robot_state_publisher_node = Node(

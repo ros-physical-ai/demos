@@ -33,6 +33,7 @@ from launch.substitutions import (
 )
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
+from nav2_common.launch import ReplaceString, RewrittenYaml
 from launch_ros.substitutions import FindPackageShare
 from ros_gz_sim.actions import GzServer
 
@@ -54,6 +55,12 @@ def launch_setup(context, *args, **kwargs):
     roll = LaunchConfiguration("roll")
     pitch = LaunchConfiguration("pitch")
     yaw = LaunchConfiguration("yaw")
+
+    # Apply empty namespaces to controller parameters file.
+    controllers_file = ReplaceString(
+        source_file=controllers_file,
+        replacements={"<robot_namespace>": ("")},
+    )
 
     robot_description_content = Command(
         [
@@ -110,6 +117,11 @@ def launch_setup(context, *args, **kwargs):
         package="controller_manager",
         executable="spawner",
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+    )
+    gripper_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["gripper_controller", "--controller-manager", "/controller_manager"],
     )
 
     # Delay rviz start after `joint_state_broadcaster`
@@ -182,6 +194,7 @@ def launch_setup(context, *args, **kwargs):
         delay_rviz_after_joint_state_broadcaster_spawner,
         initial_joint_controller_spawner_stopped,
         initial_joint_controller_spawner_started,
+        gripper_controller_spawner,
         gz_spawn_entity,
         gzserver,
         gzgui,
@@ -197,7 +210,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "controllers_file",
             default_value=PathJoinSubstitution(
-                [FindPackageShare("so_arm100_description"), "control", "ros2_controllers.yaml"]
+                [FindPackageShare("so_arm101_description"), "control", "ros2_controllers.yaml"]
             ),
             description="Absolute path to YAML file with the controllers configuration.",
         )
@@ -276,7 +289,7 @@ def generate_launch_description():
         DeclareLaunchArgument("pitch", default_value="0.0", description="Robot spawn pitch orientation (radians)")
     )
     declared_arguments.append(
-        DeclareLaunchArgument("yaw", default_value="-3.141", description="Robot spawn yaw orientation (radians)")
+        DeclareLaunchArgument("yaw", default_value="1.5708", description="Robot spawn yaw orientation (radians)")
     )
 
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])
