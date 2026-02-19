@@ -1,5 +1,5 @@
-# MuJoCo-specific controller config for LeRobot inference and rosetta data collection.
-# forward_position_controller with 6 joints (including gripper) for single-topic commands.
+# Controller config for LeRobot inference and rosetta data collection.
+# Includes forward_position_controller with 6 joints (including gripper) for single-topic commands.
 controller_manager:
   ros__parameters:
     update_rate: 50

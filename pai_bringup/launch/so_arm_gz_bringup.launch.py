@@ -210,7 +210,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "controllers_file",
             default_value=PathJoinSubstitution(
-                [FindPackageShare("so_arm101_description"), "control", "ros2_controllers.yaml"]
+                [FindPackageShare("pai_bringup"), "control", "ros2_controllers.yaml"]
             ),
             description="Absolute path to YAML file with the controllers configuration.",
         )

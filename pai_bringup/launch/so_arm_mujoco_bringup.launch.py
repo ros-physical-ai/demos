@@ -28,10 +28,8 @@ def generate_launch_description():
     )
     robot_description = {"robot_description": ParameterValue(value=robot_description_content, value_type=str)}
 
-    # MuJoCo config: forward_position_controller with 6 joints (incl. gripper_joint)
-    # for arm_demo_positions.sh, rosetta, and inference (so_arm101 has 5 joints only).
     ros2_controllers_file = PathJoinSubstitution(
-        [FindPackageShare("pai_bringup"), "config", "ros2_controllers_mujoco.yaml"]
+        [FindPackageShare("pai_bringup"), "config", "ros2_controllers.yaml"]
     )
     ros2_controllers_file = ReplaceString(
         source_file=ros2_controllers_file,
