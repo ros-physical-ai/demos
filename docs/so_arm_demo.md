@@ -231,7 +231,7 @@ joint_limits_deg = {
     'shoulder_pan_joint': (-180, 180),      # Full rotation
     'shoulder_lift_joint': (-90, 90),       # Shoulder lift range
     'elbow_flex_joint': (-135, 135),        # Elbow range
-    'wrist_pitch_joint': (-90, 90),         # Wrist pitch
+    'wrist_flex_joint': (-90, 90),          # Wrist flex
     'wrist_roll_joint': (-180, 180),        # Wrist roll full rotation
     'gripper_joint': (0, 100)               # Gripper 0-100%
 }
