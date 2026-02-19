@@ -195,7 +195,7 @@ The `Float64MultiArray` contains joint positions in the following order:
 1. `shoulder_pan_joint`
 2. `shoulder_lift_joint`
 3. `elbow_flex_joint`
-4. `wrist_pitch_joint`
+4. `wrist_flex_joint`
 5. `wrist_roll_joint`
 6. `gripper_joint`
 
