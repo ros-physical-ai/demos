@@ -29,7 +29,7 @@ def generate_launch_description():
     robot_description = {"robot_description": ParameterValue(value=robot_description_content, value_type=str)}
 
     ros2_controllers_file = PathJoinSubstitution(
-        [FindPackageShare("pai_bringup"), "config", "ros2_controllers.yaml"]
+        [FindPackageShare("pai_bringup"), "config", "control", "ros2_controllers.yaml"]
     )
     ros2_controllers_file = ReplaceString(
         source_file=ros2_controllers_file,
@@ -85,17 +85,6 @@ def generate_launch_description():
         output="both",
     )
 
-    camera_relay = Node(
-        package="pai_bringup",
-        executable="camera_relay_node",
-        name="camera_relay_node",
-        output="both",
-        parameters=[
-            {"input_topic": "/camera/color/image_raw"},
-            {"output_topic": "/camera"},
-        ],
-    )
-
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_mujoco.rviz"]
     )
@@ -113,7 +102,6 @@ def generate_launch_description():
             control_node,
             spawn_joint_state_broadcaster,
             spawn_forward_position_controller,
-            camera_relay,
             rviz_node,
         ]
     )
