@@ -21,6 +21,7 @@ start_zenoh = { cmd = [
   "rmw_zenoh_cpp",
   "rmw_zenohd",
 ]}
+so-arm-real = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_real_bringup.launch.py"] }
 so-arm-gz = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_gz_bringup.launch.py"] }
 so-arm-mujoco = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_mujoco_bringup.launch.py"] }
 rosetta-record-mujoco = { cmd = [
