@@ -1,8 +1,9 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="gz_so_101arm">
+  <!-- Custom ros2_control file to allow quick iteration on control parameters (e.g. PID gains) during development -->
   <xacro:arg
     name="ros2_control_file"
-    default="$(find so_arm101_description)/control/so_arm101.ros2_control.xacro"
+    default="$(find pai_bringup)/config/control/so_arm101.ros2_control.xacro"
   />
   <xacro:arg
     name="urdf_file"
@@ -25,7 +26,7 @@
 
   <!-- Robot arm positioned in the world -->
   <link name="world" />
-  <xacro:so_arm101 prefix="$(arg prefix)" 
+  <xacro:so_arm101 prefix="$(arg prefix)"
                    parent="world"
                    color="$(arg color)"
                    x="$(arg x)"
