@@ -24,6 +24,7 @@ Nodes launched:
   - robot_state_publisher
   - joint_state_broadcaster spawner
   - initial joint controller spawner (optionally in stopped state)
+  - gripper_controller spawner (only when using joint_trajectory_controller)
   - rviz2 (optional, delayed until joint_state_broadcaster is ready)
 """
 
@@ -96,6 +97,21 @@ def launch_setup(context, *args, **kwargs):
         initial_joint_controller_spawner,
     ]
 
+    # When using joint_trajectory_controller, also spawn the gripper_controller
+    # since that controller does not include the gripper joint.
+    # With forward_position_controller (default), the gripper joint is already included.
+    if initial_joint_controller == "joint_trajectory_controller":
+        gripper_controller_args = ["gripper_controller", "-c", "/controller_manager"]
+        if not activate_joint_controller:
+            gripper_controller_args.append("--stopped")
+        gripper_controller_spawner = Node(
+            package="controller_manager",
+            executable="spawner",
+            arguments=gripper_controller_args,
+            output="both",
+        )
+        nodes.append(gripper_controller_spawner)
+
     if launch_rviz:
         rviz_node = Node(
             package="rviz2",
@@ -135,7 +151,10 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "initial_joint_controller",
             default_value="forward_position_controller",
-            description="Robot controller to start.",
+            description="Robot controller to start. "
+            "Use 'forward_position_controller' (default) for single-topic control of all 6 joints "
+            "(including gripper) for inference/rosetta, or 'joint_trajectory_controller' for "
+            "MoveIt-style control (gripper_controller is automatically spawned alongside it).",
         ),
         DeclareLaunchArgument(
             "activate_joint_controller",

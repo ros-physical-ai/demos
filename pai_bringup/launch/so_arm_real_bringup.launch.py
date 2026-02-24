@@ -108,7 +108,10 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "initial_joint_controller",
             default_value="forward_position_controller",
-            description="Robot controller to start.",
+            description="Robot controller to start. "
+            "Use 'forward_position_controller' (default) for single-topic control of all 6 joints "
+            "(including gripper) for inference/rosetta, or 'joint_trajectory_controller' for "
+            "MoveIt-style control (gripper_controller is automatically spawned alongside it).",
         ),
         DeclareLaunchArgument(
             "launch_rviz",

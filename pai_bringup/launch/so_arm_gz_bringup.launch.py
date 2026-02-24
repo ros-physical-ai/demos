@@ -126,18 +126,11 @@ def launch_setup(context, *args, **kwargs):
         output="screen",
     )
 
-    gripper_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["gripper_controller", "--controller-manager", "/controller_manager"],
-    )
-
     nodes_to_start = [
         common,
         gz_spawn_entity,
         gzserver,
         gz_sim_bridge,
-        gripper_controller_spawner,
     ]
 
     if gazebo_gui.lower() == "true":
@@ -174,7 +167,10 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "initial_joint_controller",
             default_value="forward_position_controller",
-            description="Robot controller to start.",
+            description="Robot controller to start. "
+            "Use 'forward_position_controller' (default) for single-topic control of all 6 joints "
+            "(including gripper) for inference/rosetta, or 'joint_trajectory_controller' for "
+            "MoveIt-style control (gripper_controller is automatically spawned alongside it).",
         ),
         DeclareLaunchArgument(
             "description_file",
