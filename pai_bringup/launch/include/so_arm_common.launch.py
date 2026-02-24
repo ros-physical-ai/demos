@@ -44,6 +44,7 @@ from launch_ros.parameter_descriptions import ParameterValue
 def launch_setup(context, *args, **kwargs):
     description_file = LaunchConfiguration("description_file").perform(context)
     description_xacro_args = LaunchConfiguration("description_xacro_args").perform(context)
+    ros2_control_file = LaunchConfiguration("ros2_control_file").perform(context)
     use_sim_time = LaunchConfiguration("use_sim_time").perform(context).lower() == "true"
     initial_joint_controller = LaunchConfiguration("initial_joint_controller").perform(context)
     activate_joint_controller = (
@@ -58,6 +59,8 @@ def launch_setup(context, *args, **kwargs):
         " ",
         description_file,
     ]
+    if ros2_control_file:
+        xacro_cmd += [" ", f"ros2_control_file:={ros2_control_file}"]
     if description_xacro_args:
         xacro_cmd += [" ", description_xacro_args]
 
@@ -142,6 +145,13 @@ def generate_launch_description():
             "description_xacro_args",
             default_value="",
             description="Extra arguments to pass to the xacro command.",
+        ),
+        DeclareLaunchArgument(
+            "ros2_control_file",
+            default_value="",
+            description="Path to ros2_control xacro file. When provided, it is passed as "
+            "'ros2_control_file:=<path>' to the xacro command, overriding the default in the "
+            "description file.",
         ),
         DeclareLaunchArgument(
             "use_sim_time",

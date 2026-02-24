@@ -29,6 +29,7 @@ def launch_setup(context, *args, **kwargs):
     usb_port = LaunchConfiguration("usb_port").perform(context)
     controllers_file = LaunchConfiguration("controllers_file")
     description_file = LaunchConfiguration("description_file").perform(context)
+    ros2_control_file = LaunchConfiguration("ros2_control_file").perform(context)
     initial_joint_controller = LaunchConfiguration("initial_joint_controller").perform(context)
     launch_rviz = LaunchConfiguration("launch_rviz").perform(context)
     rviz_config_file = LaunchConfiguration("rviz_config_file").perform(context)
@@ -64,6 +65,7 @@ def launch_setup(context, *args, **kwargs):
         ),
         launch_arguments={
             "description_file": description_file,
+            "ros2_control_file": ros2_control_file,
             "description_xacro_args": (
                 f"ros2_control_hardware_type:=real"
                 f" prefix:={prefix}"
@@ -104,6 +106,14 @@ def generate_launch_description():
                 [FindPackageShare("so_arm101_description"), "urdf", "so_arm101.urdf.xacro"]
             ),
             description="URDF/XACRO description file with the robot.",
+        ),
+        DeclareLaunchArgument(
+            "ros2_control_file",
+            default_value=PathJoinSubstitution(
+                [FindPackageShare("pai_bringup"), "config", "control", "so_arm101.ros2_control.xacro"]
+            ),
+            description="Path to a custom ros2_control xacro file to override the default "
+            "in the description file.",
         ),
         DeclareLaunchArgument(
             "initial_joint_controller",
