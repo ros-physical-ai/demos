@@ -14,10 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import subprocess
 import tempfile
 from pathlib import Path
 
+import xacro
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
@@ -46,16 +46,11 @@ def _generate_mjcf_at_launch(pkg_share):
     scene_out = out_dir / "scene.xml"
 
     meshdir = Path(get_package_share_directory("so_arm101_description")) / "meshes"
-    subprocess.run(
-        ["xacro", str(so_arm101_xacro), "-o", str(so_arm101_out), f"meshdir:={meshdir}"],
-        check=True,
-    )
+    doc = xacro.process_file(str(so_arm101_xacro), mappings={"meshdir": str(meshdir)})
+    so_arm101_out.write_text(doc.toxml())
 
-    subprocess.run(
-        ["xacro", str(scene_xacro), "-o", str(scene_out)],
-        check=True,
-        cwd=str(out_dir),
-    )
+    doc = xacro.process_file(str(scene_xacro))
+    scene_out.write_text(doc.toxml())
 
     return str(scene_out)
 
