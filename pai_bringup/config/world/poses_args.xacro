@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!-- Shared xacro arg declarations for world poses. Single source of truth.
+     Arg naming: {shape}_{component} (e.g. table_x, cube_small_z, arm_base_yaw).
+     Positions in meters, orientations in radians (roll pitch yaw). -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="declare_poses_args">
+    <!-- table -->
+    <xacro:arg name="table_x" default="0.2"/>
+    <xacro:arg name="table_y" default="0.0"/>
+    <xacro:arg name="table_z" default="0.38"/>
+    <xacro:arg name="table_roll" default="0.0"/>
+    <xacro:arg name="table_pitch" default="0.0"/>
+    <xacro:arg name="table_yaw" default="0.0"/>
+    <!-- tray -->
+    <xacro:arg name="tray_x" default="0.06"/>
+    <xacro:arg name="tray_y" default="0.0"/>
+    <xacro:arg name="tray_z" default="0.3945"/>
+    <xacro:arg name="tray_roll" default="0.0"/>
+    <xacro:arg name="tray_pitch" default="0.0"/>
+    <xacro:arg name="tray_yaw" default="0.0"/>
+    <!-- cube_small -->
+    <xacro:arg name="cube_small_x" default="0.28"/>
+    <xacro:arg name="cube_small_y" default="-0.1"/>
+    <xacro:arg name="cube_small_z" default="0.4055"/>
+    <xacro:arg name="cube_small_roll" default="0.0"/>
+    <xacro:arg name="cube_small_pitch" default="0.0"/>
+    <xacro:arg name="cube_small_yaw" default="0.0"/>
+    <!-- cube_medium -->
+    <xacro:arg name="cube_medium_x" default="0.16"/>
+    <xacro:arg name="cube_medium_y" default="0.05"/>
+    <xacro:arg name="cube_medium_z" default="0.4086"/>
+    <xacro:arg name="cube_medium_roll" default="0.0"/>
+    <xacro:arg name="cube_medium_pitch" default="0.0"/>
+    <xacro:arg name="cube_medium_yaw" default="0.0"/>
+    <!-- cube_large -->
+    <xacro:arg name="cube_large_x" default="0.26"/>
+    <xacro:arg name="cube_large_y" default="0.12"/>
+    <xacro:arg name="cube_large_z" default="0.4118"/>
+    <xacro:arg name="cube_large_roll" default="0.0"/>
+    <xacro:arg name="cube_large_pitch" default="0.0"/>
+    <xacro:arg name="cube_large_yaw" default="0.0"/>
+    <!-- arm_base -->
+    <xacro:arg name="arm_base_x" default="0.38"/>
+    <xacro:arg name="arm_base_y" default="0.0"/>
+    <xacro:arg name="arm_base_z" default="0.4"/>
+    <xacro:arg name="arm_base_roll" default="0.0"/>
+    <xacro:arg name="arm_base_pitch" default="0.0"/>
+    <xacro:arg name="arm_base_yaw" default="3.14159"/>
+  </xacro:macro>
+</robot>

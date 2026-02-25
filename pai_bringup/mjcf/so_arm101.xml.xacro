@@ -1,9 +1,11 @@
-<mujoco model="so_arm101">
-  <!--
-  This is a colossal hack since mujoco can't recognize ROS paths.
-  We could instead do some search/replace of this file.
-  -->
-  <compiler angle="radian" meshdir="../../../../so_arm101_description/share/so_arm101_description/meshes" />
+<?xml version="1.0"?>
+<mujoco model="so_arm101" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find pai_bringup)/config/world/poses_args.xacro"/>
+  <xacro:declare_poses_args/>
+  <xacro:arg name="meshdir" default=""/>
+
+  <!-- MuJoCo cannot use ROS paths; meshdir is absolute path from launch -->
+  <compiler angle="radian" meshdir="$(arg meshdir)" />
 
   <option cone="elliptic" impratio="10" />
 
@@ -65,7 +67,7 @@
 
   <worldbody>
     <!-- Link base (pos for table scene: tray x=0.06, cubes x=0.26-0.32) -->
-    <body name="base_link" pos="0.38 0.0 0.4" quat="0 0 0 1" childclass="so_arm101">
+    <body name="base_link" pos="$(arg arm_base_x) $(arg arm_base_y) $(arg arm_base_z)" quat="0 0 0 1" childclass="so_arm101">
       <inertial
         pos="0.0137179 -5.19711e-05 0.0334843"
         mass="0.147"

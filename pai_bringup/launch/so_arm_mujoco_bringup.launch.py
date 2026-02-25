@@ -1,7 +1,27 @@
 #!/usr/bin/env python3
 
+# Copyright (C) 2026 Sebastian Castro, Julia Jia, Franco Cipollone
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import subprocess
+import tempfile
+from pathlib import Path
+
+from ament_index_python.packages import get_package_share_directory
+
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.actions import Node
@@ -10,8 +30,43 @@ from launch_ros.substitutions import FindPackageShare
 from nav2_common.launch import ReplaceString, RewrittenYaml
 
 
-def generate_launch_description():
-    # Process controller parameters for mujoco control node
+def _generate_mjcf_at_launch(pkg_share):
+    """Run xacro on scene and so_arm101 xacros, write to temp dir. Poses from poses_args.xacro."""
+    mjcf_dir = Path(pkg_share) / "mjcf"
+    scene_xacro = mjcf_dir / "scene.xml.xacro"
+    so_arm101_xacro = mjcf_dir / "so_arm101.xml.xacro"
+    if not scene_xacro.exists() or not so_arm101_xacro.exists():
+        raise FileNotFoundError(
+            f"MJCF xacro sources not found. Ensure mjcf/ is installed. "
+            f"Looked for {scene_xacro} and {so_arm101_xacro}"
+        )
+
+    out_dir = Path(tempfile.mkdtemp(prefix="pai_bringup_mjcf_"))
+    so_arm101_out = out_dir / "so_arm101.xml"
+    scene_out = out_dir / "scene.xml"
+
+    meshdir = Path(get_package_share_directory("so_arm101_description")) / "meshes"
+    subprocess.run(
+        ["xacro", str(so_arm101_xacro), "-o", str(so_arm101_out), f"meshdir:={meshdir}"],
+        check=True,
+    )
+
+    subprocess.run(
+        ["xacro", str(scene_xacro), "-o", str(scene_out)],
+        check=True,
+        cwd=str(out_dir),
+    )
+
+    return str(scene_out)
+
+
+def launch_setup(context, *args, **kwargs):
+    pkg_share = PathJoinSubstitution(
+        [FindPackageShare("pai_bringup")]
+    ).perform(context)
+    mujoco_model = _generate_mjcf_at_launch(pkg_share)
+    description_xacro_args = f"mujoco_model:={mujoco_model}"
+
     ros2_controllers_file = PathJoinSubstitution(
         [FindPackageShare("pai_bringup"), "config", "control", "ros2_controllers.yaml"]
     )
@@ -49,6 +104,7 @@ def generate_launch_description():
             "description_file": PathJoinSubstitution(
                 [FindPackageShare("pai_bringup"), "urdf", "so_arm101_mujoco.urdf.xacro"]
             ),
+            "description_xacro_args": description_xacro_args,
             "use_sim_time": "true",
             "rviz_config_file": PathJoinSubstitution(
                 [FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_mujoco.rviz"]
@@ -56,4 +112,8 @@ def generate_launch_description():
         }.items(),
     )
 
-    return LaunchDescription([common, control_node])
+    return [common, control_node]
+
+
+def generate_launch_description():
+    return LaunchDescription([OpaqueFunction(function=launch_setup)])

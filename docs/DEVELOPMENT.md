@@ -111,7 +111,7 @@ Additional resources for using Pixi can be found at this [blog](https://jafarabd
 
 ### Scene Configuration
 
-To change table, tray, or cube positions, edit `pai_bringup/config/scene/poses.yaml` and run `pixi run refresh-scene` (or `python3 pai_bringup/scripts/refresh_scene.py` from the repo root). See [config/scene/README.md](../pai_bringup/config/scene/README.md) for details.
+MuJoCo loads poses from `pai_bringup/config/world/poses.yaml` at launch time. Edit `poses.yaml` to change table, tray, or cube positions, then rebuild and relaunch (or relaunch only with symlink-install). See [config/world/README.md](../pai_bringup/config/world/README.md) for details.
 
 ## FAQ
 
