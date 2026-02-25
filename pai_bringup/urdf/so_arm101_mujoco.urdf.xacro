@@ -3,10 +3,188 @@
   <xacro:arg name="prefix" default="" />
   <xacro:arg name="color" default="0.2 0.7 0.85 1.0" />
 
-  <!-- The SO-ARM101 robot --> 
+  <!-- Scene poses (from config/scene/poses.yaml, refresh via scripts/refresh_scene.py) -->
+  <xacro:arg name="table_x" default="0.2" />
+  <xacro:arg name="table_y" default="0.0" />
+  <xacro:arg name="table_z" default="0.38" />
+  <xacro:arg name="tray_x" default="0.06" />
+  <xacro:arg name="tray_y" default="0.0" />
+  <xacro:arg name="tray_z" default="0.3945" />
+  <xacro:arg name="tray_roll" default="0.0" />
+  <xacro:arg name="tray_pitch" default="0.0" />
+  <xacro:arg name="tray_yaw" default="0.0" />
+  <xacro:arg name="cube_small_x" default="0.28" />
+  <xacro:arg name="cube_small_y" default="-0.1" />
+  <xacro:arg name="cube_small_z" default="0.4055" />
+  <xacro:arg name="cube_medium_x" default="0.16" />
+  <xacro:arg name="cube_medium_y" default="0.05" />
+  <xacro:arg name="cube_medium_z" default="0.4086" />
+  <xacro:arg name="cube_large_x" default="0.26" />
+  <xacro:arg name="cube_large_y" default="0.12" />
+  <xacro:arg name="cube_large_z" default="0.4118" />
+  <xacro:arg name="arm_base_x" default="0.38" />
+  <xacro:arg name="arm_base_y" default="0.0" />
+  <xacro:arg name="arm_base_z" default="0.4" />
+  <xacro:arg name="arm_base_roll" default="0.0" />
+  <xacro:arg name="arm_base_pitch" default="0.0" />
+  <xacro:arg name="arm_base_yaw" default="3.14159" />
+
+  <!-- The SO-ARM101 robot -->
   <link name="world" />
+
+  <material name="table_top">
+    <color rgba="0.18 0.18 0.2 1" />
+  </material>
+  <material name="table_leg">
+    <color rgba="0.82 0.84 0.86 1" />
+  </material>
+  <material name="tray">
+    <color rgba="0.95 0.95 0.96 1" />
+  </material>
+
+  <!-- Table and tray (match scene.xml for RViz visualization) -->
+  <link name="table_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.66 0.6 0.026" />
+      </geometry>
+      <material name="table_top" />
+    </visual>
+    <visual>
+      <origin xyz="-0.315 0.285 -0.1965" rpy="0 0 0" />
+      <geometry>
+        <box size="0.03 0.03 0.367" />
+      </geometry>
+      <material name="table_leg" />
+    </visual>
+    <visual>
+      <origin xyz="0.315 0.285 -0.1965" rpy="0 0 0" />
+      <geometry>
+        <box size="0.03 0.03 0.367" />
+      </geometry>
+      <material name="table_leg" />
+    </visual>
+    <visual>
+      <origin xyz="-0.315 -0.285 -0.1965" rpy="0 0 0" />
+      <geometry>
+        <box size="0.03 0.03 0.367" />
+      </geometry>
+      <material name="table_leg" />
+    </visual>
+    <visual>
+      <origin xyz="0.315 -0.285 -0.1965" rpy="0 0 0" />
+      <geometry>
+        <box size="0.03 0.03 0.367" />
+      </geometry>
+      <material name="table_leg" />
+    </visual>
+  </link>
+  <joint name="table_joint" type="fixed">
+    <parent link="world" />
+    <child link="table_link" />
+    <origin xyz="$(arg table_x) $(arg table_y) $(arg table_z)" rpy="0 0 0" />
+  </joint>
+
+  <link name="tray_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.16 0.003" />
+      </geometry>
+      <material name="tray" />
+    </visual>
+    <visual>
+      <origin xyz="0 0.0785 0.0115" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.003 0.02" />
+      </geometry>
+      <material name="tray" />
+    </visual>
+    <visual>
+      <origin xyz="0 -0.0785 0.0115" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.003 0.02" />
+      </geometry>
+      <material name="tray" />
+    </visual>
+    <visual>
+      <origin xyz="-0.0585 0 0.0115" rpy="0 0 0" />
+      <geometry>
+        <box size="0.003 0.16 0.02" />
+      </geometry>
+      <material name="tray" />
+    </visual>
+    <visual>
+      <origin xyz="0.0585 0 0.0115" rpy="0 0 0" />
+      <geometry>
+        <box size="0.003 0.16 0.02" />
+      </geometry>
+      <material name="tray" />
+    </visual>
+  </link>
+  <joint name="tray_joint" type="fixed">
+    <parent link="world" />
+    <child link="tray_link" />
+    <origin xyz="$(arg tray_x) $(arg tray_y) $(arg tray_z)" rpy="$(arg tray_roll) $(arg tray_pitch) $(arg tray_yaw)" />
+  </joint>
+
+  <!-- Cubes (match scene.xml initial positions for RViz) -->
+  <link name="cube_small_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.025 0.025 0.025" />
+      </geometry>
+      <material name="cube_small">
+        <color rgba="0.9 0.3 0.2 1" />
+      </material>
+    </visual>
+  </link>
+  <joint name="cube_small_joint" type="fixed">
+    <parent link="world" />
+    <child link="cube_small_link" />
+    <origin xyz="$(arg cube_small_x) $(arg cube_small_y) $(arg cube_small_z)" rpy="0 0 0" />
+  </joint>
+
+  <link name="cube_medium_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0312 0.0312 0.0312" />
+      </geometry>
+      <material name="cube_medium">
+        <color rgba="0.2 0.7 0.4 1" />
+      </material>
+    </visual>
+  </link>
+  <joint name="cube_medium_joint" type="fixed">
+    <parent link="world" />
+    <child link="cube_medium_link" />
+    <origin xyz="$(arg cube_medium_x) $(arg cube_medium_y) $(arg cube_medium_z)" rpy="0 0 0" />
+  </joint>
+
+  <link name="cube_large_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0376 0.0376 0.0376" />
+      </geometry>
+      <material name="cube_large">
+        <color rgba="0.2 0.4 0.9 1" />
+      </material>
+    </visual>
+  </link>
+  <joint name="cube_large_joint" type="fixed">
+    <parent link="world" />
+    <child link="cube_large_link" />
+    <origin xyz="$(arg cube_large_x) $(arg cube_large_y) $(arg cube_large_z)" rpy="0 0 0" />
+  </joint>
+
   <xacro:include filename="$(find so_arm101_description)/urdf/so_arm101_macro.xacro" />
-  <xacro:so_arm101 prefix="$(arg prefix)" color="$(arg color)" />
+  <xacro:so_arm101 prefix="$(arg prefix)" color="$(arg color)" parent="world"
+    x="$(arg arm_base_x)" y="$(arg arm_base_y)" z="$(arg arm_base_z)"
+    roll="$(arg arm_base_roll)" pitch="$(arg arm_base_pitch)" yaw="$(arg arm_base_yaw)" />
 
   <!-- Overhead camera link -->
   <link name="camera_color_mujoco_frame"/>

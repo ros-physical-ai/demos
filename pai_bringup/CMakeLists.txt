@@ -9,7 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY config mjcf launch scripts urdf
+  DIRECTORY config launch mjcf scripts urdf
   DESTINATION share/${PROJECT_NAME}
 )
 

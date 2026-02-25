@@ -109,6 +109,10 @@ For more details on training models, inference parameters, and usage, see [so_ar
 
 Additional resources for using Pixi can be found at this [blog](https://jafarabdi.github.io/blog/2025/ros2-pixi-dev/).
 
+### Scene Configuration
+
+To change table, tray, or cube positions, edit `pai_bringup/config/scene/poses.yaml` and run `pixi run refresh-scene` (or `python3 pai_bringup/scripts/refresh_scene.py` from the repo root). See [config/scene/README.md](../pai_bringup/config/scene/README.md) for details.
+
 ## FAQ
 
 ### Warning: "Could not find activation scripts: install/setup.bash"

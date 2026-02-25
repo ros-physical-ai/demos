@@ -1,0 +1,52 @@
+# Scene poses for table, tray, and cubes.
+# Single source of truth for MuJoCo sim, Gazebo sim, and RViz.
+# Run scripts/refresh_scene.py after editing to update scene.xml and URDF.
+# All positions in meters (x y z), orientations in radians (roll pitch yaw).
+
+table:
+  x: 0.2
+  y: 0.0
+  z: 0.38
+  roll: 0.0
+  pitch: 0.0
+  yaw: 0.0
+
+tray:
+  x: 0.06
+  y: 0.0
+  z: 0.3945
+  roll: 0.0
+  pitch: 0.0
+  yaw: 0.0
+
+cube_small:
+  x: 0.28
+  y: -0.1
+  z: 0.4055
+  roll: 0.0
+  pitch: 0.0
+  yaw: 0.0
+
+cube_medium:
+  x: 0.16
+  y: 0.05
+  z: 0.4086
+  roll: 0.0
+  pitch: 0.0
+  yaw: 0.0
+
+cube_large:
+  x: 0.26
+  y: 0.12
+  z: 0.4118
+  roll: 0.0
+  pitch: 0.0
+  yaw: 0.0
+
+arm_base:
+  x: 0.38
+  y: 0.0
+  z: 0.4
+  roll: 0.0
+  pitch: 0.0
+  yaw: 3.14159

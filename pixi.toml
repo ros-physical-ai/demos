@@ -58,6 +58,7 @@ test-joints = { cmd = [
   "--rate",
   "10",
 ]}
+refresh-scene = { cmd = ["python3", "pai_bringup/scripts/refresh_scene.py"] }
 
 [dependencies]
 # Build deps
@@ -142,6 +143,7 @@ ros-kilted-rmw-zenoh-cpp = "*"
 [pypi-dependencies]
 huggingface-hub = "*"
 lerobot = { version = "==0.4.3", extras = ["feetech"] }
+pyyaml = "*"
 
 [activation]
 scripts = ["install/setup.bash"]

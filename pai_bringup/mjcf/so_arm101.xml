@@ -64,8 +64,8 @@
   </default>
 
   <worldbody>
-    <!-- Link base -->
-    <body name="base_link" childclass="so_arm101">
+    <!-- Link base (pos for table scene: tray x=0.06, cubes x=0.26-0.32) -->
+    <body name="base_link" pos="0.38 0.0 0.4" quat="0 0 0 1" childclass="so_arm101">
       <inertial
         pos="0.0137179 -5.19711e-05 0.0334843"
         mass="0.147"
@@ -407,9 +407,9 @@
           </body>
         </body>
       </body>
-      <!-- Camera -->
-      <site name="camera_color_mujoco_frame" pos="0.0 0.0 0.5" euler="0.0 -0.785 -1.57"/>
-      <camera name="camera" fovy="58" mode="fixed" resolution="1280 720" pos="0.0 0.0 0.5" euler="0.0 -0.785 -1.57"/>
+      <!-- Camera: elevated above workspace for full scene visibility (table, tray, cubes, gripper) -->
+      <site name="camera_color_mujoco_frame" pos="0.25 0.0 0.55" euler="0 -0.7 0"/>
+      <camera name="camera" fovy="52" mode="fixed" resolution="1280 720" pos="0.25 0.0 0.55" euler="0 -0.7 0"/>
     </body>
   </worldbody>
 
