@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:macro
     name="ros2_control"
-    params="prefix ros2_control_hardware_type usb_port"
+    params="prefix ros2_control_hardware_type usb_port joint_config_file:=''"
   >
     <ros2_control name="SO_ARM101" type="system">
       <hardware>
@@ -12,6 +12,7 @@
         <xacro:if value="${ros2_control_hardware_type == 'real'}">
           <plugin>feetech_ros2_driver/FeetechHardwareInterface</plugin>
           <param name="usb_port">${usb_port}</param>
+          <param name="joint_config_file">${joint_config_file}</param>
         </xacro:if>
         <xacro:if value="${ros2_control_hardware_type == 'mujoco'}">
           <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>

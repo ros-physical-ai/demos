@@ -3,6 +3,7 @@
 controller_manager:
   ros__parameters:
     update_rate: 50
+    enforce_command_limits: false
 
     joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
