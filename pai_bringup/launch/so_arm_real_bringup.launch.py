@@ -92,10 +92,12 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "joint_config_file",
-            default_value=PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "config", "hardware", "my_follower.yaml"]
-            ),
-            description="Config file defining arm joint calibration (homing offsets, ranges, etc.).",
+            default_value="",
+            description="Path to YAML file with per-robot joint calibration "
+            "(homing offsets, PID gains, etc.). "
+            "Each robot requires its own calibration file. "
+            "See config/hardware/leader.yaml and follower.yaml for examples. "
+            "If not set, only URDF settings are used.",
         ),
         DeclareLaunchArgument(
             "prefix",

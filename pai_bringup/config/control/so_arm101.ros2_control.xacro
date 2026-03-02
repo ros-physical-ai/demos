@@ -28,8 +28,7 @@
       <joint name="${prefix}shoulder_pan_joint">
         <param name="initial_position">0.0</param>
         <param name="id">1</param>
-        <param name="p_cofficient">8</param>
-        <param name="offset">2048</param>
+        <param name="p_coefficient">8</param>
         <command_interface name="position">
           <!-- PID gains: only read by gz_ros2_control (Gazebo hardware interface) -->
           <param name="p">100.0</param>
@@ -42,8 +41,7 @@
 
       <joint name="${prefix}shoulder_lift_joint">
         <param name="id">2</param>
-        <param name="p_cofficient">16</param>
-        <param name="offset">2048</param>
+        <param name="p_coefficient">16</param>
         <param name="initial_position">0.0</param>
         <command_interface name="position">
           <!-- PID gains: only read by gz_ros2_control (Gazebo hardware interface) -->
@@ -57,8 +55,7 @@
 
       <joint name="${prefix}elbow_flex_joint">
         <param name="id">3</param>
-        <param name="offset">2048</param>
-        <param name="p_cofficient">16</param>
+        <param name="p_coefficient">16</param>
         <param name="initial_position">0.0</param>
         <command_interface name="position">
           <!-- PID gains: only read by gz_ros2_control (Gazebo hardware interface) -->
@@ -72,8 +69,7 @@
 
       <joint name="${prefix}wrist_flex_joint">
         <param name="id">4</param>
-        <param name="offset">2048</param>
-        <param name="p_cofficient">16</param>
+        <param name="p_coefficient">16</param>
         <param name="initial_position">0.0</param>
         <command_interface name="position">
           <!-- PID gains: only read by gz_ros2_control (Gazebo hardware interface) -->
@@ -87,8 +83,7 @@
 
       <joint name="${prefix}wrist_roll_joint">
         <param name="id">5</param>
-        <param name="offset">2048</param>
-        <param name="p_cofficient">16</param>
+        <param name="p_coefficient">16</param>
         <param name="initial_position">0.0</param>
         <command_interface name="position">
           <!-- PID gains: only read by gz_ros2_control (Gazebo hardware interface) -->
@@ -102,8 +97,7 @@
 
       <joint name="${prefix}gripper_joint">
         <param name="id">6</param>
-        <param name="offset">2048</param>
-        <param name="p_cofficient">16</param>
+        <param name="p_coefficient">16</param>
         <param name="initial_position">0.0</param>
         <command_interface name="position">
           <!-- PID gains: only read by gz_ros2_control (Gazebo hardware interface) -->
