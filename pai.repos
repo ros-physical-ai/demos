@@ -13,9 +13,13 @@ repositories:
     version: cd4340cc3878142def1f88845518f2b29647c7c2
   rosetta:
     type: git
-    url: https://github.com/iblnkn/rosetta.git
-    version: a52589b957f318c3577d7b663db4d8f192435b84
+    url: https://github.com/francocipollone/rosetta.git
+    version: francocipollone/rosbag_record_kilted
   rosetta_interfaces:
     type: git
     url: https://github.com/iblnkn/rosetta_interfaces.git
-    version: 3bdfa6316c31bcaedc52b57c77258c090bf33463
+    version: 90e979108b9b8cdbe791697ee9a338192e16e9fc
+  lerobot-robot-rosetta:
+    type: git
+    url: https://github.com/iblnkn/lerobot-robot-rosetta.git
+    version: e4ed91ee5cd58c0163dabf0af699d3e3c1f193dc
