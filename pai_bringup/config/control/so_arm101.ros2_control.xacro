@@ -98,6 +98,9 @@
       <joint name="${prefix}gripper_joint">
         <param name="id">6</param>
         <param name="p_coefficient">16</param>
+        <param name="max_torque_limit">500</param>
+        <param name="protection_current">250</param>
+        <param name="overload_torque">25</param>
         <param name="initial_position">0.0</param>
         <command_interface name="position">
           <!-- PID gains: only read by gz_ros2_control (Gazebo hardware interface) -->
