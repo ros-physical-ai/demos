@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<!-- ros2_control description for the SO-ARM101 leader arm.
+
+     All joints have state interfaces only (no command interfaces).
+     This causes the feetech_ros2_driver to disable torque on every
+     joint so the human can move the arm freely while the driver
+     continues to report positions via joint_state_broadcaster.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro
+    name="ros2_control"
+    params="prefix ros2_control_hardware_type usb_port"
+  >
+    <ros2_control name="SO_ARM101_LEADER" type="system">
+      <hardware>
+        <xacro:if value="${ros2_control_hardware_type == 'mock_components'}">
+          <plugin>mock_components/GenericSystem</plugin>
+        </xacro:if>
+        <xacro:if value="${ros2_control_hardware_type == 'real'}">
+          <plugin>feetech_ros2_driver/FeetechHardwareInterface</plugin>
+          <param name="usb_port">${usb_port}</param>
+        </xacro:if>
+      </hardware>
+
+      <joint name="${prefix}shoulder_pan_joint">
+        <param name="id">1</param>
+        <param name="offset">2048</param>
+        <param name="p_cofficient">8</param>
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+
+      <joint name="${prefix}shoulder_lift_joint">
+        <param name="id">2</param>
+        <param name="offset">2048</param>
+        <param name="p_cofficient">16</param>
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+
+      <joint name="${prefix}elbow_flex_joint">
+        <param name="id">3</param>
+        <param name="offset">2048</param>
+        <param name="p_cofficient">16</param>
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+
+      <joint name="${prefix}wrist_flex_joint">
+        <param name="id">4</param>
+        <param name="offset">2048</param>
+        <param name="p_cofficient">16</param>
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+
+      <joint name="${prefix}wrist_roll_joint">
+        <param name="id">5</param>
+        <param name="offset">2048</param>
+        <param name="p_cofficient">16</param>
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+
+      <joint name="${prefix}gripper_joint">
+        <param name="id">6</param>
+        <param name="offset">2048</param>
+        <param name="p_cofficient">16</param>
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+    </ros2_control>
+  </xacro:macro>
+</robot>

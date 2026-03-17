@@ -11,6 +11,10 @@ build/*
 install/*
 log/*
 
+# lerobot
+logs
+outputs
+
 # External repos imported via vcs
 external/*
 

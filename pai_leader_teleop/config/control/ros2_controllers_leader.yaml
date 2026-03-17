@@ -1,0 +1,13 @@
+# Controller config for the SO-ARM101 leader arm.
+# Only joint_state_broadcaster is needed — the leader arm has no command
+# interfaces, so no position or trajectory controllers are required.
+#
+# The /** wildcard ensures parameters are loaded correctly regardless of
+# the ROS namespace applied to the controller_manager node.
+/**/controller_manager:
+  ros__parameters:
+    update_rate: 50
+    enforce_command_limits: false
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster

@@ -1,0 +1,73 @@
+# pai_leader_teleop
+
+Leader-follower teleoperation for the SO-ARM101 using `ros2_control`.
+
+A human moves the **leader** arm by hand (torque disabled) while the **follower** arm mirrors the motion in real time via position commands.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    A["Leader arm
+    (read-only)"] -- "/leader/joint_states
+    [sensor_msgs/JointState]" --> B["leader_teleop_node
+    (relay node)"]
+    B -- "/forward_position_controller/commands
+    [std_msgs/Float64MultiArray]" --> C["Follower arm
+    (controlled)"]
+```
+
+- **Leader arm** – launched with state-only interfaces (no `<command_interface>` in the ros2_control xacro). The `feetech_ros2_driver` automatically disables torque on joints without command interfaces, so the arm is freely movable by hand while still reporting positions via `joint_state_broadcaster`.
+- **Teleop relay node** – subscribes to the leader's joint states and publishes ordered position commands to the follower's `forward_position_controller`.
+- **Follower arm** – uses the standard `pai_bringup` launch.
+
+All leader nodes run under the `/leader` namespace to avoid topic and controller manager collisions with the follower.
+
+## Usage
+
+Two terminals are needed:
+
+```bash
+# 1. Follower arm bringup (existing pai_bringup, default namespace)
+ros2 launch pai_bringup so_arm_real_bringup.launch.py usb_port:=/dev/ttyACM0
+
+# 2. Leader arm bringup + teleop relay
+ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM1
+```
+
+## Launch arguments
+
+### `leader_bringup.launch.py`
+
+| Argument | Default | Description |
+|---|---|---|
+| `usb_port` | `/dev/ttyACM1` | USB port for the leader arm servo bus |
+| `namespace` | `leader` | ROS namespace for leader nodes |
+| `use_sim_time` | `false` | Use simulation time (set to `true` when the follower is simulated) |
+| `prefix` | `""` | Joint name prefix |
+| `description_file` | `so_arm101_description/.../so_arm101.urdf.xacro` | URDF xacro file |
+| `ros2_control_file` | `pai_leader_teleop/.../so_arm101_leader.ros2_control.xacro` | Leader ros2_control xacro (state-only) |
+| `controllers_file` | `pai_leader_teleop/.../ros2_controllers_leader.yaml` | Leader controllers config |
+| `follower_commands_topic` | `/forward_position_controller/commands` | Follower position controller command topic |
+
+## Verifying
+
+```bash
+# Check leader joint states are published
+ros2 topic echo /leader/joint_states
+
+# Check commands are being relayed to the follower
+ros2 topic echo /forward_position_controller/commands
+```
+
+## Using with a simulated follower
+
+To pair the real leader arm with a simulated follower (e.g. MuJoCo or Gazebo), pass `use_sim_time:=true` to the leader bringup:
+
+```bash
+# 1. Simulated follower (e.g. MuJoCo)
+ros2 launch pai_bringup so_arm_mujoco_bringup.launch.py
+
+# 2. Real leader arm with sim time + teleop relay
+ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM0 use_sim_time:=true
+```
