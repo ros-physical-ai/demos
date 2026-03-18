@@ -1,3 +1,7 @@
+# ============================================================================
+# EXAMPLE configuration – not intended to be used as-is.
+# The values below must be adjusted to match your specific arm.
+# ============================================================================
 # Follower arm joint calibration for SO-ARM101
 # Values derived from LeRobot calibration (config/lerobot/follower_arm.json).
 # Edit homing_offset / range_min / range_max to match YOUR arm.
