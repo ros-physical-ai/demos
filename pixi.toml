@@ -5,13 +5,18 @@ name = "demos"
 platforms = ["linux-64", "linux-aarch64"]
 version = "0.1.0"
 
+[environments]
+dev = ["dev"]
+
+[feature.dev.tasks]
+build = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
+
 [tasks]
 # ML dependencies - consolidated installation (recommended)
 # Automatically detects GPU, installs appropriate PyTorch, and installs lerobot
 install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh" }
 
 # Build
-build_dev = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
 build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"]}
 clean = { cmd = "rm -rf build install log" }
 
@@ -162,3 +167,5 @@ GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-9/engine-plugins"
 ROS_DISTRO = "kilted"
 # Force ROS 2 to use Zenoh middleware
 RMW_IMPLEMENTATION = "rmw_zenoh_cpp"
+
+
