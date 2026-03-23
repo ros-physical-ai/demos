@@ -6,9 +6,8 @@ platforms = ["linux-64", "linux-aarch64"]
 version = "0.1.0"
 
 [tasks]
-# ML dependencies - consolidated installation (recommended)
-# Automatically detects GPU, installs appropriate PyTorch, and installs lerobot
-install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh" }
+# Longer uv download timeout (PyTorch wheels are huge).
+install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
 
 # Build
 build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"]}
@@ -80,7 +79,7 @@ numpy = ">=1.26.4,<3"
 # Explicitly installing pillow through Conda (rather that letting pip pull it an as transitive dependency)
 # to avoid related issue to: libtiff.so.6: undefined symbol: jpeg12_write_raw_data, version LIBJPEG_8.0.
 pillow = "*"
-# Pinned to <26 to satisfy lerobot==0.4.3 requirement (packaging>=24.2,<26.0)
+# Pinned to <26 to satisfy lerobot packaging constraint (packaging>=24.2,<26.0)
 packaging = ">=24.2,<26"
 
 # ROS dependencies
@@ -141,7 +140,10 @@ ros-kilted-rmw-zenoh-cpp = "*"
 
 [pypi-dependencies]
 huggingface-hub = "*"
-lerobot = { version = "==0.4.3", extras = ["feetech"] }
+# LeRobot 0.4.x imports scipy.fftpack.idct; SciPy 2.0 removed fftpack re-exports.
+scipy = ">=1.11.0,<2"
+lerobot = { version = "==0.4.4", extras = ["feetech"] }
+
 [activation]
 scripts = ["install/setup.bash"]
 
@@ -159,3 +161,5 @@ GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-9/engine-plugins"
 ROS_DISTRO = "kilted"
 # Force ROS 2 to use Zenoh middleware
 RMW_IMPLEMENTATION = "rmw_zenoh_cpp"
+# uv/PyPI: large wheels (e.g. torch) need a longer per-request timeout than the default 30s
+UV_HTTP_TIMEOUT = "600"
