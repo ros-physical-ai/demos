@@ -55,7 +55,7 @@ LeRobot writes a JSON file per arm under:
 If you want to make those values explicit in this project, copy the relevant fields into a `joint_config_file`, for example:
 
 - [`../pai_bringup/config/hardware/follower.yaml`](../pai_bringup/config/hardware/follower.yaml)
-- [`../pai_bringup/config/hardware/my_leader.yaml`](../pai_bringup/config/hardware/my_leader.yaml)
+- [`../pai_bringup/config/hardware/leader.yaml`](../pai_bringup/config/hardware/leader.yaml)
 
 Use a `joint_config_file` only if you want to keep a versioned per-robot configuration in the repo, override existing motor settings, or set additional driver parameters.
 
