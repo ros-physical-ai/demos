@@ -6,6 +6,23 @@ Before using the SO-ARM101 with the ROS 2 stack, each robot must be calibrated u
 
 In the current `feetech_ros2_driver`, positions are converted relative to the fixed STS midpoint (**2048**), while `homing_offset` in the motor EEPROM provides the per-robot centering. In practice, this means that after calibration, sending **0 rad** to a joint controller moves the joint to its calibrated middle position.
 
+### Calibration artifacts (default vs advanced)
+
+Calibration can live in EEPROM, LeRobot cache JSON, URDF/xacro, or an optional `joint_config_file`; stacks do not share one file, so copy values only where a tool actually reads them. The table lists each layer, its reader, and its default role. Step 1 and Step 2 cover the calibration flow and optional `joint_config_file`.
+
+| Where | Read by | Default role |
+|-------|---------|--------------|
+| Servo EEPROM | Firmware + bus reads | Canonical after Step 1; holds `homing_offset` and related registers |
+| `~/.cache/huggingface/lerobot/calibration/.../*.json` | LeRobot Python tools | Written by `lerobot-calibrate`; not read by ROS nodes |
+| URDF / xacro | `feetech_ros2_driver` when `joint_config_file` is empty | Joint layout and defaults |
+| `joint_config_file` YAML (launch arg) | `feetech_ros2_driver` only if you pass the path | Optional overrides and versioned per-robot settings |
+
+Default workflow: complete Step 1 only. You do not need to keep repo copies of JSON or YAML up to date for ROS bringup (launch uses an empty `joint_config_file` unless you set it).
+
+The files under `pai_bringup/config/lerobot/*.json` and `pai_bringup/config/hardware/{follower,leader}.yaml` are examples or seeds (for instance copying JSON into LeRobot’s cache per other docs). They are not automatic runtime inputs for ROS unless you wire them yourself.
+
+Advanced use (LeRobot and ROS must stay aligned): pick one authoring source for shared motor fields (`homing_offset`, limits, PID, protection). After each recalibration, refresh the other artifacts from that source—for example copy from the new LeRobot cache JSON into your YAML before launching with `joint_config_file`, or recalibrate and update both files from the same calibration output. If JSON and YAML are both in play for the same arm, plan to update them together so they stay consistent with that source.
+
 ## Prerequisites
 
 - SO-ARM101 follower arm (and optionally a leader arm) connected via USB.
