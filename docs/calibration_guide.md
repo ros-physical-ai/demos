@@ -106,6 +106,43 @@ Since the servo firmware has already centered `Present_Position` around 2047 via
 
 The two layers work together: the EEPROM homing offset handles per-robot mechanical variation, and the fixed software offset maps the centered tick value to 0 radians.
 
+## Deriving Joint Limits in Radians
+
+The calibration JSON records `range_min` and `range_max` — the raw encoder bounds
+for each joint. To derive joint limits in radians (for URDF or MJCF), apply the
+same conversion as the feetech_ros2_driver:
+
+```
+limit_rad = (range_value − offset) × 2π / 4096
+```
+
+where `offset` is the software offset from the ros2_control xacro (2048 for all
+joints). `range_min` and `range_max` are raw encoder positions; they have **not**
+had `homing_offset` applied (the servo firmware applies `homing_offset`
+transparently before the driver reads `Present_Position`).
+
+When `drive_mode` is non-zero, the servo inverts its direction. In that case,
+invert the raw value before converting: `raw_inverted = 4095 − raw`.
+
+### generate_limits.py
+
+A script is provided to automate this conversion:
+
+```bash
+# Show calibration-derived limits compared to URDF vendor limits
+pixi run python3 pai_bringup/scripts/generate_limits.py \
+    pai_bringup/config/lerobot/follower_arm.json
+
+# Generate a follower.yaml for the feetech_ros2_driver
+pixi run python3 pai_bringup/scripts/generate_limits.py \
+    pai_bringup/config/lerobot/follower_arm.json \
+    --generate-yaml pai_bringup/config/hardware/follower.yaml
+```
+
+The calibration-derived limits are typically wider than the URDF vendor limits
+because they reflect the servo's full mechanical travel, while the URDF limits
+represent a conservative operational envelope set by the arm designer.
+
 ## Known Limitations
 
 ### Gripper normalization differs between LeRobot and ROS 2

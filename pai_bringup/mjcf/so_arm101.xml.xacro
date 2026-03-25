@@ -117,7 +117,7 @@
           axis="0 0 1"
           name="shoulder_pan_joint"
           type="hinge"
-          range="-1.9198621771937616 1.9198621771937634"
+          range="-1.91986 1.91986"
           class="sts3215"
         />
         <inertial
@@ -177,7 +177,7 @@
             axis="0 0 1"
             name="shoulder_lift_joint"
             type="hinge"
-            range="-1.7453292519943224 1.7453292519943366"
+            range="-1.74533 1.74533"
             class="sts3215"
           />
           <inertial
@@ -223,7 +223,7 @@
               axis="0 0 1"
               name="elbow_flex_joint"
               type="hinge"
-              range="-1.69 1.69"
+              range="-1.69 1.54"
               class="sts3215"
             />
             <inertial
@@ -283,7 +283,7 @@
                 axis="0 0 1"
                 name="wrist_flex_joint"
                 type="hinge"
-                range="-1.6580628494556928 1.6580627293335335"
+                range="-1.6 1.6"
                 class="sts3215"
               />
               <inertial
@@ -329,7 +329,7 @@
                   axis="0 0 1"
                   name="wrist_roll_joint"
                   type="hinge"
-                  range="-2.7438472969992493 2.841206309382605"
+                  range="-2.3 2.3"
                   class="sts3215"
                 />
                 <inertial
@@ -381,7 +381,7 @@
                     axis="0 0 1"
                     name="gripper_joint"
                     type="hinge"
-                    range="-0.17453297762778586 1.7453291995659765"
+                    range="0.0 1.0"
                     class="sts3215"
                   />
                   <inertial
@@ -435,28 +435,28 @@
       name="elbow_flex_joint"
       joint="elbow_flex_joint"
       forcerange="-3.35 3.35"
-      ctrlrange="-1.69 1.69"
+      ctrlrange="-1.69 1.54"
     />
     <position
       class="sts3215"
       name="wrist_flex_joint"
       joint="wrist_flex_joint"
       forcerange="-3.35 3.35"
-      ctrlrange="-1.65806 1.65806"
+      ctrlrange="-1.6 1.6"
     />
     <position
       class="sts3215"
       name="wrist_roll_joint"
       joint="wrist_roll_joint"
       forcerange="-3.35 3.35"
-      ctrlrange="-2.74385 2.84121"
+      ctrlrange="-2.3 2.3"
     />
     <position
       class="sts3215"
       name="gripper_joint"
       joint="gripper_joint"
       forcerange="-3.35 3.35"
-      ctrlrange="-0.17453 1.74533"
+      ctrlrange="0.0 1.0"
     />
   </actuator>
 

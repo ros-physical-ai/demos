@@ -1,8 +1,26 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- Shared ros2_control definition for all hardware backends.
+       MuJoCo, Gazebo, real hardware, and mock_components all use this macro
+       so that joint IDs, gains, and offsets are defined in exactly one place.
+
+       MuJoCo-specific params (mujoco_model, sim_speed_factor, camera_*) are
+       only used when ros2_control_hardware_type == 'mujoco'.  Camera sensors
+       are added when camera_frame is non-empty. -->
   <xacro:macro
     name="ros2_control"
-    params="prefix ros2_control_hardware_type usb_port"
+    params="
+      prefix
+      ros2_control_hardware_type
+      usb_port:=''
+      mujoco_model:=''
+      sim_speed_factor:='1.0'
+      camera_publish_rate:='10.0'
+      camera_frame:=''
+      camera_info_topic:='/camera/info'
+      camera_image_topic:='/camera'
+      camera_depth_topic:='/camera/depth'
+    "
   >
     <ros2_control name="SO_ARM101" type="system">
       <hardware>
@@ -15,9 +33,9 @@
         </xacro:if>
         <xacro:if value="${ros2_control_hardware_type == 'mujoco'}">
           <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
-          <param name="mujoco_model">
-            $(find so_arm101_description)/mjcf/scene.xml
-          </param>
+          <param name="mujoco_model">${mujoco_model}</param>
+          <param name="sim_speed_factor">${sim_speed_factor}</param>
+          <param name="camera_publish_rate">${camera_publish_rate}</param>
         </xacro:if>
         <xacro:if value="${ros2_control_hardware_type == 'gazebo'}">
           <plugin>gz_ros2_control/GazeboSimSystem</plugin>
@@ -27,7 +45,10 @@
       <joint name="${prefix}shoulder_pan_joint">
         <param name="initial_position">0.0</param>
         <param name="id">1</param>
-        <param name="p_cofficient">8</param>
+        <!-- Lower P gain (8 vs 16) for the base joint to reduce oscillation
+             under the higher inertia of the full arm above it.
+             Note: param name matches feetech_ros2_driver's expected spelling. -->
+        <param name="p_coefficient">8</param>
         <param name="offset">2048</param>
         <command_interface name="position">
           <!-- PID gains: only read by gz_ros2_control (Gazebo hardware interface) -->
@@ -41,11 +62,10 @@
 
       <joint name="${prefix}shoulder_lift_joint">
         <param name="id">2</param>
-        <param name="p_cofficient">16</param>
+        <param name="p_coefficient">16</param>
         <param name="offset">2048</param>
         <param name="initial_position">0.0</param>
         <command_interface name="position">
-          <!-- PID gains: only read by gz_ros2_control (Gazebo hardware interface) -->
           <param name="p">100.0</param>
           <param name="i">0.1</param>
           <param name="d">10.0</param>
@@ -57,10 +77,9 @@
       <joint name="${prefix}elbow_flex_joint">
         <param name="id">3</param>
         <param name="offset">2048</param>
-        <param name="p_cofficient">16</param>
+        <param name="p_coefficient">16</param>
         <param name="initial_position">0.0</param>
         <command_interface name="position">
-          <!-- PID gains: only read by gz_ros2_control (Gazebo hardware interface) -->
           <param name="p">100.0</param>
           <param name="i">0.1</param>
           <param name="d">10.0</param>
@@ -72,10 +91,9 @@
       <joint name="${prefix}wrist_flex_joint">
         <param name="id">4</param>
         <param name="offset">2048</param>
-        <param name="p_cofficient">16</param>
+        <param name="p_coefficient">16</param>
         <param name="initial_position">0.0</param>
         <command_interface name="position">
-          <!-- PID gains: only read by gz_ros2_control (Gazebo hardware interface) -->
           <param name="p">100.0</param>
           <param name="i">0.1</param>
           <param name="d">10.0</param>
@@ -87,10 +105,9 @@
       <joint name="${prefix}wrist_roll_joint">
         <param name="id">5</param>
         <param name="offset">2048</param>
-        <param name="p_cofficient">16</param>
+        <param name="p_coefficient">16</param>
         <param name="initial_position">0.0</param>
         <command_interface name="position">
-          <!-- PID gains: only read by gz_ros2_control (Gazebo hardware interface) -->
           <param name="p">100.0</param>
           <param name="i">0.1</param>
           <param name="d">10.0</param>
@@ -102,10 +119,9 @@
       <joint name="${prefix}gripper_joint">
         <param name="id">6</param>
         <param name="offset">2048</param>
-        <param name="p_cofficient">16</param>
+        <param name="p_coefficient">16</param>
         <param name="initial_position">0.0</param>
         <command_interface name="position">
-          <!-- PID gains: only read by gz_ros2_control (Gazebo hardware interface) -->
           <param name="p">100.0</param>
           <param name="i">0.1</param>
           <param name="d">10.0</param>
@@ -113,6 +129,16 @@
         <state_interface name="position" />
         <state_interface name="velocity" />
       </joint>
+
+      <!-- Camera sensor: only added when camera_frame is provided (MuJoCo sim) -->
+      <xacro:if value="${camera_frame != ''}">
+        <sensor name="camera">
+          <param name="frame_name">${camera_frame}</param>
+          <param name="info_topic">${camera_info_topic}</param>
+          <param name="image_topic">${camera_image_topic}</param>
+          <param name="depth_topic">${camera_depth_topic}</param>
+        </sensor>
+      </xacro:if>
     </ros2_control>
   </xacro:macro>
 </robot>

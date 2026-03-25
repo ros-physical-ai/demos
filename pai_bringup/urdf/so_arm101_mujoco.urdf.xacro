@@ -25,82 +25,15 @@
     <origin xyz="0.0 0.0 0.5" rpy="0 2.356 0.0"/>
   </joint>
 
-  <!-- ros2_control information including camera sensor -->
-  <ros2_control name="MujocoSystem" type="system">
-    <hardware>
-      <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
-      <param name="mujoco_model">$(arg mujoco_model)</param>
-      <param name="sim_speed_factor">1.0</param>
-      <param name="camera_publish_rate">10.0</param>
-    </hardware>
-
-    <joint name="$(arg prefix)shoulder_pan_joint">
-      <param name="initial_position">0.0</param>
-      <param name="id">1</param>
-      <param name="p_cofficient">8</param>
-      <param name="offset">2048</param>
-      <command_interface name="position" />
-      <state_interface name="position" />
-      <state_interface name="velocity" />
-    </joint>
-
-    <joint name="$(arg prefix)shoulder_lift_joint">
-      <param name="id">2</param>
-      <param name="p_cofficient">16</param>
-      <param name="offset">2125</param>
-      <param name="initial_position">0.0</param>
-      <command_interface name="position" />
-      <state_interface name="position" />
-      <state_interface name="velocity" />
-    </joint>
-
-    <joint name="$(arg prefix)elbow_flex_joint">
-      <param name="id">3</param>
-      <param name="offset">2080</param>
-      <param name="p_cofficient">16</param>
-      <param name="initial_position">0.0</param>
-      <command_interface name="position" />
-      <state_interface name="position" />
-      <state_interface name="velocity" />
-    </joint>
-
-    <joint name="$(arg prefix)wrist_flex_joint">
-      <param name="id">4</param>
-      <param name="offset">3110</param>
-      <param name="p_cofficient">16</param>
-      <param name="initial_position">0.0</param>
-      <command_interface name="position" />
-      <state_interface name="position" />
-      <state_interface name="velocity" />
-    </joint>
-
-    <joint name="$(arg prefix)wrist_roll_joint">
-      <param name="id">5</param>
-      <param name="offset">1024</param>
-      <param name="p_cofficient">16</param>
-      <param name="initial_position">0.0</param>
-      <command_interface name="position" />
-      <state_interface name="position" />
-      <state_interface name="velocity" />
-    </joint>
-
-    <joint name="$(arg prefix)gripper_joint">
-      <param name="id">6</param>
-      <param name="offset">2070</param>
-      <param name="p_cofficient">16</param>
-      <param name="initial_position">0.0</param>
-      <command_interface name="position" />
-      <state_interface name="position" />
-      <state_interface name="velocity" />
-    </joint>
-
-    <!-- Camera informatiom -->
-    <sensor name="camera">
-      <param name="frame_name">camera_color_mujoco_frame</param>
-      <param name="info_topic">/camera/info</param>
-      <param name="image_topic">/camera</param>
-      <param name="depth_topic">/camera/depth</param>
-    </sensor>
-  </ros2_control>
+  <!-- ros2_control: uses the shared macro (single definition for all backends).
+       Joint IDs, gains, and offsets are defined once in so_arm101.ros2_control.xacro.
+       Camera sensor is enabled by passing camera_frame. -->
+  <xacro:include filename="$(find pai_bringup)/config/control/so_arm101.ros2_control.xacro" />
+  <xacro:ros2_control
+    prefix="$(arg prefix)"
+    ros2_control_hardware_type="mujoco"
+    mujoco_model="$(arg mujoco_model)"
+    camera_frame="camera_color_mujoco_frame"
+  />
 
 </robot>
