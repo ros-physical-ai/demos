@@ -28,6 +28,7 @@ def launch_setup(context, *args, **kwargs):
     prefix = LaunchConfiguration("prefix").perform(context)
     usb_port = LaunchConfiguration("usb_port").perform(context)
     controllers_file = LaunchConfiguration("controllers_file")
+    joint_config_file = LaunchConfiguration("joint_config_file").perform(context)
     description_file = LaunchConfiguration("description_file").perform(context)
     ros2_control_file = LaunchConfiguration("ros2_control_file").perform(context)
     initial_joint_controller = LaunchConfiguration("initial_joint_controller").perform(context)
@@ -70,6 +71,7 @@ def launch_setup(context, *args, **kwargs):
                 f"ros2_control_hardware_type:=real"
                 f" prefix:={prefix}"
                 f" usb_port:={usb_port}"
+                f" joint_config_file:={joint_config_file}"
             ),
             "use_sim_time": "false",
             "initial_joint_controller": initial_joint_controller,
@@ -89,6 +91,15 @@ def generate_launch_description():
             description="USB port for the Feetech servo bus.",
         ),
         DeclareLaunchArgument(
+            "joint_config_file",
+            default_value="",
+            description="Path to YAML file with per-robot joint calibration "
+            "(homing offsets, PID gains, etc.). "
+            "Each robot requires its own calibration file. "
+            "See config/hardware/leader.yaml and follower.yaml for examples. "
+            "If not set, only URDF settings are used.",
+        ),
+        DeclareLaunchArgument(
             "prefix",
             default_value='""',
             description="Prefix of the joint names.",
@@ -103,7 +114,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "description_file",
             default_value=PathJoinSubstitution(
-                [FindPackageShare("so_arm101_description"), "urdf", "so_arm101.urdf.xacro"]
+                [FindPackageShare("pai_bringup"), "urdf", "so_arm_real.urdf.xacro"]
             ),
             description="URDF/XACRO description file with the robot.",
         ),
