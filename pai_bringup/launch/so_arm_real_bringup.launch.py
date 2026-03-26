@@ -96,7 +96,7 @@ def generate_launch_description():
             description="Path to YAML file with per-robot joint calibration "
             "(homing offsets, PID gains, etc.). "
             "Each robot requires its own calibration file. "
-            "See config/hardware/leader.yaml and follower.yaml for examples. "
+            "See config/hardware/follower.yaml for an example. "
             "If not set, only URDF settings are used.",
         ),
         DeclareLaunchArgument(

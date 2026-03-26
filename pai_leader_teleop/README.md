@@ -23,6 +23,28 @@ flowchart LR
 
 All leader nodes run under the `/leader` namespace to avoid topic and controller manager collisions with the follower.
 
+## Calibration
+
+Both the leader and follower arms must be calibrated before use. The calibration procedure writes `homing_offset` values to each servo's EEPROM so that joint positions are reported correctly.
+
+See the [SO-ARM101 Calibration Guide](../docs/calibration_guide.md) for the full procedure, including:
+
+- **Step 1** — Running `lerobot-calibrate` for the leader arm. This writes `homing_offset` to each servo's EEPROM and is **sufficient for normal use** — no additional config file is needed.
+- **Step 2** *(optional)* — Providing a `joint_config_file` with per-robot overrides (homing offsets, range limits, PID gains, etc.) only if you want to version calibration in the repo or override specific driver parameters.
+
+> [!NOTE]
+> Even though the leader arm has no command interfaces (torque is disabled), running LeRobot calibration (Step 1) is still important. The driver uses `homing_offset` to convert raw encoder ticks to radians when *reading* positions. Without it, the joint positions forwarded to the follower may be incorrect.
+
+To optionally use a calibration file with the leader:
+
+```bash
+ros2 launch pai_leader_teleop leader_bringup.launch.py \
+    usb_port:=/dev/ttyACM1 \
+    joint_config_file:=$(ros2 pkg prefix pai_bringup)/share/pai_bringup/config/hardware/leader.yaml
+```
+
+See [`pai_bringup/config/hardware/leader.yaml`](../pai_bringup/config/hardware/leader.yaml) for an example calibration file.
+
 ## Usage
 
 Two terminals are needed:
@@ -45,10 +67,30 @@ ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM1
 | `namespace` | `leader` | ROS namespace for leader nodes |
 | `use_sim_time` | `false` | Use simulation time (set to `true` when the follower is simulated) |
 | `prefix` | `""` | Joint name prefix |
-| `description_file` | `so_arm101_description/.../so_arm101.urdf.xacro` | URDF xacro file |
+| `joint_config_file` | `""` | Path to per-robot joint calibration YAML (homing offsets, PID gains, etc.). See [Calibration](#calibration) |
+| `description_file` | `pai_leader_teleop/.../so_arm_leader.urdf.xacro` | URDF xacro file |
 | `ros2_control_file` | `pai_leader_teleop/.../so_arm101_leader.ros2_control.xacro` | Leader ros2_control xacro (state-only) |
 | `controllers_file` | `pai_leader_teleop/.../ros2_controllers_leader.yaml` | Leader controllers config |
 | `follower_commands_topic` | `/forward_position_controller/commands` | Follower position controller command topic |
+| `launch_rviz` | `false` | Launch RViz to visualize the leader arm |
+| `rviz_config_file` | `pai_leader_teleop/.../so_arm_leader.rviz` | RViz config file for the leader arm |
+
+## Visualizing the leader in RViz
+
+To launch RViz alongside the leader arm for real-time visualization, pass `launch_rviz:=true`:
+
+```bash
+ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM1 launch_rviz:=true
+```
+
+RViz is automatically configured to use the leader's namespaced TF topics (`/leader/tf`, `/leader/tf_static`), so it displays the leader model without interfering with the follower's visualization.
+
+To use a custom RViz config file:
+
+```bash
+ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM1 launch_rviz:=true \
+    rviz_config_file:=/path/to/custom.rviz
+```
 
 ## Verifying
 
@@ -69,5 +111,5 @@ To pair the real leader arm with a simulated follower (e.g. MuJoCo or Gazebo), p
 ros2 launch pai_bringup so_arm_mujoco_bringup.launch.py
 
 # 2. Real leader arm with sim time + teleop relay
-ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM0 use_sim_time:=true
+ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM1 use_sim_time:=true
 ```

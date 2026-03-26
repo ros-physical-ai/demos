@@ -30,6 +30,7 @@ Usage:
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, GroupAction, OpaqueFunction
+from launch.conditions import IfCondition
 from launch.substitutions import (
     Command,
     FindExecutable,
@@ -48,10 +49,13 @@ def launch_setup(context, *args, **kwargs):
     namespace = LaunchConfiguration("namespace").perform(context)
     use_sim_time = LaunchConfiguration("use_sim_time").perform(context).lower() == "true"
     follower_commands_topic = LaunchConfiguration("follower_commands_topic").perform(context)
+    joint_config_file = LaunchConfiguration("joint_config_file").perform(context)
 
     description_file = LaunchConfiguration("description_file").perform(context)
     ros2_control_file = LaunchConfiguration("ros2_control_file").perform(context)
     controllers_file = LaunchConfiguration("controllers_file")
+    launch_rviz = LaunchConfiguration("launch_rviz")
+    rviz_config_file = LaunchConfiguration("rviz_config_file").perform(context)
 
     # Build robot description via xacro
     robot_description_content = Command(
@@ -67,6 +71,8 @@ def launch_setup(context, *args, **kwargs):
             f"prefix:={prefix}",
             " ",
             f"usb_port:={usb_port}",
+            " ",
+            f"joint_config_file:={joint_config_file}",
         ]
     )
     robot_description = {
@@ -140,7 +146,22 @@ def launch_setup(context, *args, **kwargs):
         output="both",
     )
 
-    return [namespaced_nodes, teleop_node]
+    # RViz — optional, uses namespaced TF topics
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2_leader",
+        output="log",
+        arguments=["-d", rviz_config_file],
+        parameters=[{"use_sim_time": use_sim_time}],
+        remappings=[
+            ("/tf", f"/{namespace}/tf"),
+            ("/tf_static", f"/{namespace}/tf_static"),
+        ],
+        condition=IfCondition(launch_rviz),
+    )
+
+    return [namespaced_nodes, teleop_node, rviz_node]
 
 
 def generate_launch_description():
@@ -166,9 +187,18 @@ def generate_launch_description():
             description="Use simulation time (set to true when the follower is simulated).",
         ),
         DeclareLaunchArgument(
+            "joint_config_file",
+            default_value="",
+            description="Path to YAML file with per-robot joint calibration "
+            "(homing offsets, PID gains, etc.). "
+            "Each robot requires its own calibration file. "
+            "See config/hardware/leader.yaml for an example. "
+            "If not set, only URDF settings are used.",
+        ),
+        DeclareLaunchArgument(
             "description_file",
             default_value=PathJoinSubstitution(
-                [FindPackageShare("so_arm101_description"), "urdf", "so_arm101.urdf.xacro"]
+                [FindPackageShare("pai_leader_teleop"), "urdf", "so_arm_leader.urdf.xacro"]
             ),
             description="URDF/XACRO description file with the robot.",
         ),
@@ -200,6 +230,18 @@ def generate_launch_description():
             "follower_commands_topic",
             default_value="/forward_position_controller/commands",
             description="Topic for the follower's forward position controller commands.",
+        ),
+        DeclareLaunchArgument(
+            "launch_rviz",
+            default_value="false",
+            description="Launch RViz to visualize the leader arm.",
+        ),
+        DeclareLaunchArgument(
+            "rviz_config_file",
+            default_value=PathJoinSubstitution(
+                [FindPackageShare("pai_leader_teleop"), "config", "rviz", "so_arm_leader.rviz"]
+            ),
+            description="RViz config file for the leader arm.",
         ),
     ]
 
