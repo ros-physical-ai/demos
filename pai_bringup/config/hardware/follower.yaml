@@ -1,0 +1,77 @@
+# ============================================================================
+# EXAMPLE configuration – not intended to be used as-is.
+# The values below must be adjusted to match your specific arm.
+# ============================================================================
+# Follower arm joint calibration for SO-ARM101
+# Values derived from LeRobot calibration (config/lerobot/follower_arm.json).
+# Edit homing_offset / range_min / range_max to match YOUR arm.
+joints:
+  shoulder_pan_joint:
+    id: 1
+    homing_offset: -1480
+    range_min: 748
+    range_max: 3410
+    p_coefficient: 16
+    i_coefficient: 0
+    d_coefficient: 32
+    return_delay_time: 0
+    acceleration: 254
+
+  shoulder_lift_joint:
+    id: 2
+    homing_offset: -1665
+    range_min: 837
+    range_max: 3341
+    p_coefficient: 16
+    i_coefficient: 0
+    d_coefficient: 32
+    return_delay_time: 0
+    acceleration: 254
+
+  elbow_flex_joint:
+    id: 3
+    homing_offset: 1137
+    range_min: 793
+    range_max: 2995
+    p_coefficient: 16
+    i_coefficient: 0
+    d_coefficient: 32
+    return_delay_time: 0
+    acceleration: 254
+
+  wrist_flex_joint:
+    id: 4
+    homing_offset: -2041
+    range_min: 910
+    range_max: 3277
+    p_coefficient: 16
+    i_coefficient: 0
+    d_coefficient: 32
+    return_delay_time: 0
+    acceleration: 254
+
+  wrist_roll_joint:
+    id: 5
+    homing_offset: -1892
+    range_min: 180
+    range_max: 4030
+    p_coefficient: 16
+    i_coefficient: 0
+    d_coefficient: 32
+    return_delay_time: 0
+    acceleration: 254
+
+  gripper_joint:
+    id: 6
+    homing_offset: 999
+    range_min: 2030
+    range_max: 3454
+    p_coefficient: 16
+    i_coefficient: 0
+    d_coefficient: 32
+    return_delay_time: 0
+    acceleration: 254
+    max_torque_limit: 500
+    protection_current: 250
+    overload_torque: 25
+
