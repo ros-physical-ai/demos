@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancel in-progress runs for the same PR/branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1
+
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libserial-dev
+
+      - name: Import external repos
+        run: |
+          pip install vcstool
+          vcs import external < pai.repos --recursive
+
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          pixi-version: v0.63.2
+          cache: false
+
+      - name: Build
+        # This is a workaround to run colcon directly in the pixi-activated shell.
+        # Using 'pixi run -- bash -c' instead of 'pixi run build' task so
+        # colcon inherits a real bash environment and can propagate
+        # per-package CMAKE_PREFIX_PATH via DSV hooks to downstream builds.
+        # On the CI runner, this shell-less execution context breaks the propagation chain. Wrapping in bash -c restores it.
+        run: |
+          pixi run -- bash -c '
+            echo "CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH"
+            echo "AMENT_PREFIX_PATH=$AMENT_PREFIX_PATH"
+            colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+          '
