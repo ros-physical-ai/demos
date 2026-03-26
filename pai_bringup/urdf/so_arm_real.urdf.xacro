@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="real_so_101arm">
+  <!-- Custom ros2_control file with joint_config_file support for real hardware -->
+  <xacro:arg
+    name="ros2_control_file"
+    default="$(find pai_bringup)/config/control/so_arm101.ros2_control.xacro"
+  />
+  <xacro:arg
+    name="urdf_file"
+    default="$(find so_arm101_description)/urdf/so_arm101_macro.xacro"
+  />
+  <xacro:arg name="ros2_control_hardware_type" default="real" />
+  <xacro:arg name="usb_port" default="/dev/ttyACM0" />
+  <xacro:arg name="joint_config_file" default="" />
+  <xacro:arg name="prefix" default="" />
+  <xacro:arg name="color" default="0.2 0.7 0.85 1.0" />
+
+  <!-- World link (required as parent for the base fixed joint) -->
+  <link name="world" />
+
+  <!-- Robot description -->
+  <xacro:include filename="$(arg urdf_file)" />
+  <xacro:so_arm101 prefix="$(arg prefix)" color="$(arg color)" />
+
+  <!-- ros2_control description -->
+  <xacro:include filename="$(arg ros2_control_file)" />
+  <xacro:ros2_control
+    prefix="$(arg prefix)"
+    ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+    usb_port="$(arg usb_port)"
+    joint_config_file="$(arg joint_config_file)"
+  />
+</robot>
+
