@@ -33,6 +33,7 @@ from ros_gz_sim.actions import GzServer
 
 
 def launch_setup(context, *args, **kwargs):
+    """Set up nodes for the SO ARM Gazebo bringup."""
     controllers_file = LaunchConfiguration("controllers_file").perform(context)
     prefix = LaunchConfiguration("prefix").perform(context)
     activate_joint_controller = LaunchConfiguration("activate_joint_controller").perform(context)
@@ -79,7 +80,12 @@ def launch_setup(context, *args, **kwargs):
     common = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "launch", "include", "so_arm_common.launch.py"]
+                [
+                    FindPackageShare("pai_bringup"),
+                    "launch",
+                    "include",
+                    "so_arm_common.launch.py",
+                ]
             )
         ),
         launch_arguments={
@@ -110,9 +116,9 @@ def launch_setup(context, *args, **kwargs):
 
     gzserver = GzServer(
         world_sdf_file=world_file,
-        container_name='ros_gz_container',
-        create_own_container='True',
-        use_composition='True',
+        container_name="ros_gz_container",
+        create_own_container="True",
+        use_composition="True",
     )
 
     # Make the /clock topic available in ROS
@@ -135,8 +141,8 @@ def launch_setup(context, *args, **kwargs):
 
     if gazebo_gui.lower() == "true":
         gzgui = ExecuteProcess(
-            cmd=['gz', 'sim', '-g'],
-            output='screen',
+            cmd=["gz", "sim", "-g"],
+            output="screen",
         )
         nodes_to_start.append(gzgui)
 
@@ -144,11 +150,17 @@ def launch_setup(context, *args, **kwargs):
 
 
 def generate_launch_description():
+    """Generate launch description with declared arguments."""
     declared_arguments = [
         DeclareLaunchArgument(
             "controllers_file",
             default_value=PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "config", "control", "ros2_controllers.yaml"]
+                [
+                    FindPackageShare("pai_bringup"),
+                    "config",
+                    "control",
+                    "ros2_controllers.yaml",
+                ]
             ),
             description="Absolute path to YAML file with the controllers configuration.",
         ),
@@ -174,35 +186,42 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "description_file",
-            default_value=PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "urdf", "so_arm_gz.urdf.xacro"]
-            ),
+            default_value=PathJoinSubstitution([FindPackageShare("pai_bringup"), "urdf", "so_arm_gz.urdf.xacro"]),
             description="URDF/XACRO description file (absolute path) with the robot.",
         ),
         DeclareLaunchArgument("launch_rviz", default_value="true", description="Launch RViz?"),
         DeclareLaunchArgument(
             "rviz_config_file",
-            default_value=PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_gz.rviz"]
-            ),
+            default_value=PathJoinSubstitution([FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_gz.rviz"]),
             description="Rviz config file (absolute path) to use when launching rviz.",
         ),
-        DeclareLaunchArgument(
-            "gazebo_gui", default_value="true", description="Start gazebo with GUI?"
-        ),
+        DeclareLaunchArgument("gazebo_gui", default_value="true", description="Start gazebo with GUI?"),
         DeclareLaunchArgument(
             "world_file",
             default_value=PathJoinSubstitution(
                 [FindPackageShare("pai_description"), "world", "so_arm_in_lightbox.sdf"]
             ),
-            description="Gazebo world file (absolute path or filename from the gazebosim worlds collection) containing a custom world.",
+            description="Gazebo world file (absolute path or filename from the "
+            "gazebosim worlds collection) containing a custom world.",
         ),
         DeclareLaunchArgument("x", default_value="0.0", description="Robot spawn X position"),
         DeclareLaunchArgument("y", default_value="-0.488", description="Robot spawn Y position"),
         DeclareLaunchArgument("z", default_value="0.845", description="Robot spawn Z position"),
-        DeclareLaunchArgument("roll", default_value="0.0", description="Robot spawn roll orientation (radians)"),
-        DeclareLaunchArgument("pitch", default_value="0.0", description="Robot spawn pitch orientation (radians)"),
-        DeclareLaunchArgument("yaw", default_value="1.5708", description="Robot spawn yaw orientation (radians)"),
+        DeclareLaunchArgument(
+            "roll",
+            default_value="0.0",
+            description="Robot spawn roll orientation (radians)",
+        ),
+        DeclareLaunchArgument(
+            "pitch",
+            default_value="0.0",
+            description="Robot spawn pitch orientation (radians)",
+        ),
+        DeclareLaunchArgument(
+            "yaw",
+            default_value="1.5708",
+            description="Robot spawn yaw orientation (radians)",
+        ),
     ]
 
-    return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])
+    return LaunchDescription([*declared_arguments, OpaqueFunction(function=launch_setup)])

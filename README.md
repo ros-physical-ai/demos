@@ -1,6 +1,7 @@
 # ROS Physical AI Demos
 
 ## Requirements
+
 - [Ubuntu 24.04](https://ubuntu.com/download/desktop)
 - [Pixi](https://pixi.sh/latest/installation/) (recommended) — manages ROS 2, Gazebo, and all dependencies automatically
 - **NVIDIA GPU** (for ML inference):
@@ -65,22 +66,22 @@ source ~/ws_pai/install/setup.bash
 
 ### This repository
 
-| Package | Description |
-|---------|-------------|
-| **pai_bringup** | Main bringup package — launches the SO-ARM101 in Gazebo, MuJoCo, or on real hardware with ros2_control, RViz, camera bridge, and optional LeRobot inference |
-| **pai_leader_teleop** | Leader-follower teleoperation — brings up a physical leader SO-ARM101 to control a follower arm via ros2_control |
-| **pai_data_collection** | Configuration and scripts for collecting demonstration datasets via the Rosetta ROS 2–LeRobot bridge |
-| **pai_description** | Scene-level SDF world descriptions for the demo environments |
-| **pai_assets** | Shared 3D model assets (meshes, textures) used by the demo scenes |
+| Package                 | Description                                                                                                                                                 |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **pai_bringup**         | Main bringup package — launches the SO-ARM101 in Gazebo, MuJoCo, or on real hardware with ros2_control, RViz, camera bridge, and optional LeRobot inference |
+| **pai_leader_teleop**   | Leader-follower teleoperation — brings up a physical leader SO-ARM101 to control a follower arm via ros2_control                                            |
+| **pai_data_collection** | Configuration and scripts for collecting demonstration datasets via the Rosetta ROS 2–LeRobot bridge                                                        |
+| **pai_description**     | Scene-level SDF world descriptions for the demo environments                                                                                                |
+| **pai_assets**          | Shared 3D model assets (meshes, textures) used by the demo scenes                                                                                           |
 
 ### External (imported via `pai.repos`)
 
-| Source | Description |
-|--------|-------------|
-| [ros2_so_arm](https://github.com/JafarAbdi/ros2_so_arm) | URDF descriptions, MoveIt config, Gazebo support, and utilities for the SO-ARM robots |
-| [feetech_ros2_driver](https://github.com/legalaspro/feetech_ros2_driver) | ros2_control hardware interface for Feetech servo motors |
-| [mujoco_ros2_control](https://github.com/ros-controls/mujoco_ros2_control) | ros2_control integration with the MuJoCo physics simulator |
-| [rosetta](https://github.com/iblnkn/rosetta) / [rosetta_interfaces](https://github.com/iblnkn/rosetta_interfaces) | ROS 2–LeRobot bridge for recording demonstration datasets |
+| Source                                                                                                            | Description                                                                           |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| [ros2_so_arm](https://github.com/JafarAbdi/ros2_so_arm)                                                           | URDF descriptions, MoveIt config, Gazebo support, and utilities for the SO-ARM robots |
+| [feetech_ros2_driver](https://github.com/legalaspro/feetech_ros2_driver)                                          | ros2_control hardware interface for Feetech servo motors                              |
+| [mujoco_ros2_control](https://github.com/ros-controls/mujoco_ros2_control)                                        | ros2_control integration with the MuJoCo physics simulator                            |
+| [rosetta](https://github.com/iblnkn/rosetta) / [rosetta_interfaces](https://github.com/iblnkn/rosetta_interfaces) | ROS 2–LeRobot bridge for recording demonstration datasets                             |
 
 ## Demos
 
@@ -160,6 +161,6 @@ With Pixi: `pixi run lint`
 
 ## External demos
 
-Other demos: fully open-source physical AI projects on ROS. 
+Other demos: fully open-source physical AI projects on ROS.
 
 - [Agentic mobile manipulator](https://github.com/RobotecAI/agentic-mobile-manipulator), a comprehensive demo project using a hardware-in-the-loop setup with O3DE and all the software and inference running on-board.

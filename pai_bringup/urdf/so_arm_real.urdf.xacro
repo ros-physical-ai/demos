@@ -31,4 +31,3 @@
     joint_config_file="$(arg joint_config_file)"
   />
 </robot>
-

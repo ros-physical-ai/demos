@@ -30,10 +30,10 @@ Both the leader and follower arms must be calibrated before use. The calibration
 See the [SO-ARM101 Calibration Guide](../docs/calibration_guide.md) for the full procedure, including:
 
 - **Step 1** — Running `lerobot-calibrate` for the leader arm. This writes `homing_offset` to each servo's EEPROM and is **sufficient for normal use** — no additional config file is needed.
-- **Step 2** *(optional)* — Providing a `joint_config_file` with per-robot overrides (homing offsets, range limits, PID gains, etc.) only if you want to version calibration in the repo or override specific driver parameters.
+- **Step 2** _(optional)_ — Providing a `joint_config_file` with per-robot overrides (homing offsets, range limits, PID gains, etc.) only if you want to version calibration in the repo or override specific driver parameters.
 
 > [!NOTE]
-> Even though the leader arm has no command interfaces (torque is disabled), running LeRobot calibration (Step 1) is still important. The driver uses `homing_offset` to convert raw encoder ticks to radians when *reading* positions. Without it, the joint positions forwarded to the follower may be incorrect.
+> Even though the leader arm has no command interfaces (torque is disabled), running LeRobot calibration (Step 1) is still important. The driver uses `homing_offset` to convert raw encoder ticks to radians when _reading_ positions. Without it, the joint positions forwarded to the follower may be incorrect.
 
 To optionally use a calibration file with the leader:
 
@@ -61,19 +61,19 @@ ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM1
 
 ### `leader_bringup.launch.py`
 
-| Argument | Default | Description |
-|---|---|---|
-| `usb_port` | `/dev/ttyACM1` | USB port for the leader arm servo bus |
-| `namespace` | `leader` | ROS namespace for leader nodes |
-| `use_sim_time` | `false` | Use simulation time (set to `true` when the follower is simulated) |
-| `prefix` | `""` | Joint name prefix |
-| `joint_config_file` | `""` | Path to per-robot joint calibration YAML (homing offsets, PID gains, etc.). See [Calibration](#calibration) |
-| `description_file` | `pai_leader_teleop/.../so_arm_leader.urdf.xacro` | URDF xacro file |
-| `ros2_control_file` | `pai_leader_teleop/.../so_arm101_leader.ros2_control.xacro` | Leader ros2_control xacro (state-only) |
-| `controllers_file` | `pai_leader_teleop/.../ros2_controllers_leader.yaml` | Leader controllers config |
-| `follower_commands_topic` | `/forward_position_controller/commands` | Follower position controller command topic |
-| `launch_rviz` | `false` | Launch RViz to visualize the leader arm |
-| `rviz_config_file` | `pai_leader_teleop/.../so_arm_leader.rviz` | RViz config file for the leader arm |
+| Argument                  | Default                                                     | Description                                                                                                 |
+| ------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `usb_port`                | `/dev/ttyACM1`                                              | USB port for the leader arm servo bus                                                                       |
+| `namespace`               | `leader`                                                    | ROS namespace for leader nodes                                                                              |
+| `use_sim_time`            | `false`                                                     | Use simulation time (set to `true` when the follower is simulated)                                          |
+| `prefix`                  | `""`                                                        | Joint name prefix                                                                                           |
+| `joint_config_file`       | `""`                                                        | Path to per-robot joint calibration YAML (homing offsets, PID gains, etc.). See [Calibration](#calibration) |
+| `description_file`        | `pai_leader_teleop/.../so_arm_leader.urdf.xacro`            | URDF xacro file                                                                                             |
+| `ros2_control_file`       | `pai_leader_teleop/.../so_arm101_leader.ros2_control.xacro` | Leader ros2_control xacro (state-only)                                                                      |
+| `controllers_file`        | `pai_leader_teleop/.../ros2_controllers_leader.yaml`        | Leader controllers config                                                                                   |
+| `follower_commands_topic` | `/forward_position_controller/commands`                     | Follower position controller command topic                                                                  |
+| `launch_rviz`             | `false`                                                     | Launch RViz to visualize the leader arm                                                                     |
+| `rviz_config_file`        | `pai_leader_teleop/.../so_arm_leader.rviz`                  | RViz config file for the leader arm                                                                         |
 
 ## Visualizing the leader in RViz
 

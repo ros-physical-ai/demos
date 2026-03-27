@@ -4,5 +4,6 @@
 # This avoids pixi warnings about missing activation scripts on fresh checkouts.
 
 if [ -f "${PIXI_PROJECT_ROOT}/install/setup.bash" ]; then
+  # shellcheck disable=SC1091
   source "${PIXI_PROJECT_ROOT}/install/setup.bash"
 fi

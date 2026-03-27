@@ -6,20 +6,20 @@ Install Pixi first by following [its official documentation](https://pixi.prefix
 
 ## Prerequisites
 
-The following must be installed system-wide. 
+The following must be installed system-wide.
 See [README.md](../README.md) for installation instructions:
 
 _Dependent repos_: Installed via `vcs import external < pai.repos --recursive`
 
 _libserial-dev_: Required for feetech_ros2_driver. Install via:
-  ```bash
-  sudo apt update && sudo apt install -y libserial-dev
-  ```
+
+```bash
+sudo apt update && sudo apt install -y libserial-dev
+```
 
 _NVIDIA drivers and CUDA toolkit_: Required for GPU acceleration (system components)
 
 ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pixi install`.
-
 
 ## Quick Start
 
@@ -36,6 +36,7 @@ pixi run install-ml-deps
 ```
 
 The `install-ml-deps` task automatically:
+
 - Detects your GPU (RTX 5090 or standard)
 - Installs the appropriate PyTorch version
 
@@ -59,16 +60,19 @@ The `RMW_IMPLEMENTATION` environment variable is set to `rmw_zenoh_cpp` via the 
 Before running any ROS 2 commands, start the Zenoh router in a separate terminal.
 
 Terminal 1 (start Zenoh router):
+
 ```bash
 pixi run start_zenoh
 ```
 
 Terminal 2 (launch Gazebo simulation):
+
 ```bash
 pixi run so-arm-gz
 ```
 
 MuJoCo simulation (SO-ARM in MuJoCo):
+
 ```bash
 pixi run so-arm-mujoco
 ```
@@ -92,11 +96,13 @@ Start it in a separate terminal using `pixi run start_zenoh`.
 For example, to launch the LeRobot inference node:
 
 Terminal 1 (start Zenoh router):
+
 ```bash
 pixi run start_zenoh
 ```
 
 Terminal 2 (run inference node):
+
 ```bash
 pixi shell
 
@@ -128,12 +134,13 @@ After modifying `pixi.toml` to add or update dependencies, run `pixi install` to
 
 Common Gazebo-specific warnings and errors that may appear during simulation:
 
-**"Trying to set debug visualization mode while GI is disabled"**: This error occurs when Gazebo's Global Illumination (GI) system tries to set debug visualization before GI is fully initialized. 
+**"Trying to set debug visualization mode while GI is disabled"**: This error occurs when Gazebo's Global Illumination (GI) system tries to set debug visualization before GI is fully initialized.
 
-**"libEGL warning: egl: failed to create dri2 screen"**: This warning appears when Gazebo cannot access the GPU directly. 
+**"libEGL warning: egl: failed to create dri2 screen"**: This warning appears when Gazebo cannot access the GPU directly.
 
 The simulation will still run using software rendering, but without hardware acceleration.
 
 For resolution steps for these, see:
+
 - [Gazebo Rendering Plugin Documentation](https://gazebosim.org/api/rendering/9/renderingplugin.html)
 - [Gazebo Sim Troubleshooting](https://gazebosim.org/docs/ionic/troubleshooting/)

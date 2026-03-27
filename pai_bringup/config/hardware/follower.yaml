@@ -74,4 +74,3 @@ joints:
     max_torque_limit: 500
     protection_current: 250
     overload_torque: 25
-

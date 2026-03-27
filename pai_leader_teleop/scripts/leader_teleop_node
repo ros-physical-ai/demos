@@ -29,7 +29,6 @@ from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float64MultiArray
 
-
 # Expected joint ordering matching the follower's forward_position_controller config.
 JOINT_ORDER = [
     "shoulder_pan_joint",
@@ -42,40 +41,27 @@ JOINT_ORDER = [
 
 
 class LeaderTeleopNode(Node):
+    """ROS 2 node that relays leader joint states to follower commands."""
+
     def __init__(self):
+        """Initialize the teleop relay node."""
         super().__init__("leader_teleop_node")
 
-        self.declare_parameter(
-            "leader_joint_states_topic", "/leader/joint_states"
-        )
-        self.declare_parameter(
-            "follower_commands_topic", "/forward_position_controller/commands"
-        )
+        self.declare_parameter("leader_joint_states_topic", "/leader/joint_states")
+        self.declare_parameter("follower_commands_topic", "/forward_position_controller/commands")
 
-        leader_topic = (
-            self.get_parameter("leader_joint_states_topic")
-            .get_parameter_value()
-            .string_value
-        )
-        follower_topic = (
-            self.get_parameter("follower_commands_topic")
-            .get_parameter_value()
-            .string_value
-        )
+        leader_topic = self.get_parameter("leader_joint_states_topic").get_parameter_value().string_value
+        follower_topic = self.get_parameter("follower_commands_topic").get_parameter_value().string_value
 
         self.publisher_ = self.create_publisher(Float64MultiArray, follower_topic, 10)
-        self.subscription_ = self.create_subscription(
-            JointState, leader_topic, self._joint_states_cb, 10
-        )
+        self.subscription_ = self.create_subscription(JointState, leader_topic, self._joint_states_cb, 10)
 
-        self.get_logger().info(
-            f"Teleop relay: {leader_topic} -> {follower_topic}"
-        )
+        self.get_logger().info(f"Teleop relay: {leader_topic} -> {follower_topic}")
 
     def _joint_states_cb(self, msg: JointState):
         """Map incoming JointState positions to a Float64MultiArray in the expected order."""
         # Build a name -> position lookup from the message
-        name_to_pos = dict(zip(msg.name, msg.position))
+        name_to_pos = dict(zip(msg.name, msg.position, strict=False))
 
         cmd = Float64MultiArray()
         cmd.data = []
@@ -92,6 +78,7 @@ class LeaderTeleopNode(Node):
 
 
 def main(args=None):
+    """Entry point for the leader teleop node."""
     rclpy.init(args=args)
     node = LeaderTeleopNode()
     try:

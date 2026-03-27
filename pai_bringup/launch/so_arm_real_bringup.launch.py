@@ -15,7 +15,11 @@
 # limitations under the License.
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
+from launch.actions import (
+    DeclareLaunchArgument,
+    IncludeLaunchDescription,
+    OpaqueFunction,
+)
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
@@ -25,6 +29,7 @@ from nav2_common.launch import ReplaceString, RewrittenYaml
 
 
 def launch_setup(context, *args, **kwargs):
+    """Set up nodes for the SO ARM real hardware bringup."""
     prefix = LaunchConfiguration("prefix").perform(context)
     usb_port = LaunchConfiguration("usb_port").perform(context)
     controllers_file = LaunchConfiguration("controllers_file")
@@ -61,7 +66,12 @@ def launch_setup(context, *args, **kwargs):
     common = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "launch", "include", "so_arm_common.launch.py"]
+                [
+                    FindPackageShare("pai_bringup"),
+                    "launch",
+                    "include",
+                    "so_arm_common.launch.py",
+                ]
             )
         ),
         launch_arguments={
@@ -84,6 +94,7 @@ def launch_setup(context, *args, **kwargs):
 
 
 def generate_launch_description():
+    """Generate launch description with declared arguments."""
     declared_arguments = [
         DeclareLaunchArgument(
             "usb_port",
@@ -107,24 +118,31 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "controllers_file",
             default_value=PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "config", "control", "ros2_controllers.yaml"]
+                [
+                    FindPackageShare("pai_bringup"),
+                    "config",
+                    "control",
+                    "ros2_controllers.yaml",
+                ]
             ),
             description="Absolute path to YAML file with the controllers configuration.",
         ),
         DeclareLaunchArgument(
             "description_file",
-            default_value=PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "urdf", "so_arm_real.urdf.xacro"]
-            ),
+            default_value=PathJoinSubstitution([FindPackageShare("pai_bringup"), "urdf", "so_arm_real.urdf.xacro"]),
             description="URDF/XACRO description file with the robot.",
         ),
         DeclareLaunchArgument(
             "ros2_control_file",
             default_value=PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "config", "control", "so_arm101.ros2_control.xacro"]
+                [
+                    FindPackageShare("pai_bringup"),
+                    "config",
+                    "control",
+                    "so_arm101.ros2_control.xacro",
+                ]
             ),
-            description="Path to a custom ros2_control xacro file to override the default "
-            "in the description file.",
+            description="Path to a custom ros2_control xacro file to override the default in the description file.",
         ),
         DeclareLaunchArgument(
             "initial_joint_controller",
@@ -141,11 +159,9 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "rviz_config_file",
-            default_value=PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_gz.rviz"]
-            ),
+            default_value=PathJoinSubstitution([FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_gz.rviz"]),
             description="RViz config file to use.",
         ),
     ]
 
-    return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])
+    return LaunchDescription([*declared_arguments, OpaqueFunction(function=launch_setup)])

@@ -42,14 +42,13 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 
 def launch_setup(context, *args, **kwargs):
+    """Set up nodes for the SO ARM bringup."""
     description_file = LaunchConfiguration("description_file").perform(context)
     description_xacro_args = LaunchConfiguration("description_xacro_args").perform(context)
     ros2_control_file = LaunchConfiguration("ros2_control_file").perform(context)
     use_sim_time = LaunchConfiguration("use_sim_time").perform(context).lower() == "true"
     initial_joint_controller = LaunchConfiguration("initial_joint_controller").perform(context)
-    activate_joint_controller = (
-        LaunchConfiguration("activate_joint_controller").perform(context).lower() == "true"
-    )
+    activate_joint_controller = LaunchConfiguration("activate_joint_controller").perform(context).lower() == "true"
     launch_rviz = LaunchConfiguration("launch_rviz").perform(context).lower() == "true"
     rviz_config_file = LaunchConfiguration("rviz_config_file").perform(context)
 
@@ -65,9 +64,7 @@ def launch_setup(context, *args, **kwargs):
         xacro_cmd += [" ", description_xacro_args]
 
     robot_description_content = Command(xacro_cmd)
-    robot_description = {
-        "robot_description": ParameterValue(robot_description_content, value_type=str)
-    }
+    robot_description = {"robot_description": ParameterValue(robot_description_content, value_type=str)}
 
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
@@ -79,11 +76,15 @@ def launch_setup(context, *args, **kwargs):
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+        arguments=[
+            "joint_state_broadcaster",
+            "--controller-manager",
+            "/controller_manager",
+        ],
         output="both",
     )
 
-    # Initial joint controller – started or stopped depending on argument
+    # Initial joint controller - started or stopped depending on argument
     controller_args = [initial_joint_controller, "-c", "/controller_manager"]
     if not activate_joint_controller:
         controller_args.append("--stopped")
@@ -136,6 +137,7 @@ def launch_setup(context, *args, **kwargs):
 
 
 def generate_launch_description():
+    """Generate launch description with declared arguments."""
     declared_arguments = [
         DeclareLaunchArgument(
             "description_file",
@@ -182,4 +184,4 @@ def generate_launch_description():
         ),
     ]
 
-    return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])
+    return LaunchDescription([*declared_arguments, OpaqueFunction(function=launch_setup)])

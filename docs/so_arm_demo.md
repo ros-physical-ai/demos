@@ -16,7 +16,9 @@ torchcodec==0.4.0
 torchvision==0.22.0+cu128
 
 ```
+
 And running these commands should produce the result below without any `sm_120` errors.
+
 ```bash
 $ python -c "import torch; print(torch.cuda.is_available()); print(torch.cuda.device_count()); print(torch.cuda.get_device_name(0))"
 True
@@ -90,16 +92,19 @@ python3 src/lerobot/teleoperate.py \
 #### Record
 
 First, set your Hugging Face username automatically using the [Hugging Face CLI](https://huggingface.co/docs/huggingface_hub/en/guides/cli):
+
 ```bash
 export HF_USER=$(hf auth whoami | head -n 1)
 ```
 
 Or set it manually:
+
 ```bash
 export HF_USER=your_username_here
 ```
 
 Then run the record command:
+
 ```bash
 python3 src/lerobot/record.py \
     --robot.type=so101_follower \
@@ -117,6 +122,7 @@ python3 src/lerobot/record.py \
 ```
 
 #### Replay
+
 ```bash
 python3 src/lerobot/replay.py \
     --robot.type=so101_follower \
@@ -127,6 +133,7 @@ python3 src/lerobot/replay.py \
 ```
 
 #### Train
+
 ```bash
 python3 src/lerobot/scripts/train.py \
     --dataset.repo_id=${HF_USER}/move_to_cube \
@@ -140,6 +147,7 @@ python3 src/lerobot/scripts/train.py \
 ```
 
 #### Evaluate
+
 ```bash
 python3 src/lerobot/record.py \
     --robot.type=so101_follower \
@@ -184,14 +192,17 @@ python3 pai_bringup/scripts/lerobot_inference_node --ros-args \
 ### Topic Interface
 
 **Subscribed Topics:**
+
 - `/camera` (or specified camera_topic): `sensor_msgs/Image` - Camera data for policy input
 
 **Published Topics:**
+
 - `/forward_position_controller/commands` (or specified command_topic): `std_msgs/Float64MultiArray` - Joint position commands
 
 ### Expected Message Format
 
 The `Float64MultiArray` contains joint positions in the following order:
+
 1. `shoulder_pan_joint`
 2. `shoulder_lift_joint`
 3. `elbow_flex_joint`
@@ -202,6 +213,7 @@ The `Float64MultiArray` contains joint positions in the following order:
 ## Implementation Notes
 
 ### Key Features
+
 - **Real-time Inference**: Runs policy inference at specified FPS (default 30 Hz)
 - **Image Processing**: Automatically converts ROS 2 `sensor_msgs/Image` to LeRobot format
 - **Device Support**: Configurable PyTorch device (CUDA/CPU)
@@ -210,6 +222,7 @@ The `Float64MultiArray` contains joint positions in the following order:
 - **Error Handling**: Robust error handling and logging
 
 ### CRITICAL: Unit Conversion
+
 **LeRobot vs ROS 2 Unit Differences**
 
 LeRobot SO101 training uses different units than ROS 2:
@@ -226,6 +239,7 @@ LeRobot SO101 training uses different units than ROS 2:
 3. **Verify joint limits**: The hardcoded joint limits are approximations and may not match your specific robot's calibration
 
 **Joint Limits Used (in degrees):**
+
 ```python
 joint_limits_deg = {
     'shoulder_pan_joint': (-180, 180),      # Full rotation
@@ -240,6 +254,7 @@ joint_limits_deg = {
 ** WARNING**: Incorrect unit conversion can cause unsafe robot movements! Always test with simulation first.
 
 ### Architecture
+
 The inference node follows the same data processing pipeline as the original LeRobot recording script:
 
 1. **Image Conversion**: ROS 2 Image → OpenCV → NumPy → PyTorch
@@ -248,12 +263,14 @@ The inference node follows the same data processing pipeline as the original LeR
 4. **Command Publishing**: Action values → Float64MultiArray
 
 ### Camera Data Processing
+
 - Images are converted from ROS 2 `sensor_msgs/Image` to OpenCV format using `cv_bridge`
 - Images are resized to expected dimensions if needed
 - Pixel values are normalized to [0,1] range
 - Channel order is converted from HWC to CHW for PyTorch
 
 ### Policy Integration
+
 - Uses the same `predict_action` logic as the original LeRobot code
 - Supports both CUDA and CPU inference
 - Maintains compatibility with all LeRobot policy types (ACT, Diffusion, etc.)

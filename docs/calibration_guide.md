@@ -10,12 +10,12 @@ In the current `feetech_ros2_driver`, positions are converted relative to the fi
 
 Calibration can live in EEPROM, LeRobot cache JSON, URDF/xacro, or an optional `joint_config_file`; stacks do not share one file, so copy values only where a tool actually reads them. The table lists each layer, its reader, and its default role. Step 1 and Step 2 cover the calibration flow and optional `joint_config_file`.
 
-| Where | Read by | Default role |
-|-------|---------|--------------|
-| Servo EEPROM | Firmware + bus reads | Canonical after Step 1; holds `homing_offset` and related registers |
-| `~/.cache/huggingface/lerobot/calibration/.../*.json` | LeRobot Python tools | Written by `lerobot-calibrate`; not read by ROS nodes |
-| URDF / xacro | `feetech_ros2_driver` when `joint_config_file` is empty | Joint layout and defaults |
-| `joint_config_file` YAML (launch arg) | `feetech_ros2_driver` only if you pass the path | Optional overrides and versioned per-robot settings |
+| Where                                                 | Read by                                                 | Default role                                                        |
+| ----------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------- |
+| Servo EEPROM                                          | Firmware + bus reads                                    | Canonical after Step 1; holds `homing_offset` and related registers |
+| `~/.cache/huggingface/lerobot/calibration/.../*.json` | LeRobot Python tools                                    | Written by `lerobot-calibrate`; not read by ROS nodes               |
+| URDF / xacro                                          | `feetech_ros2_driver` when `joint_config_file` is empty | Joint layout and defaults                                           |
+| `joint_config_file` YAML (launch arg)                 | `feetech_ros2_driver` only if you pass the path         | Optional overrides and versioned per-robot settings                 |
 
 Default workflow: complete Step 1 only. You do not need to keep repo copies of JSON or YAML up to date for ROS bringup (launch uses an empty `joint_config_file` unless you set it).
 
@@ -54,7 +54,7 @@ lerobot-calibrate \
 
 > [!IMPORTANT]
 > Getting the reference pose right:
-> During calibration you will be prompted with: *"Move follower_arm SOFollower to the middle of its range of motion and press ENTER...."*. Take extra care at this step: the calibration routine writes a `homing_offset` to the servo's EEPROM so that the pose you confirm becomes the joint's zero/mid reference used later by ROS 2.
+> During calibration you will be prompted with: _"Move follower_arm SOFollower to the middle of its range of motion and press ENTER...."_. Take extra care at this step: the calibration routine writes a `homing_offset` to the servo's EEPROM so that the pose you confirm becomes the joint's zero/mid reference used later by ROS 2.
 >
 > **Gripper exception:** Leave the **gripper fully closed** instead of centering it. This aligns the zero-point between LeRobot and ROS 2 so that "zero" means closed in both stacks and positive values open the gripper (see [Known Limitations](#gripper-normalization-differs-between-lerobot-and-ros-2) for details).
 
@@ -105,7 +105,6 @@ LeRobot calibration does not produce these safety values in its calibration outp
 
 For full parameter details and memory behavior, see the [`feetech_ros2_driver` user guide](https://github.com/legalaspro/feetech_ros2_driver/blob/feat/joint-config-and-calibration/doc/user.md#ros2_control-urdf-tag).
 
-
 ## How It Works
 
 ### Servo firmware (hardware level)
@@ -133,10 +132,10 @@ If a `joint_config_file` is provided, the driver merges those parameters over th
 
 ### Summary
 
-| Layer | What it does | Value |
-|-------|-------------|-------|
+| Layer                          | What it does                                                                         | Value                                                                |
+| ------------------------------ | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
 | Servo EEPROM (`homing_offset`) | Per-robot correction so the desired physical center is reported at the midpoint tick | Set by `lerobot.calibrate` or by the driver if provided in URDF/YAML |
-| `feetech_ros2_driver` midpoint | Fixed tick reference used for radian/tick conversion | 2048 |
+| `feetech_ros2_driver` midpoint | Fixed tick reference used for radian/tick conversion                                 | 2048                                                                 |
 
 The two layers work together: the EEPROM `homing_offset` handles per-robot mechanical variation in hardware, and the driver always maps the centered midpoint tick value to **0 rad**.
 
@@ -146,10 +145,10 @@ The two layers work together: the EEPROM `homing_offset` handles per-robot mecha
 
 The two stacks use **different conventions** for the gripper joint:
 
-| Stack | Gripper mode | "Zero" means | Units |
-|-------|-------------|--------------|-------|
-| **LeRobot** | `RANGE_0_100` (hardcoded) | `range_min` — one physical limit | 0–100 % |
-| **ROS 2** (`feetech_ros2_driver`) | Same as all joints | Calibrated mid-range (fixed midpoint tick 2048) | radians |
+| Stack                             | Gripper mode              | "Zero" means                                    | Units   |
+| --------------------------------- | ------------------------- | ----------------------------------------------- | ------- |
+| **LeRobot**                       | `RANGE_0_100` (hardcoded) | `range_min` — one physical limit                | 0–100 % |
+| **ROS 2** (`feetech_ros2_driver`) | Same as all joints        | Calibrated mid-range (fixed midpoint tick 2048) | radians |
 
 In LeRobot's `so_follower.py`, the gripper is always created with `MotorNormMode.RANGE_0_100`(See [here](https://github.com/huggingface/lerobot/blob/0b067df57d21d3a02d6c511f1609172fa39ac29b/src/lerobot/robots/so_follower/so_follower.py#L60)) regardless of the `use_degrees` setting. This maps 0 → `range_min` (fully closed) and 100 → `range_max` (fully open), treating the gripper as a percentage-open actuator. Body joints, on the other hand, use `RANGE_M100_100` (or `DEGREES`), where 0 maps to the midpoint of the range.
 

@@ -44,6 +44,7 @@ from nav2_common.launch import RewrittenYaml
 
 
 def launch_setup(context, *args, **kwargs):
+    """Set up nodes for the leader arm bringup with teleop relay."""
     usb_port = LaunchConfiguration("usb_port").perform(context)
     prefix = LaunchConfiguration("prefix").perform(context)
     namespace = LaunchConfiguration("namespace").perform(context)
@@ -66,7 +67,7 @@ def launch_setup(context, *args, **kwargs):
             " ",
             f"ros2_control_file:={ros2_control_file}",
             " ",
-            f"ros2_control_hardware_type:=real",
+            "ros2_control_hardware_type:=real",
             " ",
             f"prefix:={prefix}",
             " ",
@@ -75,9 +76,7 @@ def launch_setup(context, *args, **kwargs):
             f"joint_config_file:={joint_config_file}",
         ]
     )
-    robot_description = {
-        "robot_description": ParameterValue(robot_description_content, value_type=str)
-    }
+    robot_description = {"robot_description": ParameterValue(robot_description_content, value_type=str)}
 
     controller_parameters = ParameterFile(
         RewrittenYaml(
@@ -165,6 +164,7 @@ def launch_setup(context, *args, **kwargs):
 
 
 def generate_launch_description():
+    """Generate launch description with declared arguments."""
     declared_arguments = [
         DeclareLaunchArgument(
             "usb_port",
@@ -198,7 +198,11 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "description_file",
             default_value=PathJoinSubstitution(
-                [FindPackageShare("pai_leader_teleop"), "urdf", "so_arm_leader.urdf.xacro"]
+                [
+                    FindPackageShare("pai_leader_teleop"),
+                    "urdf",
+                    "so_arm_leader.urdf.xacro",
+                ]
             ),
             description="URDF/XACRO description file with the robot.",
         ),
@@ -239,10 +243,15 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "rviz_config_file",
             default_value=PathJoinSubstitution(
-                [FindPackageShare("pai_leader_teleop"), "config", "rviz", "so_arm_leader.rviz"]
+                [
+                    FindPackageShare("pai_leader_teleop"),
+                    "config",
+                    "rviz",
+                    "so_arm_leader.rviz",
+                ]
             ),
             description="RViz config file for the leader arm.",
         ),
     ]
 
-    return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])
+    return LaunchDescription([*declared_arguments, OpaqueFunction(function=launch_setup)])

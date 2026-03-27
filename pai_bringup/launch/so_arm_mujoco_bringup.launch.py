@@ -19,7 +19,6 @@ from pathlib import Path
 
 import xacro
 from ament_index_python.packages import get_package_share_directory
-
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -37,8 +36,7 @@ def _generate_mjcf_at_launch(pkg_share):
     so_arm101_xacro = mjcf_dir / "so_arm101.xml.xacro"
     if not scene_xacro.exists() or not so_arm101_xacro.exists():
         raise FileNotFoundError(
-            f"MJCF xacro sources not found. Ensure mjcf/ is installed. "
-            f"Looked for {scene_xacro} and {so_arm101_xacro}"
+            f"MJCF xacro sources not found. Ensure mjcf/ is installed. Looked for {scene_xacro} and {so_arm101_xacro}"
         )
 
     out_dir = Path(tempfile.mkdtemp(prefix="pai_bringup_mjcf_"))
@@ -56,9 +54,8 @@ def _generate_mjcf_at_launch(pkg_share):
 
 
 def launch_setup(context, *args, **kwargs):
-    pkg_share = PathJoinSubstitution(
-        [FindPackageShare("pai_bringup")]
-    ).perform(context)
+    """Set up nodes for the SO ARM MuJoCo bringup."""
+    pkg_share = PathJoinSubstitution([FindPackageShare("pai_bringup")]).perform(context)
     mujoco_model = _generate_mjcf_at_launch(pkg_share)
     description_xacro_args = f"mujoco_model:={mujoco_model}"
 
@@ -92,7 +89,12 @@ def launch_setup(context, *args, **kwargs):
     common = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "launch", "include", "so_arm_common.launch.py"]
+                [
+                    FindPackageShare("pai_bringup"),
+                    "launch",
+                    "include",
+                    "so_arm_common.launch.py",
+                ]
             )
         ),
         launch_arguments={
@@ -102,7 +104,12 @@ def launch_setup(context, *args, **kwargs):
             "description_xacro_args": description_xacro_args,
             "use_sim_time": "true",
             "rviz_config_file": PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_mujoco.rviz"]
+                [
+                    FindPackageShare("pai_bringup"),
+                    "config",
+                    "rviz",
+                    "so_arm_mujoco.rviz",
+                ]
             ),
         }.items(),
     )
@@ -111,4 +118,5 @@ def launch_setup(context, *args, **kwargs):
 
 
 def generate_launch_description():
+    """Generate launch description."""
     return LaunchDescription([OpaqueFunction(function=launch_setup)])
