@@ -207,8 +207,9 @@ def main():
                         metavar="PATH",
                         help="Path to servo defaults YAML "
                              f"(default: {DEFAULT_SERVO_DEFAULTS_PATH.name})")
-    parser.add_argument("--generate-yaml", type=Path, default=None, metavar="PATH",
-                        help="Generate a YAML config at PATH from calibration JSON "
+    parser.add_argument("--generate-yaml", type=Path, default=None, nargs="?",
+                        const=True, metavar="PATH",
+                        help="Generate a YAML config from calibration JSON "
                              "(merges servo-default PID/torque fields). "
                              "If PATH is omitted when --robot-id is set, writes to "
                              "config/lerobots/<robot_id>/<arm>.yaml")
@@ -240,13 +241,19 @@ def main():
         print_mjcf_patch(derived)
 
     if args.generate_yaml is not None:
-        yaml_path = args.generate_yaml
+        if args.generate_yaml is True:
+            # --generate-yaml with no path: auto-resolve from robot_id
+            if not args.robot_id:
+                parser.error("--generate-yaml without a path requires --robot-id")
+            yaml_path = cal_path.parent / f"{args.arm}.yaml"
+        else:
+            yaml_path = args.generate_yaml
         servo_defaults = load_servo_defaults(args.servo_defaults)
         print()
         generate_yaml(calibration, servo_defaults, yaml_path, source_desc, args.servo_defaults)
     elif args.robot_id:
         # Hint: user can generate YAML with --generate-yaml
-        robot_yaml = resolve_robot_calibration(args.robot_id, arm=args.arm).parent / f"{args.arm}.yaml"
+        robot_yaml = cal_path.parent / f"{args.arm}.yaml"
         print(f"\nTo generate {args.arm}.yaml for this robot, add:")
         print(f"  --generate-yaml {robot_yaml}")
 
