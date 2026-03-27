@@ -14,6 +14,10 @@ log/*
 # External repos imported via vcs
 external/*
 
+# Per-robot calibration (only nominal/ is tracked)
+pai_bringup/config/lerobots/*/
+!pai_bringup/config/lerobots/nominal/
+
 # Recorded datasets
 datasets/*
 datasets_lerobot/*

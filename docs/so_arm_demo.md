@@ -57,8 +57,8 @@ The `install-ml-deps` task detects your GPU and installs the appropriate PyTorch
 #### Calibration
 
 ```bash
-cp config/lerobot/follower_arm.json ~/.cache/huggingface/lerobot/calibration/robots/so101_follower/follower_arm.json
-cp config/lerobot/leader_arm.json ~/.cache/huggingface/lerobot/calibration/teleoperators/so101_leader/leader_arm.json
+cp config/lerobots/nominal/follower_arm.json ~/.cache/huggingface/lerobot/calibration/robots/so101_follower/follower_arm.json
+cp config/lerobots/nominal/leader_arm.json ~/.cache/huggingface/lerobot/calibration/teleoperators/so101_leader/leader_arm.json
 ```
 
 #### Teleoperate

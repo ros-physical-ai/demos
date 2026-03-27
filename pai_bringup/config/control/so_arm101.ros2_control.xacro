@@ -13,6 +13,7 @@
       prefix
       ros2_control_hardware_type
       usb_port:=''
+      joint_config_file:=''
       mujoco_model:=''
       sim_speed_factor:='1.0'
       camera_publish_rate:='10.0'

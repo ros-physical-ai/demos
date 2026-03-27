@@ -146,6 +146,12 @@ def launch_setup(context, *args, **kwargs):
 def generate_launch_description():
     declared_arguments = [
         DeclareLaunchArgument(
+            "robot_id",
+            default_value="nominal",
+            description="Robot identifier (e.g. arm-001). Reserved for future per-robot "
+            "URDF limit parameterization. Currently unused by Gazebo launch.",
+        ),
+        DeclareLaunchArgument(
             "controllers_file",
             default_value=PathJoinSubstitution(
                 [FindPackageShare("pai_bringup"), "config", "control", "ros2_controllers.yaml"]

@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
+import math
 import tempfile
 from pathlib import Path
 
@@ -21,16 +23,47 @@ import xacro
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, OpaqueFunction
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterFile
 from launch_ros.substitutions import FindPackageShare
 from nav2_common.launch import ReplaceString, RewrittenYaml
 
 
-def _generate_mjcf_at_launch(pkg_share):
+_ENCODER_RESOLUTION = 4096
+_DEFAULT_OFFSET = 2048
+_JOINT_NAMES = [
+    "shoulder_pan", "shoulder_lift", "elbow_flex",
+    "wrist_flex", "wrist_roll", "gripper",
+]
+
+
+def _load_calibration_limits(pkg_share, robot_id):
+    """Load calibration JSON and derive radian limits for each joint."""
+    cal_path = Path(pkg_share) / "config" / "lerobots" / robot_id / "follower_arm.json"
+    if not cal_path.exists():
+        return {}  # Fall back to xacro defaults
+    with open(cal_path) as f:
+        data = json.load(f)
+    # Normalize: strip _joint suffix if present
+    normalized = {}
+    for name, params in data.items():
+        bare = name.replace("_joint", "") if name.endswith("_joint") else name
+        normalized[bare] = params
+
+    limits = {}
+    for bare_name, params in normalized.items():
+        lo = (params["range_min"] - _DEFAULT_OFFSET) * 2.0 * math.pi / _ENCODER_RESOLUTION
+        hi = (params["range_max"] - _DEFAULT_OFFSET) * 2.0 * math.pi / _ENCODER_RESOLUTION
+        if lo > hi:
+            lo, hi = hi, lo
+        limits[bare_name] = (lo, hi)
+    return limits
+
+
+def _generate_mjcf_at_launch(pkg_share, joint_limits=None):
     """Run xacro on scene and so_arm101 xacros, write to temp dir. Poses from poses_args.xacro."""
     mjcf_dir = Path(pkg_share) / "mjcf"
     scene_xacro = mjcf_dir / "scene.xml.xacro"
@@ -46,7 +79,13 @@ def _generate_mjcf_at_launch(pkg_share):
     scene_out = out_dir / "scene.xml"
 
     meshdir = Path(get_package_share_directory("so_arm101_description")) / "meshes"
-    doc = xacro.process_file(str(so_arm101_xacro), mappings={"meshdir": str(meshdir)})
+    mappings = {"meshdir": str(meshdir)}
+    if joint_limits:
+        for bare_name, (lo, hi) in joint_limits.items():
+            ros_name = f"{bare_name}_joint"
+            mappings[f"{ros_name}_lower"] = f"{lo:.5f}"
+            mappings[f"{ros_name}_upper"] = f"{hi:.5f}"
+    doc = xacro.process_file(str(so_arm101_xacro), mappings=mappings)
     so_arm101_out.write_text(doc.toxml())
 
     doc = xacro.process_file(str(scene_xacro))
@@ -59,7 +98,9 @@ def launch_setup(context, *args, **kwargs):
     pkg_share = PathJoinSubstitution(
         [FindPackageShare("pai_bringup")]
     ).perform(context)
-    mujoco_model = _generate_mjcf_at_launch(pkg_share)
+    robot_id = LaunchConfiguration("robot_id").perform(context)
+    joint_limits = _load_calibration_limits(pkg_share, robot_id)
+    mujoco_model = _generate_mjcf_at_launch(pkg_share, joint_limits)
     description_xacro_args = f"mujoco_model:={mujoco_model}"
 
     ros2_controllers_file = PathJoinSubstitution(
@@ -111,4 +152,13 @@ def launch_setup(context, *args, **kwargs):
 
 
 def generate_launch_description():
-    return LaunchDescription([OpaqueFunction(function=launch_setup)])
+    declared_arguments = [
+        DeclareLaunchArgument(
+            "robot_id",
+            default_value="nominal",
+            description="Robot identifier (e.g. arm-001). Resolves per-robot calibration "
+            "from config/lerobots/<robot_id>/ for joint limits. "
+            "Use 'nominal' for default/CI limits.",
+        ),
+    ]
+    return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])

@@ -51,7 +51,58 @@ cd demos
 pixi run build
 ```
 
-### 3. Run Demo
+### 3. Per-Robot Calibration
+
+Each physical robot has its own calibration. Calibration files are stored under `pai_bringup/config/lerobots/<robot_id>/` with standardized filenames (`follower_arm.json`, `leader_arm.json`).
+
+| Robot ID | Description | Tracked in git? |
+|----------|-------------|-----------------|
+| `nominal` | Default/CI limits (no physical robot required) | Yes |
+| `arm-001`, `arm-002`, ... | Per-unit calibration from LeRobot | No (gitignored) |
+
+**First-time setup for a new robot:**
+
+```bash
+# 1. Run LeRobot calibration (writes to ~/.cache/huggingface/lerobot/calibration/)
+#    See docs/calibration_guide.md for details.
+
+# 2. Copy calibration JSON into the per-robot directory
+mkdir -p pai_bringup/config/lerobots/<robot_id>
+cp ~/.cache/huggingface/lerobot/calibration/robots/so101_follower/follower_arm.json \
+   pai_bringup/config/lerobots/<robot_id>/follower_arm.json
+cp ~/.cache/huggingface/lerobot/calibration/teleoperators/so101_leader/leader_arm.json \
+   pai_bringup/config/lerobots/<robot_id>/leader_arm.json
+
+# 3. Generate follower.yaml and leader.yaml for the feetech_ros2_driver
+pixi run python3 pai_bringup/scripts/generate_limits.py \
+    --robot-id <robot_id> --arm follower \
+    --generate-yaml pai_bringup/config/lerobots/<robot_id>/follower.yaml
+
+pixi run python3 pai_bringup/scripts/generate_limits.py \
+    --robot-id <robot_id> --arm leader \
+    --generate-yaml pai_bringup/config/lerobots/<robot_id>/leader.yaml
+
+# 4. Rebuild so the nominal config is installed
+pixi run build
+```
+
+**Launching with a specific robot:**
+
+```bash
+# Real hardware — auto-resolves follower.yaml from robot_id
+ros2 launch pai_bringup so_arm_real_bringup.launch.py robot_id:=arm-001
+
+# MuJoCo (uses robot's calibration-derived joint limits)
+ros2 launch pai_bringup so_arm_mujoco_bringup.launch.py robot_id:=arm-001
+
+# Override with a specific joint_config_file (bypasses robot_id resolution)
+ros2 launch pai_bringup so_arm_real_bringup.launch.py \
+    joint_config_file:=/absolute/path/to/follower.yaml
+```
+
+Omitting `robot_id` defaults to `nominal`. See [calibration_guide.md](./calibration_guide.md) for the full calibration procedure and `generate_limits.py` options.
+
+### 4. Run Demo
 
 The workspace is configured to use Zenoh middleware automatically.
 The `RMW_IMPLEMENTATION` environment variable is set to `rmw_zenoh_cpp` via the Pixi activation environment.
@@ -73,7 +124,7 @@ MuJoCo simulation (SO-ARM in MuJoCo):
 pixi run so-arm-mujoco
 ```
 
-### 4. Interactive Mode with Pixi Shell
+### 5. Interactive Mode with Pixi Shell
 
 For interactive development, you can use `pixi shell` to enter an interactive shell with the environment activated.
 

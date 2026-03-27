@@ -11,6 +11,7 @@ find_package(ament_cmake REQUIRED)
 install(
   DIRECTORY config launch mjcf scripts urdf
   DESTINATION share/${PROJECT_NAME}
+  PATTERN "arm-*" EXCLUDE
 )
 
 # Install Python scripts and wrappers

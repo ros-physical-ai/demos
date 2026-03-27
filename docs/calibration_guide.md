@@ -19,9 +19,7 @@ Calibration can live in EEPROM, LeRobot cache JSON, URDF/xacro, or an optional `
 
 Default workflow: complete Step 1 only. You do not need to keep repo copies of JSON or YAML up to date for ROS bringup (launch uses an empty `joint_config_file` unless you set it).
 
-The files under `pai_bringup/config/lerobot/*.json` and `pai_bringup/config/hardware/{follower,leader}.yaml` are examples or seeds (for instance copying JSON into LeRobot’s cache per other docs). They are not automatic runtime inputs for ROS unless you wire them yourself.
-
-Advanced use (LeRobot and ROS must stay aligned): pick one authoring source for shared motor fields (`homing_offset`, limits, PID, protection). After each recalibration, refresh the other artifacts from that source—for example copy from the new LeRobot cache JSON into your YAML before launching with `joint_config_file`, or recalibrate and update both files from the same calibration output. If JSON and YAML are both in play for the same arm, plan to update them together so they stay consistent with that source.
+Per-robot calibration JSON files live under `pai_bringup/config/lerobots/<robot_id>/` (e.g., `nominal/follower_arm.json` for the default). The generated `follower.yaml` for the driver is produced by `generate_limits.py`, which merges per-robot calibration with shared servo defaults from `config/servo_defaults/so_arm101.yaml`. See [config_design.md](./config_design.md) for the full design rationale.
 
 ## Prerequisites
 
@@ -69,12 +67,19 @@ LeRobot writes a JSON file per arm under:
 ~/.cache/huggingface/lerobot/calibration/teleoperators/so101_leader/leader_arm.json
 ```
 
-If you want to make those values explicit in this project, copy the relevant fields into a `joint_config_file`, for example:
+To make those values explicit in this project, copy the JSON into your robot's config directory and generate a `follower.yaml`:
 
-- [`../pai_bringup/config/hardware/follower.yaml`](../pai_bringup/config/hardware/follower.yaml)
-- [`../pai_bringup/config/hardware/leader.yaml`](../pai_bringup/config/hardware/leader.yaml)
+```bash
+mkdir -p pai_bringup/config/lerobots/<robot_id>
+cp ~/.cache/huggingface/lerobot/calibration/robots/so101_follower/follower_arm.json \
+   pai_bringup/config/lerobots/<robot_id>/follower_arm.json
 
-Use a `joint_config_file` only if you want to keep a versioned per-robot configuration in the repo, override existing motor settings, or set additional driver parameters.
+pixi run python3 pai_bringup/scripts/generate_limits.py \
+    --robot-id <robot_id> \
+    --generate-yaml pai_bringup/config/lerobots/<robot_id>/follower.yaml
+```
+
+The generated YAML merges per-robot calibration with shared servo defaults (`config/servo_defaults/so_arm101.yaml`). Use `robot_id` at launch to load it automatically.
 
 ### Parameter precedence
 
@@ -163,14 +168,28 @@ invert the raw value before converting: `raw_inverted = 4095 − raw`.
 A script is provided to automate this conversion:
 
 ```bash
-# Show calibration-derived limits compared to URDF vendor limits
-pixi run python3 pai_bringup/scripts/generate_limits.py \
-    pai_bringup/config/lerobot/follower_arm.json
+# Show calibration-derived limits compared to URDF vendor limits (by robot_id)
+pixi run python3 pai_bringup/scripts/generate_limits.py --robot-id arm-001
 
-# Generate a follower.yaml for the feetech_ros2_driver
-pixi run python3 pai_bringup/scripts/generate_limits.py \
-    pai_bringup/config/lerobot/follower_arm.json \
-    --generate-yaml pai_bringup/config/hardware/follower.yaml
+# Generate follower.yaml for the feetech_ros2_driver
+pixi run python3 pai_bringup/scripts/generate_limits.py --robot-id arm-001 \
+    --arm follower \
+    --generate-yaml pai_bringup/config/lerobots/arm-001/follower.yaml
+
+# Generate leader.yaml (for teleoperation via ROS)
+pixi run python3 pai_bringup/scripts/generate_limits.py --robot-id arm-001 \
+    --arm leader \
+    --generate-yaml pai_bringup/config/lerobots/arm-001/leader.yaml
+```
+
+Per-robot calibration files are stored under `config/lerobots/<robot_id>/` (`follower_arm.json`, `leader_arm.json`).
+The `nominal` robot_id contains default calibration for CI and developers without hardware.
+Launch files accept `robot_id:=arm-001` to load the correct calibration.
+To bypass `robot_id` resolution and pass a YAML directly:
+
+```bash
+ros2 launch pai_bringup so_arm_real_bringup.launch.py \
+    joint_config_file:=/absolute/path/to/follower.yaml
 ```
 
 The calibration-derived limits are typically wider than the URDF vendor limits

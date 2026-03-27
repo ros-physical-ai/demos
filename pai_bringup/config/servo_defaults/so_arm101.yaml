@@ -1,0 +1,45 @@
+# SO-ARM101 servo defaults — shared across all units of this arm model.
+#
+# These STS3215 servo parameters are merged into the generated follower.yaml
+# alongside per-robot calibration (homing_offset, range_min, range_max) from
+# config/lerobots/<robot_id>/follower_arm.json.
+#
+# To change gains or protection for ALL robots, edit this file.
+# To override for a specific robot, use the joint_config_file launch arg.
+#
+# Fields here are written to servo EEPROM by feetech_ros2_driver on init.
+# See docs/calibration_guide.md for field descriptions and precedence.
+
+# Defaults applied to every joint unless overridden per-joint below.
+all_joints:
+  i_coefficient: 0
+  d_coefficient: 32
+  return_delay_time: 0
+  acceleration: 254
+
+# Per-joint overrides (merged on top of all_joints).
+joints:
+  shoulder_pan:
+    # Lower P gain for the base joint — reduces oscillation under the
+    # higher inertia of the full arm above it.
+    p_coefficient: 8
+
+  shoulder_lift:
+    p_coefficient: 16
+
+  elbow_flex:
+    p_coefficient: 16
+
+  wrist_flex:
+    p_coefficient: 16
+
+  wrist_roll:
+    p_coefficient: 16
+
+  gripper:
+    p_coefficient: 16
+    # Protection values to reduce risk of overloading the gripper motor.
+    # These match the defaults in so_arm101.ros2_control.xacro.
+    max_torque_limit: 500
+    protection_current: 250
+    overload_torque: 25

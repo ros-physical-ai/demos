@@ -4,6 +4,20 @@
   <xacro:declare_poses_args/>
   <xacro:arg name="meshdir" default=""/>
 
+  <!-- Per-robot joint limits (radians). Defaults match URDF vendor limits. -->
+  <xacro:arg name="shoulder_pan_joint_lower" default="-1.91986"/>
+  <xacro:arg name="shoulder_pan_joint_upper" default="1.91986"/>
+  <xacro:arg name="shoulder_lift_joint_lower" default="-1.74533"/>
+  <xacro:arg name="shoulder_lift_joint_upper" default="1.74533"/>
+  <xacro:arg name="elbow_flex_joint_lower" default="-1.69"/>
+  <xacro:arg name="elbow_flex_joint_upper" default="1.54"/>
+  <xacro:arg name="wrist_flex_joint_lower" default="-1.6"/>
+  <xacro:arg name="wrist_flex_joint_upper" default="1.6"/>
+  <xacro:arg name="wrist_roll_joint_lower" default="-2.3"/>
+  <xacro:arg name="wrist_roll_joint_upper" default="2.3"/>
+  <xacro:arg name="gripper_joint_lower" default="0.0"/>
+  <xacro:arg name="gripper_joint_upper" default="1.0"/>
+
   <!-- MuJoCo cannot use ROS paths; meshdir is absolute path from launch -->
   <compiler angle="radian" meshdir="$(arg meshdir)" />
 
@@ -117,7 +131,7 @@
           axis="0 0 1"
           name="shoulder_pan_joint"
           type="hinge"
-          range="-1.91986 1.91986"
+          range="$(arg shoulder_pan_joint_lower) $(arg shoulder_pan_joint_upper)"
           class="sts3215"
         />
         <inertial
@@ -177,7 +191,7 @@
             axis="0 0 1"
             name="shoulder_lift_joint"
             type="hinge"
-            range="-1.74533 1.74533"
+            range="$(arg shoulder_lift_joint_lower) $(arg shoulder_lift_joint_upper)"
             class="sts3215"
           />
           <inertial
@@ -223,7 +237,7 @@
               axis="0 0 1"
               name="elbow_flex_joint"
               type="hinge"
-              range="-1.69 1.54"
+              range="$(arg elbow_flex_joint_lower) $(arg elbow_flex_joint_upper)"
               class="sts3215"
             />
             <inertial
@@ -283,7 +297,7 @@
                 axis="0 0 1"
                 name="wrist_flex_joint"
                 type="hinge"
-                range="-1.6 1.6"
+                range="$(arg wrist_flex_joint_lower) $(arg wrist_flex_joint_upper)"
                 class="sts3215"
               />
               <inertial
@@ -329,7 +343,7 @@
                   axis="0 0 1"
                   name="wrist_roll_joint"
                   type="hinge"
-                  range="-2.3 2.3"
+                  range="$(arg wrist_roll_joint_lower) $(arg wrist_roll_joint_upper)"
                   class="sts3215"
                 />
                 <inertial
@@ -381,7 +395,7 @@
                     axis="0 0 1"
                     name="gripper_joint"
                     type="hinge"
-                    range="0.0 1.0"
+                    range="$(arg gripper_joint_lower) $(arg gripper_joint_upper)"
                     class="sts3215"
                   />
                   <inertial
@@ -421,42 +435,42 @@
       name="shoulder_pan_joint"
       joint="shoulder_pan_joint"
       forcerange="-3.35 3.35"
-      ctrlrange="-1.91986 1.91986"
+      ctrlrange="$(arg shoulder_pan_joint_lower) $(arg shoulder_pan_joint_upper)"
     />
     <position
       class="sts3215"
       name="shoulder_lift_joint"
       joint="shoulder_lift_joint"
       forcerange="-3.35 3.35"
-      ctrlrange="-1.74533 1.74533"
+      ctrlrange="$(arg shoulder_lift_joint_lower) $(arg shoulder_lift_joint_upper)"
     />
     <position
       class="sts3215"
       name="elbow_flex_joint"
       joint="elbow_flex_joint"
       forcerange="-3.35 3.35"
-      ctrlrange="-1.69 1.54"
+      ctrlrange="$(arg elbow_flex_joint_lower) $(arg elbow_flex_joint_upper)"
     />
     <position
       class="sts3215"
       name="wrist_flex_joint"
       joint="wrist_flex_joint"
       forcerange="-3.35 3.35"
-      ctrlrange="-1.6 1.6"
+      ctrlrange="$(arg wrist_flex_joint_lower) $(arg wrist_flex_joint_upper)"
     />
     <position
       class="sts3215"
       name="wrist_roll_joint"
       joint="wrist_roll_joint"
       forcerange="-3.35 3.35"
-      ctrlrange="-2.3 2.3"
+      ctrlrange="$(arg wrist_roll_joint_lower) $(arg wrist_roll_joint_upper)"
     />
     <position
       class="sts3215"
       name="gripper_joint"
       joint="gripper_joint"
       forcerange="-3.35 3.35"
-      ctrlrange="0.0 1.0"
+      ctrlrange="$(arg gripper_joint_lower) $(arg gripper_joint_upper)"
     />
   </actuator>
 
