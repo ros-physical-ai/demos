@@ -7,11 +7,10 @@ feetech_ros2_driver.  The output can be used to patch URDF and MJCF files
 so that all representations agree on the hardware's actual range of motion.
 
 Encoder-to-radian formula (from feetech_ros2_driver/common.hpp):
-    joint_rad = (raw_encoder - offset) * 2π / 4096
+    joint_rad = (raw_encoder - midpoint) * 2π / 4096
 
-where *offset* is the ros2_control ``<param name="offset">`` value
-(defaults to 2048 — the STS3215 servo centre).  The driver subtracts the
-offset from the raw reading before converting.
+where *midpoint* is the STS3215 servo centre tick (2048).  The driver
+subtracts this midpoint from the raw reading before converting to radians.
 
 range_min / range_max in the calibration JSON are raw servo register limits.
 """
@@ -26,7 +25,7 @@ import yaml
 
 
 ENCODER_RESOLUTION = 4096
-DEFAULT_OFFSET = 2048  # STS3215 centre position
+STS_MIDPOINT = 2048  # STS3215 centre position
 
 # Ordered list of bare joint names (LeRobot native format).
 JOINT_NAMES = [
@@ -66,9 +65,9 @@ def load_servo_defaults(path: Path = DEFAULT_SERVO_DEFAULTS_PATH) -> dict:
     return defaults
 
 
-def encoder_to_rad(raw: int, offset: int = DEFAULT_OFFSET) -> float:
+def encoder_to_rad(raw: int, midpoint: int = STS_MIDPOINT) -> float:
     """Convert a raw encoder value to radians."""
-    return (raw - offset) * 2.0 * math.pi / ENCODER_RESOLUTION
+    return (raw - midpoint) * 2.0 * math.pi / ENCODER_RESOLUTION
 
 
 def normalize_calibration(data: dict) -> dict:
@@ -112,12 +111,12 @@ URDF_LIMITS = {
 }
 
 
-def derive_limits(calibration: dict, offset: int = DEFAULT_OFFSET) -> dict:
+def derive_limits(calibration: dict, midpoint: int = STS_MIDPOINT) -> dict:
     """Return {bare_name: (lower_rad, upper_rad)} from calibration data."""
     limits = {}
     for name, params in calibration.items():
-        lower = encoder_to_rad(params["range_min"], offset)
-        upper = encoder_to_rad(params["range_max"], offset)
+        lower = encoder_to_rad(params["range_min"], midpoint)
+        upper = encoder_to_rad(params["range_max"], midpoint)
         if lower > upper:
             lower, upper = upper, lower
         limits[name] = (lower, upper)
@@ -199,8 +198,8 @@ def main():
                              "config/lerobots/<robot_id>/<arm>_arm.json")
     parser.add_argument("--arm", default="follower", choices=["follower", "leader"],
                         help="Which arm to process (default: follower)")
-    parser.add_argument("--offset", type=int, default=DEFAULT_OFFSET,
-                        help=f"Encoder offset (default: {DEFAULT_OFFSET})")
+    parser.add_argument("--midpoint", type=int, default=STS_MIDPOINT,
+                        help=f"STS3215 encoder midpoint tick (default: {STS_MIDPOINT})")
     parser.add_argument("--use-urdf", action="store_true",
                         help="Use URDF vendor limits instead of deriving from calibration "
                              "(for initial alignment when the formula is unverified)")
@@ -229,7 +228,7 @@ def main():
         return 1  # unreachable
 
     calibration = load_calibration(cal_path)
-    derived = derive_limits(calibration, offset=args.offset)
+    derived = derive_limits(calibration, midpoint=args.midpoint)
 
     print("=== Calibration-derived joint limits (radians) ===\n")
     print_comparison(derived)

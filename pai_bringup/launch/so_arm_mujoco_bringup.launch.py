@@ -33,7 +33,7 @@ from nav2_common.launch import ReplaceString, RewrittenYaml
 
 
 _ENCODER_RESOLUTION = 4096
-_DEFAULT_OFFSET = 2048
+_STS_MIDPOINT = 2048
 _JOINT_NAMES = [
     "shoulder_pan", "shoulder_lift", "elbow_flex",
     "wrist_flex", "wrist_roll", "gripper",
@@ -55,8 +55,8 @@ def _load_calibration_limits(pkg_share, robot_id):
 
     limits = {}
     for bare_name, params in normalized.items():
-        lo = (params["range_min"] - _DEFAULT_OFFSET) * 2.0 * math.pi / _ENCODER_RESOLUTION
-        hi = (params["range_max"] - _DEFAULT_OFFSET) * 2.0 * math.pi / _ENCODER_RESOLUTION
+        lo = (params["range_min"] - _STS_MIDPOINT) * 2.0 * math.pi / _ENCODER_RESOLUTION
+        hi = (params["range_max"] - _STS_MIDPOINT) * 2.0 * math.pi / _ENCODER_RESOLUTION
         if lo > hi:
             lo, hi = hi, lo
         limits[bare_name] = (lo, hi)
