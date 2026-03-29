@@ -34,14 +34,11 @@ jobs:
           pip install vcstool
           vcs import external < pai.repos --recursive
 
-      - name: Install Pixi
-        run: curl -fsSL https://pixi.sh/install.sh | PIXI_VERSION=v0.63.2 bash
-
-      - name: Add Pixi to PATH
-        run: echo "$HOME/.pixi/bin" >> $GITHUB_PATH
-
-      - name: Install Pixi environment
-        run: pixi install
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+          frozen: true
 
       - name: Build
-        run: pixi run build
+        run: pixi run -e ci build

@@ -7,9 +7,13 @@ version = "0.1.0"
 
 [environments]
 dev = ["dev"]
+ci = ["ci"]
 
 [feature.dev.tasks]
 build = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
+
+[feature.ci.activation.env]
+CMAKE_INSTALL_MODE = "COPY"
 
 [tasks]
 
