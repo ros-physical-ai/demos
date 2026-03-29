@@ -82,16 +82,11 @@ source ~/ws_pai/install/setup.bash
 | [feetech_ros2_driver](https://github.com/legalaspro/feetech_ros2_driver)                                          | ros2_control hardware interface for Feetech servo motors                              |
 | [mujoco_ros2_control](https://github.com/ros-controls/mujoco_ros2_control)                                        | ros2_control integration with the MuJoCo physics simulator                            |
 | [rosetta](https://github.com/iblnkn/rosetta) / [rosetta_interfaces](https://github.com/iblnkn/rosetta_interfaces) | ROS 2–LeRobot bridge for recording demonstration datasets                             |
+| [lerobot-robot-rosetta](https://github.com/iblnkn/lerobot-robot-rosetta)                                          | LeRobot Robot plugin for Rosetta — bridges ROS 2 topics to LeRobot's Robot interface  |
 
-## Demos
+## Launching the SO-ARM101
 
-### Demo 1: Pick and Place with SO-ARM
-
-A simple demonstration of training and running a policy with an SO-ARM in sim and real.
-
-For instructions on training a policy and running inference see [this guide](./docs/so_arm_demo.md).
-
-#### Launch the Gazebo world
+### Gazebo
 
 ![](./docs/media/so_arm_gz.png)
 
@@ -101,7 +96,7 @@ ros2 launch pai_bringup so_arm_gz_bringup.launch.py
 
 With Pixi: `pixi run so-arm-gz`
 
-#### Launch the MuJoCo world
+### MuJoCo
 
 ![](./docs/media/so_arm_mujoco.png)
 
@@ -111,7 +106,7 @@ ros2 launch pai_bringup so_arm_mujoco_bringup.launch.py
 
 With Pixi: `pixi run so-arm-mujoco`
 
-#### Launch with real hardware
+### Real hardware
 
 ```bash
 ros2 launch pai_bringup so_arm_real_bringup.launch.py
@@ -119,7 +114,7 @@ ros2 launch pai_bringup so_arm_real_bringup.launch.py
 
 With Pixi: `pixi run so-arm-real`
 
-#### Leader arm teleoperation
+### Leader arm teleoperation
 
 You can use a leader SO-ARM101 to teleoperate the follower arm (sim or real):
 
@@ -128,6 +123,14 @@ ros2 launch pai_leader_teleop leader_bringup.launch.py
 ```
 
 With Pixi: `pixi run so-arm-leader`
+
+## Demos
+
+### Pick and Place with SO-ARM
+
+A simple demonstration of training and running a policy with an SO-ARM in sim and real.
+
+For instructions on training a policy and running inference see [this guide](./demos/so_arm_101/rosetta_end_to_end_demo.md).
 
 ## Linting & Pre-commit
 
