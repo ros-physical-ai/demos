@@ -38,13 +38,14 @@ pixi run build
 
 The SO-ARM101 contract is defined at `pai_data_collection/config/rosetta/so_arm101.yaml` and maps the robot's ROS 2 topics to LeRobot features:
 
-| ROS 2 Side | | LeRobot Side |
-|------------|---|-------------|
-| `/camera` (`sensor_msgs/Image`) | → | `observation.images.wrist` |
-| `/joint_states` (`sensor_msgs/JointState`) | → | `observation.state` |
-| `/forward_position_controller/commands` (`Float64MultiArray`) | ← | `action` |
+| ROS 2 Side                                                    |     | LeRobot Side               |
+| ------------------------------------------------------------- | --- | -------------------------- |
+| `/camera` (`sensor_msgs/Image`)                               | →   | `observation.images.wrist` |
+| `/joint_states` (`sensor_msgs/JointState`)                    | →   | `observation.state`        |
+| `/forward_position_controller/commands` (`Float64MultiArray`) | ←   | `action`                   |
 
 Key contract features:
+
 - **FPS**: 50 Hz (matches controller update rate)
 - **Image resize**: 480×480 for neural network input
 - **Unit conversion**: `rad2deg` — automatically converts ROS 2 radians to LeRobot degrees
@@ -153,14 +154,14 @@ python -m rosetta.port_bags \
 
 ### port_bags Arguments
 
-| Argument | Required | Description |
-|----------|----------|-------------|
-| `--raw-dir` | Yes | Directory containing bag subdirectories (each with `metadata.yaml`) |
-| `--contract` | Yes | Path to rosetta contract YAML |
-| `--repo-id` | No | Dataset name. Defaults to `--raw-dir` directory name |
-| `--root` | No | Parent directory for datasets. Dataset saved to `root/repo-id` |
-| `--push-to-hub` | No | Upload to HuggingFace Hub after conversion |
-| `--vcodec` | No | Video codec (default: `libsvtav1`). Use `libx264` for faster encoding |
+| Argument        | Required | Description                                                           |
+| --------------- | -------- | --------------------------------------------------------------------- |
+| `--raw-dir`     | Yes      | Directory containing bag subdirectories (each with `metadata.yaml`)   |
+| `--contract`    | Yes      | Path to rosetta contract YAML                                         |
+| `--repo-id`     | No       | Dataset name. Defaults to `--raw-dir` directory name                  |
+| `--root`        | No       | Parent directory for datasets. Dataset saved to `root/repo-id`        |
+| `--push-to-hub` | No       | Upload to HuggingFace Hub after conversion                            |
+| `--vcodec`      | No       | Video codec (default: `libsvtav1`). Use `libx264` for faster encoding |
 
 ---
 
@@ -183,6 +184,7 @@ lerobot-replay \
 ```
 
 **Important flags:**
+
 - `--robot.use_degrees=true` — required because the dataset contains degree values (from `unit_conversion: rad2deg` in the contract)
 - `--play_sounds=false` — disables audio feedback (avoids `spd-say` errors)
 
@@ -223,7 +225,6 @@ lerobot-train \
     --log_freq=500
 ```
 
-
 ### Resume Training
 
 ```bash
@@ -234,12 +235,12 @@ lerobot-train \
 
 ### Supported Policies
 
-| Policy | Type | Best For |
-|--------|------|----------|
-| **ACT** | Behavior Cloning | General manipulation, fast training (recommended for beginners) |
-| **SmolVLA** | VLA | Efficient VLA, good for resource-constrained setups |
-| **Pi0** / **Pi0Fast** | VLA | Physical Intelligence foundation models |
-| **Diffusion** | Diffusion Policy | Tasks requiring multimodal action distributions |
+| Policy                | Type             | Best For                                                        |
+| --------------------- | ---------------- | --------------------------------------------------------------- |
+| **ACT**               | Behavior Cloning | General manipulation, fast training (recommended for beginners) |
+| **SmolVLA**           | VLA              | Efficient VLA, good for resource-constrained setups             |
+| **Pi0** / **Pi0Fast** | VLA              | Physical Intelligence foundation models                         |
+| **Diffusion**         | Diffusion Policy | Tasks requiring multimodal action distributions                 |
 
 ---
 
@@ -250,16 +251,19 @@ lerobot-train \
 The `rosetta_client_node` wraps LeRobot's inference pipeline in ROS 2 actions and handles unit conversion via the contract automatically.
 
 **Terminal 1** — Start Zenoh:
+
 ```bash
 pixi run start_zenoh
 ```
 
 **Terminal 2** — Start simulation (or real robot):
+
 ```bash
 pixi run so-arm-gz
 ```
 
 **Terminal 3** — Launch the Rosetta client:
+
 ```bash
 ros2 launch rosetta rosetta_client_launch.py \
     contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
@@ -269,6 +273,7 @@ ros2 launch rosetta rosetta_client_launch.py \
 ```
 
 **Terminal 4** — Run the policy:
+
 ```bash
 ros2 action send_goal /run_policy \
     rosetta_interfaces/action/RunPolicy "{prompt: 'move arm'}"
@@ -276,12 +281,12 @@ ros2 action send_goal /run_policy \
 
 #### Rosetta Client Parameters
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `contract_path` | — | Path to contract YAML |
-| `pretrained_name_or_path` | — | HuggingFace model ID or local path |
-| `policy_type` | `act` | Policy type: `act`, `smolvla`, `diffusion`, `pi0`, etc. |
-| `policy_device` | `cuda` | Inference device: `cuda`, `cpu` |
-| `server_address` | `127.0.0.1:8080` | Policy server address (for remote inference) |
-| `actions_per_chunk` | `30` | Actions per inference chunk |
-| `launch_local_server` | `true` | Launch local gRPC policy server or connect to remote |
+| Parameter                 | Default          | Description                                             |
+| ------------------------- | ---------------- | ------------------------------------------------------- |
+| `contract_path`           | —                | Path to contract YAML                                   |
+| `pretrained_name_or_path` | —                | HuggingFace model ID or local path                      |
+| `policy_type`             | `act`            | Policy type: `act`, `smolvla`, `diffusion`, `pi0`, etc. |
+| `policy_device`           | `cuda`           | Inference device: `cuda`, `cpu`                         |
+| `server_address`          | `127.0.0.1:8080` | Policy server address (for remote inference)            |
+| `actions_per_chunk`       | `30`             | Actions per inference chunk                             |
+| `launch_local_server`     | `true`           | Launch local gRPC policy server or connect to remote    |
