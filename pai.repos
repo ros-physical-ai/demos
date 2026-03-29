@@ -14,8 +14,12 @@ repositories:
   rosetta:
     type: git
     url: https://github.com/iblnkn/rosetta.git
-    version: a52589b957f318c3577d7b663db4d8f192435b84
+    version: 8d251c57b3b0a4cb6b40d64a9f07b567f9eaf623
   rosetta_interfaces:
     type: git
     url: https://github.com/iblnkn/rosetta_interfaces.git
-    version: 3bdfa6316c31bcaedc52b57c77258c090bf33463
+    version: 90e979108b9b8cdbe791697ee9a338192e16e9fc
+  lerobot-robot-rosetta:
+    type: git
+    url: https://github.com/iblnkn/lerobot-robot-rosetta.git
+    version: e4ed91ee5cd58c0163dabf0af699d3e3c1f193dc

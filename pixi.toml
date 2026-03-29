@@ -5,6 +5,12 @@ name = "demos"
 platforms = ["linux-64", "linux-aarch64"]
 version = "0.1.0"
 
+[environments]
+dev = ["dev"]
+
+[feature.dev.tasks]
+build = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
+
 [tasks]
 
 # Lint
@@ -103,8 +109,9 @@ ros-kilted-robot-state-publisher = "*"
 ros-kilted-ros-gz-bridge = "*"
 ros-kilted-ros-gz-sim = "*"
 # From pai_data_collection
+ros-kilted-rosbag2 = ">=0.32.0,<0.33"
 ros-kilted-rosbag2-py = "*"
-ros-kilted-rosbag2-storage-mcap = "*"
+ros-kilted-rosbag2-storage-mcap = ">=0.32.0,<0.33"
 # Gazebo Sim (provides gz CLI and simulation engine)
 # Using version 9 to match ROS Kilted compatibility
 gz-sim9 = "*"
@@ -150,7 +157,7 @@ ros-kilted-rmw-zenoh-cpp = "*"
 huggingface-hub = "*"
 # LeRobot 0.4.x imports scipy.fftpack.idct; SciPy 2.0 removed fftpack re-exports.
 scipy = ">=1.11.0,<2"
-lerobot = { version = "==0.4.4", extras = ["feetech"] }
+lerobot = { version = "==0.4.4", extras = ["feetech", "async"] }
 
 [activation]
 scripts = ["scripts/activate.sh"]
