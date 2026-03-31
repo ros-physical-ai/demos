@@ -38,11 +38,12 @@ pixi run build
 
 The SO-ARM101 contract is defined at `pai_data_collection/config/rosetta/so_arm101.yaml` and maps the robot's ROS 2 topics to LeRobot features:
 
-| ROS 2 Side                                                    |     | LeRobot Side               |
-| ------------------------------------------------------------- | --- | -------------------------- |
-| `/camera` (`sensor_msgs/Image`)                               | →   | `observation.images.wrist` |
-| `/joint_states` (`sensor_msgs/JointState`)                    | →   | `observation.state`        |
-| `/forward_position_controller/commands` (`Float64MultiArray`) | ←   | `action`                   |
+| ROS 2 Side                                                    |     | LeRobot Side                |
+| ------------------------------------------------------------- | --- | --------------------------- |
+| `/wrist_camera/image_raw` (`sensor_msgs/Image`)               | →   | `observation.images.wrist`  |
+| `/static_camera/image_raw` (`sensor_msgs/Image`)              | →   | `observation.images.static` |
+| `/joint_states` (`sensor_msgs/JointState`)                    | →   | `observation.state`         |
+| `/forward_position_controller/commands` (`Float64MultiArray`) | ←   | `action`                    |
 
 Key contract features:
 

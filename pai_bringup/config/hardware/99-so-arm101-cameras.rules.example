@@ -1,0 +1,56 @@
+# Udev rules example for PAI camera symlinks.
+#
+# Creates stable device names so camera config YAMLs always find the
+# right device regardless of USB enumeration order:
+#
+#   /dev/cam_wrist    → wrist camera (mounted on gripper)
+#   /dev/cam_static   → static camera (looking down)
+#
+# We match cameras by ID_PATH — the full hardware bus path that udev
+# assigns to each USB port (e.g. pci-0000:00:14.0-usb-0:1.3:1.0).
+# This is preferred over ID_SERIAL_SHORT because identical camera
+# models often share the same serial number (or expose none at all),
+# making serial-based matching unreliable when two of the same camera
+# are connected.  ID_PATH is always unique per physical USB port.
+#
+# Preconditions:
+#   - Each camera must stay plugged into the SAME physical USB port
+#     across reboots.  Moving a cable to a different port changes
+#     its ID_PATH and breaks the symlink.
+#   - USB hubs are fine — each downstream port gets its own path.
+#
+# ── Setup ──────────────────────────────────────────────────────────
+#
+# 1. Plug in each camera and find its ID_PATH:
+#
+#      udevadm info --name=/dev/video0 --query=all | egrep 'ID_MODEL=|ID_PATH='
+#
+#    Example output:
+#      E: ID_MODEL=USB2.0_CAM1
+#      E: ID_PATH=pci-0000:00:14.0-usb-0:9.4:1.0
+#
+# 2. Replace <WRIST_PATH> and <STATIC_PATH> below with the actual
+#    ID_PATH values from step 1.
+#
+# 3. Copy this file (without the .example suffix) to /etc/udev/rules.d/:
+#
+#      sudo cp 99-so-arm101-cameras.rules.example /etc/udev/rules.d/99-so-arm101-cameras.rules
+#
+#    Then edit the file in /etc/udev/rules.d/ with the real paths.
+#
+# 4. Reload udev rules:
+#
+#      sudo udevadm control --reload-rules && sudo udevadm trigger
+#
+# 5. Verify:
+#
+#      ls -la /dev/cam_wrist /dev/cam_static
+#
+# ── Notes ──────────────────────────────────────────────────────────
+#
+# - ATTR{index}=="0" selects the main video stream (not metadata).
+# - If your cameras have truly unique serial numbers you can match
+#   with ENV{ID_SERIAL_SHORT} instead of ENV{ID_PATH}.
+
+SUBSYSTEM=="video4linux", ATTR{index}=="0", ENV{ID_PATH}=="<WRIST_PATH>",  SYMLINK+="cam_wrist",  MODE="0660", GROUP="video"
+SUBSYSTEM=="video4linux", ATTR{index}=="0", ENV{ID_PATH}=="<STATIC_PATH>", SYMLINK+="cam_static", MODE="0660", GROUP="video"

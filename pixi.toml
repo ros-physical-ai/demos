@@ -156,6 +156,9 @@ ros-kilted-rclcpp = "*"
 ros-kilted-pluginlib = "*"
 # Zenoh middleware
 ros-kilted-rmw-zenoh-cpp = "*"
+# Camera driver
+ros-kilted-usb-cam = "*"
+ros-kilted-camera-calibration = ">=6.0.11,<7"
 
 [pypi-dependencies]
 huggingface-hub = "*"

@@ -17,15 +17,13 @@
     x="$(arg arm_base_x)" y="$(arg arm_base_y)" z="$(arg arm_base_z)"
     roll="$(arg arm_base_roll)" pitch="$(arg arm_base_pitch)" yaw="$(arg arm_base_yaw)" />
 
-  <!-- Overhead camera link -->
-  <link name="camera_color_mujoco_frame"/>
-  <joint name="camera_color_mujoco_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="camera_color_mujoco_frame"/>
-    <origin xyz="0.0 0.0 0.5" rpy="0 2.356 0.0"/>
-  </joint>
+  <!-- Camera frames (wrist + static).
+       Poses are hardcoded here (not launch-configurable) because the MJCF
+       camera poses use MuJoCo/OpenGL convention and must stay in sync. -->
+  <xacro:include filename="$(find pai_bringup)/urdf/cameras.xacro" />
+  <xacro:pai_cameras prefix="$(arg prefix)" />
 
-  <!-- ros2_control information including camera sensor -->
+  <!-- ros2_control information including camera sensors -->
   <ros2_control name="MujocoSystem" type="system">
     <hardware>
       <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
@@ -94,12 +92,20 @@
       <state_interface name="velocity" />
     </joint>
 
-    <!-- Camera informatiom -->
-    <sensor name="camera">
-      <param name="frame_name">camera_color_mujoco_frame</param>
-      <param name="info_topic">/camera/info</param>
-      <param name="image_topic">/camera</param>
-      <param name="depth_topic">/camera/depth</param>
+    <!-- Wrist camera (MuJoCo camera name must match sensor name) -->
+    <sensor name="wrist_camera">
+      <param name="frame_name">wrist_camera_link</param>
+      <param name="info_topic">/wrist_camera/camera_info</param>
+      <param name="image_topic">/wrist_camera/image_raw</param>
+      <param name="depth_topic">/wrist_camera/depth</param>
+    </sensor>
+
+    <!-- Static camera -->
+    <sensor name="static_camera">
+      <param name="frame_name">static_camera_link</param>
+      <param name="info_topic">/static_camera/camera_info</param>
+      <param name="image_topic">/static_camera/image_raw</param>
+      <param name="depth_topic">/static_camera/depth</param>
     </sensor>
   </ros2_control>
 

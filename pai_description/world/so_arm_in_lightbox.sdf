@@ -386,14 +386,14 @@
       <static>false</static>
     </include>
 
-    <include>
+    <!-- <include>
       <name>wrist_camera</name>
       <uri>
         https://fuel.gazebosim.org/1.0/RudisLaboratories/models/OakD-Lite
       </uri>
       <pose>0.09 -0.45 1.25 0 0.9 1.57</pose>
       <static>true</static>
-    </include>
+    </include> -->
 
   </world>
 </sdf>

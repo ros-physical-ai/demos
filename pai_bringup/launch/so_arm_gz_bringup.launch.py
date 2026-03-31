@@ -49,6 +49,8 @@ def launch_setup(context, *args, **kwargs):
     roll = LaunchConfiguration("roll").perform(context)
     pitch = LaunchConfiguration("pitch").perform(context)
     yaw = LaunchConfiguration("yaw").perform(context)
+    cam_static_xyz = LaunchConfiguration("cam_static_xyz").perform(context)
+    cam_static_rpy = LaunchConfiguration("cam_static_rpy").perform(context)
 
     # Process controllers file for xacro
     controllers_file_replaced = ReplaceString(
@@ -63,6 +65,8 @@ def launch_setup(context, *args, **kwargs):
         f" prefix:={prefix}"
         f" x:={x} y:={y} z:={z}"
         f" roll:={roll} pitch:={pitch} yaw:={yaw}"
+        f" cam_static_xyz:='{cam_static_xyz}'"
+        f" cam_static_rpy:='{cam_static_rpy}'"
     )
 
     # Build robot_description_content for gz_spawn_entity
@@ -127,7 +131,10 @@ def launch_setup(context, *args, **kwargs):
         executable="parameter_bridge",
         arguments=[
             "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
-            "/camera@sensor_msgs/msg/Image@gz.msgs.Image",
+            "/wrist_camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image",
+            "/wrist_camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
+            "/static_camera/image_raw@sensor_msgs/msg/Image[gz.msgs.Image",
+            "/static_camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
         ],
         output="screen",
     )
@@ -192,7 +199,7 @@ def generate_launch_description():
         DeclareLaunchArgument("launch_rviz", default_value="true", description="Launch RViz?"),
         DeclareLaunchArgument(
             "rviz_config_file",
-            default_value=PathJoinSubstitution([FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_gz.rviz"]),
+            default_value=PathJoinSubstitution([FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_101.rviz"]),
             description="Rviz config file (absolute path) to use when launching rviz.",
         ),
         DeclareLaunchArgument("gazebo_gui", default_value="true", description="Start gazebo with GUI?"),
@@ -221,6 +228,17 @@ def generate_launch_description():
             "yaw",
             default_value="1.5708",
             description="Robot spawn yaw orientation (radians)",
+        ),
+        DeclareLaunchArgument(
+            "cam_static_xyz",
+            default_value="0.0 0.0 0.50",
+            description="Position of the static (overhead) camera relative to the world frame as 'x y z' in metres.",
+        ),
+        DeclareLaunchArgument(
+            "cam_static_rpy",
+            default_value="3.6652 0.0 -1.5708",
+            description="Orientation of the static (overhead) camera relative to the world frame "
+            "as 'roll pitch yaw' in radians.",
         ),
     ]
 

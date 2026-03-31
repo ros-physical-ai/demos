@@ -6,7 +6,16 @@ max_duration_s: 120.0
 
 observations:
   - key: observation.images.wrist
-    topic: /camera
+    topic: /wrist_camera/image_raw
+    type: sensor_msgs/msg/Image
+    image:
+      # Resize for neural network input
+      resize: [480, 480]
+    align: { strategy: hold, stamp: header, tol_ms: 100 }
+    qos: { reliability: best_effort, history: keep_last, depth: 10 }
+
+  - key: observation.images.static
+    topic: /static_camera/image_raw
     type: sensor_msgs/msg/Image
     image:
       # Resize for neural network input

@@ -90,6 +90,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/dartsim-cpp-6.16.7-h4a00e65_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/dav1d-1.2.1-hd590300_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/dbus-1.16.2-h24cb091_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/deprecated-1.3.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/distlib-0.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/distro-1.9.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/docutils-0.22.4-pyhd8ed1ab_0.conda
@@ -337,6 +338,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-ng-15.2.0-hdf11a46_18.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libsystemd0-257.13-hd0affe5_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libtasn1-4.21.0-hb03c661_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/libtheora-1.1.1-h4ab18f5_1006.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libtiff-4.7.1-h9d88235_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libudev1-257.13-hd0affe5_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libunistring-0.9.10-h7f98852_0.tar.bz2
@@ -505,10 +507,15 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-angles-1.16.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-backward-ros-1.0.8-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-builtin-interfaces-2.3.0-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-camera-calibration-6.0.11-np2py312hedab9cf_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-camera-calibration-parsers-6.1.3-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-camera-info-manager-6.1.3-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-chomp-motion-planner-2.14.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-class-loader-2.8.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-common-interfaces-5.5.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-composition-interfaces-2.3.0-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-compressed-depth-image-transport-5.1.1-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-compressed-image-transport-5.1.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-console-bridge-vendor-1.8.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-control-msgs-6.7.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-control-toolbox-5.8.3-np2py312h2c89a96_15.conda
@@ -555,7 +562,9 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-iceoryx-binding-c-2.0.5-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-iceoryx-hoofs-2.0.5-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-iceoryx-posh-2.0.5-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-image-geometry-4.1.0-np2py312hedab9cf_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-image-transport-6.1.3-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-image-transport-plugins-5.1.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-interactive-markers-2.7.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-joint-limits-5.11.3-np2py312h2c89a96_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-joint-state-broadcaster-5.12.0-np2py312h2ed9cc7_15.conda
@@ -755,6 +764,7 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tf2-py-0.41.6-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tf2-ros-0.41.6-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tf2-ros-py-0.41.6-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-theora-image-transport-5.1.1-np2py312hedab9cf_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tinyxml2-vendor-0.10.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tl-expected-1.2.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tracetools-8.6.0-np2py312h2ed9cc7_15.conda
@@ -768,12 +778,14 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-urdfdom-4.0.1-py312h24bf083_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-urdfdom-headers-1.1.2-py312h24bf083_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-urdfdom-py-1.2.1-py312h24bf083_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-usb-cam-0.8.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-vision-msgs-4.2.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-visualization-msgs-5.5.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-warehouse-ros-2.0.5-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-xacro-2.1.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-yaml-cpp-vendor-9.1.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-zenoh-cpp-vendor-0.6.6-np2py312ha80d210_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-zstd-image-transport-5.1.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-zstd-vendor-0.32.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros2-distro-mutex-0.13.0-kilted_15.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/rosdep-0.26.0-pyhd8ed1ab_1.conda
@@ -821,6 +833,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/wayland-1.25.0-hd6090a7_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/wayland-protocols-1.47-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/wheel-0.46.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/wrapt-2.1.2-py312h4c3975b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/x264-1!164.3095-h166bdaf_2.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/x265-3.5-h924138e_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xcb-util-0.4.1-h4f16b4b_2.conda
@@ -1046,6 +1059,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/dartsim-cpp-6.16.7-h0486b68_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/dav1d-1.2.1-h31becfc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/dbus-1.16.2-h70963c4_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/deprecated-1.3.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/distlib-0.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/distro-1.9.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/docutils-0.22.4-pyhd8ed1ab_0.conda
@@ -1288,6 +1302,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libstdcxx-ng-15.2.0-hdbbeba8_18.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libsystemd0-257.13-hf9559e3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libtasn1-4.21.0-he30d5cf_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libtheora-1.1.1-h68df207_1006.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libtiff-4.7.1-hdb009f0_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libudev1-257.13-hf9559e3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libunistring-0.9.10-hf897c2e_0.tar.bz2
@@ -1452,10 +1467,15 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-angles-1.16.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-backward-ros-1.0.8-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-builtin-interfaces-2.3.0-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-camera-calibration-6.0.11-np2py312h6b1b059_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-camera-calibration-parsers-6.1.3-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-camera-info-manager-6.1.3-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-chomp-motion-planner-2.14.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-class-loader-2.8.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-common-interfaces-5.5.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-composition-interfaces-2.3.0-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-compressed-depth-image-transport-5.1.1-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-compressed-image-transport-5.1.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-console-bridge-vendor-1.8.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-control-msgs-6.7.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-control-toolbox-5.8.3-np2py312h8b5252a_15.conda
@@ -1502,7 +1522,9 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-iceoryx-binding-c-2.0.5-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-iceoryx-hoofs-2.0.5-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-iceoryx-posh-2.0.5-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-image-geometry-4.1.0-np2py312h6b1b059_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-image-transport-6.1.3-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-image-transport-plugins-5.1.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-interactive-markers-2.7.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-joint-limits-5.11.3-np2py312h8b5252a_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-joint-state-broadcaster-5.12.0-np2py312h61f2ce4_15.conda
@@ -1702,6 +1724,7 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tf2-py-0.41.6-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tf2-ros-0.41.6-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tf2-ros-py-0.41.6-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-theora-image-transport-5.1.1-np2py312h6b1b059_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tinyxml2-vendor-0.10.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tl-expected-1.2.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tracetools-8.6.0-np2py312h61f2ce4_15.conda
@@ -1715,12 +1738,14 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-urdfdom-4.0.1-py312h9804fc4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-urdfdom-headers-1.1.2-py312h9804fc4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-urdfdom-py-1.2.1-py312h9804fc4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-usb-cam-0.8.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-vision-msgs-4.2.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-visualization-msgs-5.5.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-warehouse-ros-2.0.5-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-xacro-2.1.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-yaml-cpp-vendor-9.1.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-zenoh-cpp-vendor-0.6.6-np2py312h1cd77a6_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-zstd-image-transport-5.1.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-zstd-vendor-0.32.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros2-distro-mutex-0.13.0-kilted_15.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/rosdep-0.26.0-pyhd8ed1ab_1.conda
@@ -1767,6 +1792,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/virtualenv-21.2.0-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/wayland-1.25.0-h4f8a99f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/wheel-0.46.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/wrapt-2.1.2-py312hcd1a082_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/x264-1!164.3095-h4e544f5_2.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/x265-3.5-hdd96247_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/xcb-util-0.4.1-hca56bd8_2.conda
@@ -1982,6 +2008,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/dartsim-cpp-6.16.7-h4a00e65_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/dav1d-1.2.1-hd590300_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/dbus-1.16.2-h24cb091_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/deprecated-1.3.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/distlib-0.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/distro-1.9.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/docutils-0.22.4-pyhd8ed1ab_0.conda
@@ -2229,6 +2256,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-ng-15.2.0-hdf11a46_18.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libsystemd0-257.13-hd0affe5_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libtasn1-4.21.0-hb03c661_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/libtheora-1.1.1-h4ab18f5_1006.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libtiff-4.7.1-h9d88235_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libudev1-257.13-hd0affe5_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libunistring-0.9.10-h7f98852_0.tar.bz2
@@ -2397,10 +2425,15 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-angles-1.16.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-backward-ros-1.0.8-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-builtin-interfaces-2.3.0-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-camera-calibration-6.0.11-np2py312hedab9cf_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-camera-calibration-parsers-6.1.3-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-camera-info-manager-6.1.3-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-chomp-motion-planner-2.14.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-class-loader-2.8.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-common-interfaces-5.5.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-composition-interfaces-2.3.0-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-compressed-depth-image-transport-5.1.1-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-compressed-image-transport-5.1.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-console-bridge-vendor-1.8.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-control-msgs-6.7.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-control-toolbox-5.8.3-np2py312h2c89a96_15.conda
@@ -2447,7 +2480,9 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-iceoryx-binding-c-2.0.5-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-iceoryx-hoofs-2.0.5-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-iceoryx-posh-2.0.5-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-image-geometry-4.1.0-np2py312hedab9cf_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-image-transport-6.1.3-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-image-transport-plugins-5.1.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-interactive-markers-2.7.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-joint-limits-5.11.3-np2py312h2c89a96_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-joint-state-broadcaster-5.12.0-np2py312h2ed9cc7_15.conda
@@ -2647,6 +2682,7 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tf2-py-0.41.6-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tf2-ros-0.41.6-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tf2-ros-py-0.41.6-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-theora-image-transport-5.1.1-np2py312hedab9cf_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tinyxml2-vendor-0.10.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tl-expected-1.2.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tracetools-8.6.0-np2py312h2ed9cc7_15.conda
@@ -2660,12 +2696,14 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-urdfdom-4.0.1-py312h24bf083_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-urdfdom-headers-1.1.2-py312h24bf083_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-urdfdom-py-1.2.1-py312h24bf083_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-usb-cam-0.8.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-vision-msgs-4.2.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-visualization-msgs-5.5.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-warehouse-ros-2.0.5-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-xacro-2.1.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-yaml-cpp-vendor-9.1.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-zenoh-cpp-vendor-0.6.6-np2py312ha80d210_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-zstd-image-transport-5.1.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-zstd-vendor-0.32.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros2-distro-mutex-0.13.0-kilted_15.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/rosdep-0.26.0-pyhd8ed1ab_1.conda
@@ -2712,6 +2750,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/wayland-1.25.0-hd6090a7_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/wayland-protocols-1.47-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/wheel-0.46.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/wrapt-2.1.2-py312h4c3975b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/x264-1!164.3095-h166bdaf_2.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/x265-3.5-h924138e_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xcb-util-0.4.1-h4f16b4b_2.conda
@@ -2937,6 +2976,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/dartsim-cpp-6.16.7-h0486b68_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/dav1d-1.2.1-h31becfc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/dbus-1.16.2-h70963c4_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/deprecated-1.3.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/distlib-0.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/distro-1.9.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/docutils-0.22.4-pyhd8ed1ab_0.conda
@@ -3179,6 +3219,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libstdcxx-ng-15.2.0-hdbbeba8_18.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libsystemd0-257.13-hf9559e3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libtasn1-4.21.0-he30d5cf_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libtheora-1.1.1-h68df207_1006.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libtiff-4.7.1-hdb009f0_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libudev1-257.13-hf9559e3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libunistring-0.9.10-hf897c2e_0.tar.bz2
@@ -3343,10 +3384,15 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-angles-1.16.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-backward-ros-1.0.8-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-builtin-interfaces-2.3.0-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-camera-calibration-6.0.11-np2py312h6b1b059_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-camera-calibration-parsers-6.1.3-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-camera-info-manager-6.1.3-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-chomp-motion-planner-2.14.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-class-loader-2.8.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-common-interfaces-5.5.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-composition-interfaces-2.3.0-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-compressed-depth-image-transport-5.1.1-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-compressed-image-transport-5.1.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-console-bridge-vendor-1.8.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-control-msgs-6.7.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-control-toolbox-5.8.3-np2py312h8b5252a_15.conda
@@ -3393,7 +3439,9 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-iceoryx-binding-c-2.0.5-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-iceoryx-hoofs-2.0.5-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-iceoryx-posh-2.0.5-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-image-geometry-4.1.0-np2py312h6b1b059_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-image-transport-6.1.3-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-image-transport-plugins-5.1.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-interactive-markers-2.7.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-joint-limits-5.11.3-np2py312h8b5252a_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-joint-state-broadcaster-5.12.0-np2py312h61f2ce4_15.conda
@@ -3593,6 +3641,7 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tf2-py-0.41.6-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tf2-ros-0.41.6-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tf2-ros-py-0.41.6-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-theora-image-transport-5.1.1-np2py312h6b1b059_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tinyxml2-vendor-0.10.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tl-expected-1.2.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tracetools-8.6.0-np2py312h61f2ce4_15.conda
@@ -3606,12 +3655,14 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-urdfdom-4.0.1-py312h9804fc4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-urdfdom-headers-1.1.2-py312h9804fc4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-urdfdom-py-1.2.1-py312h9804fc4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-usb-cam-0.8.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-vision-msgs-4.2.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-visualization-msgs-5.5.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-warehouse-ros-2.0.5-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-xacro-2.1.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-yaml-cpp-vendor-9.1.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-zenoh-cpp-vendor-0.6.6-np2py312h1cd77a6_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-zstd-image-transport-5.1.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-zstd-vendor-0.32.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros2-distro-mutex-0.13.0-kilted_15.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/rosdep-0.26.0-pyhd8ed1ab_1.conda
@@ -3657,6 +3708,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/virtualenv-21.2.0-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/wayland-1.25.0-h4f8a99f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/wheel-0.46.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/wrapt-2.1.2-py312hcd1a082_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/x264-1!164.3095-h4e544f5_2.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/x265-3.5-hdd96247_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/xcb-util-0.4.1-hca56bd8_2.conda
@@ -3872,6 +3924,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/dartsim-cpp-6.16.7-h4a00e65_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/dav1d-1.2.1-hd590300_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/dbus-1.16.2-h24cb091_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/deprecated-1.3.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/distlib-0.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/distro-1.9.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/docutils-0.22.4-pyhd8ed1ab_0.conda
@@ -4119,6 +4172,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-ng-15.2.0-hdf11a46_18.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libsystemd0-257.13-hd0affe5_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libtasn1-4.21.0-hb03c661_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/libtheora-1.1.1-h4ab18f5_1006.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libtiff-4.7.1-h9d88235_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libudev1-257.13-hd0affe5_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libunistring-0.9.10-h7f98852_0.tar.bz2
@@ -4287,10 +4341,15 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-angles-1.16.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-backward-ros-1.0.8-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-builtin-interfaces-2.3.0-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-camera-calibration-6.0.11-np2py312hedab9cf_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-camera-calibration-parsers-6.1.3-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-camera-info-manager-6.1.3-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-chomp-motion-planner-2.14.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-class-loader-2.8.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-common-interfaces-5.5.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-composition-interfaces-2.3.0-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-compressed-depth-image-transport-5.1.1-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-compressed-image-transport-5.1.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-console-bridge-vendor-1.8.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-control-msgs-6.7.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-control-toolbox-5.8.3-np2py312h2c89a96_15.conda
@@ -4337,7 +4396,9 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-iceoryx-binding-c-2.0.5-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-iceoryx-hoofs-2.0.5-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-iceoryx-posh-2.0.5-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-image-geometry-4.1.0-np2py312hedab9cf_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-image-transport-6.1.3-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-image-transport-plugins-5.1.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-interactive-markers-2.7.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-joint-limits-5.11.3-np2py312h2c89a96_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-joint-state-broadcaster-5.12.0-np2py312h2ed9cc7_15.conda
@@ -4537,6 +4598,7 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tf2-py-0.41.6-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tf2-ros-0.41.6-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tf2-ros-py-0.41.6-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-theora-image-transport-5.1.1-np2py312hedab9cf_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tinyxml2-vendor-0.10.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tl-expected-1.2.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tracetools-8.6.0-np2py312h2ed9cc7_15.conda
@@ -4550,12 +4612,14 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-urdfdom-4.0.1-py312h24bf083_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-urdfdom-headers-1.1.2-py312h24bf083_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-urdfdom-py-1.2.1-py312h24bf083_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-usb-cam-0.8.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-vision-msgs-4.2.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-visualization-msgs-5.5.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-warehouse-ros-2.0.5-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-xacro-2.1.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-yaml-cpp-vendor-9.1.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-zenoh-cpp-vendor-0.6.6-np2py312ha80d210_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-zstd-image-transport-5.1.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-zstd-vendor-0.32.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros2-distro-mutex-0.13.0-kilted_15.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/rosdep-0.26.0-pyhd8ed1ab_1.conda
@@ -4603,6 +4667,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/wayland-1.25.0-hd6090a7_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/wayland-protocols-1.47-hd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/wheel-0.46.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/wrapt-2.1.2-py312h4c3975b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/x264-1!164.3095-h166bdaf_2.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/x265-3.5-h924138e_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xcb-util-0.4.1-h4f16b4b_2.conda
@@ -4828,6 +4893,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/dartsim-cpp-6.16.7-h0486b68_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/dav1d-1.2.1-h31becfc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/dbus-1.16.2-h70963c4_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/deprecated-1.3.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/distlib-0.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/distro-1.9.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/docutils-0.22.4-pyhd8ed1ab_0.conda
@@ -5070,6 +5136,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libstdcxx-ng-15.2.0-hdbbeba8_18.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libsystemd0-257.13-hf9559e3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libtasn1-4.21.0-he30d5cf_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libtheora-1.1.1-h68df207_1006.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libtiff-4.7.1-hdb009f0_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libudev1-257.13-hf9559e3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libunistring-0.9.10-hf897c2e_0.tar.bz2
@@ -5234,10 +5301,15 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-angles-1.16.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-backward-ros-1.0.8-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-builtin-interfaces-2.3.0-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-camera-calibration-6.0.11-np2py312h6b1b059_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-camera-calibration-parsers-6.1.3-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-camera-info-manager-6.1.3-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-chomp-motion-planner-2.14.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-class-loader-2.8.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-common-interfaces-5.5.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-composition-interfaces-2.3.0-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-compressed-depth-image-transport-5.1.1-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-compressed-image-transport-5.1.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-console-bridge-vendor-1.8.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-control-msgs-6.7.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-control-toolbox-5.8.3-np2py312h8b5252a_15.conda
@@ -5284,7 +5356,9 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-iceoryx-binding-c-2.0.5-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-iceoryx-hoofs-2.0.5-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-iceoryx-posh-2.0.5-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-image-geometry-4.1.0-np2py312h6b1b059_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-image-transport-6.1.3-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-image-transport-plugins-5.1.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-interactive-markers-2.7.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-joint-limits-5.11.3-np2py312h8b5252a_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-joint-state-broadcaster-5.12.0-np2py312h61f2ce4_15.conda
@@ -5484,6 +5558,7 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tf2-py-0.41.6-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tf2-ros-0.41.6-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tf2-ros-py-0.41.6-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-theora-image-transport-5.1.1-np2py312h6b1b059_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tinyxml2-vendor-0.10.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tl-expected-1.2.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-tracetools-8.6.0-np2py312h61f2ce4_15.conda
@@ -5497,12 +5572,14 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-urdfdom-4.0.1-py312h9804fc4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-urdfdom-headers-1.1.2-py312h9804fc4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-urdfdom-py-1.2.1-py312h9804fc4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-usb-cam-0.8.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-vision-msgs-4.2.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-visualization-msgs-5.5.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-warehouse-ros-2.0.5-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-xacro-2.1.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-yaml-cpp-vendor-9.1.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-zenoh-cpp-vendor-0.6.6-np2py312h1cd77a6_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-zstd-image-transport-5.1.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-zstd-vendor-0.32.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros2-distro-mutex-0.13.0-kilted_15.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/rosdep-0.26.0-pyhd8ed1ab_1.conda
@@ -5549,6 +5626,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/virtualenv-21.2.0-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/wayland-1.25.0-h4f8a99f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/wheel-0.46.3-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/wrapt-2.1.2-py312hcd1a082_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/x264-1!164.3095-h4e544f5_2.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/x265-3.5-hdd96247_3.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/xcb-util-0.4.1-hca56bd8_2.conda
@@ -8236,6 +8314,18 @@ packages:
   - pytest-cov~=6.0.0 ; extra == 'test'
   - python-dotenv~=1.0.0 ; extra == 'test'
   requires_python: '>=3.9'
+- conda: https://conda.anaconda.org/conda-forge/noarch/deprecated-1.3.1-pyhd8ed1ab_1.conda
+  sha256: 7d57a7b8266043ffb99d092ebc25e89a0a2490bed4146b9432c83c2c476fa94d
+  md5: 5498feb783ab29db6ca8845f68fa0f03
+  depends:
+  - python >=3.10
+  - wrapt <3,>=1.10
+  license: MIT
+  license_family: MIT
+  purls:
+  - pkg:pypi/deprecated?source=hash-mapping
+  size: 15896
+  timestamp: 1768934186726
 - pypi: https://files.pythonhosted.org/packages/2a/2e/38d9824f8c6bb048c5ba21c6d4da54c29c162a46b58b3ef907a360a76d3e/diffusers-0.35.2-py3-none-any.whl
   name: diffusers
   version: 0.35.2
@@ -16151,6 +16241,34 @@ packages:
   purls: []
   size: 126001
   timestamp: 1768299601532
+- conda: https://conda.anaconda.org/conda-forge/linux-64/libtheora-1.1.1-h4ab18f5_1006.conda
+  sha256: 50c8cd416ac8425e415264de167b41ae8442de22a91098dfdd993ddbf9f13067
+  md5: 553281a034e9cf8693c9df49f6c78ea1
+  depends:
+  - libgcc-ng >=12
+  - libogg 1.3.*
+  - libogg >=1.3.5,<1.4.0a0
+  - libvorbis 1.3.*
+  - libvorbis >=1.3.7,<1.4.0a0
+  license: BSD-3-Clause
+  license_family: BSD
+  purls: []
+  size: 328924
+  timestamp: 1719667859099
+- conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libtheora-1.1.1-h68df207_1006.conda
+  sha256: b5a46b5f2cf1ab6734dcab65f370c6b95f1d62ed27d9d30fe06a828bcb9b239b
+  md5: 5786518d6e1eff2225fe56c0e5d573d8
+  depends:
+  - libgcc-ng >=12
+  - libogg 1.3.*
+  - libogg >=1.3.5,<1.4.0a0
+  - libvorbis 1.3.*
+  - libvorbis >=1.3.7,<1.4.0a0
+  license: BSD-3-Clause
+  license_family: BSD
+  purls: []
+  size: 335103
+  timestamp: 1719667812650
 - conda: https://conda.anaconda.org/conda-forge/linux-64/libtiff-4.7.1-h9d88235_1.conda
   sha256: e5f8c38625aa6d567809733ae04bb71c161a42e44a9fa8227abe61fa5c60ebe0
   md5: cd5a90476766d53e901500df9215e927
@@ -21888,6 +22006,142 @@ packages:
   license: Apache-2.0
   size: 82139
   timestamp: 1769483235524
+- conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-camera-calibration-6.0.11-np2py312hedab9cf_15.conda
+  sha256: ffa452c19644fcae7d5fc606322009a02d69892c020b503b797696b9dc37c9b9
+  md5: e485baeb247aea170310058c521f93b9
+  depends:
+  - libopencv
+  - libopencv * *qt6*
+  - py-opencv
+  - python
+  - ros-kilted-cv-bridge
+  - ros-kilted-image-geometry
+  - ros-kilted-message-filters
+  - ros-kilted-rclpy
+  - ros-kilted-ros-workspace
+  - ros-kilted-sensor-msgs
+  - ros-kilted-std-srvs
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libstdcxx >=14
+  - libgcc >=14
+  - __glibc >=2.17,<3.0.a0
+  - numpy >=1.23,<3
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - libopencv >=4.12.0,<4.12.1.0a0
+  - py-opencv >=4.12.0,<5.0a0
+  - python_abi 3.12.* *_cp312
+  license: BSD-3-Clause
+  size: 130579
+  timestamp: 1769485605697
+- conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-camera-calibration-6.0.11-np2py312h6b1b059_15.conda
+  sha256: c08e575a9b3960e652144aab5cd0c4a3cd5d08911b9b675a2fcdace2a0b3747f
+  md5: 9e692ee3b2b7381e552974e581c416cc
+  depends:
+  - libopencv
+  - libopencv * *qt6*
+  - py-opencv
+  - python
+  - ros-kilted-cv-bridge
+  - ros-kilted-image-geometry
+  - ros-kilted-message-filters
+  - ros-kilted-rclpy
+  - ros-kilted-ros-workspace
+  - ros-kilted-sensor-msgs
+  - ros-kilted-std-srvs
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libgcc >=14
+  - libstdcxx >=14
+  - libgcc >=14
+  - py-opencv >=4.12.0,<5.0a0
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - libopencv >=4.12.0,<4.12.1.0a0
+  - numpy >=1.23,<3
+  - python_abi 3.12.* *_cp312
+  license: BSD-3-Clause
+  size: 129117
+  timestamp: 1769485636154
+- conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-camera-calibration-parsers-6.1.3-np2py312h2ed9cc7_15.conda
+  sha256: 8142937273daad06588fcd3df9e1cc23ea1818e6fe70cd0f459dc517447d92c2
+  md5: fccb4a8c40afb71b1d0c34214e11cf02
+  depends:
+  - python
+  - ros-kilted-rclcpp
+  - ros-kilted-ros-workspace
+  - ros-kilted-sensor-msgs
+  - ros-kilted-yaml-cpp-vendor
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libgcc >=14
+  - __glibc >=2.17,<3.0.a0
+  - libstdcxx >=14
+  - libgcc >=14
+  - python_abi 3.12.* *_cp312
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - numpy >=1.23,<3
+  license: BSD-3-Clause
+  size: 111082
+  timestamp: 1769485077120
+- conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-camera-calibration-parsers-6.1.3-np2py312h61f2ce4_15.conda
+  sha256: 5261089f5429ea81d6e993f42ec9c6de5f32d3ec4189de0a2f1275959cd66bf3
+  md5: 44935864235ff1d738f5e6e73bfab262
+  depends:
+  - python
+  - ros-kilted-rclcpp
+  - ros-kilted-ros-workspace
+  - ros-kilted-sensor-msgs
+  - ros-kilted-yaml-cpp-vendor
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libstdcxx >=14
+  - libgcc >=14
+  - python_abi 3.12.* *_cp312
+  - numpy >=1.23,<3
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  license: BSD-3-Clause
+  size: 110432
+  timestamp: 1769485194192
+- conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-camera-info-manager-6.1.3-np2py312h2ed9cc7_15.conda
+  sha256: ecc3f659c8ddbbb1b1c4032dadec099c566d5b5bfe26df15f19273db03e5d714
+  md5: d83a5f879955ca8ee907d6770a01b5a8
+  depends:
+  - python
+  - ros-kilted-ament-index-cpp
+  - ros-kilted-camera-calibration-parsers
+  - ros-kilted-rclcpp
+  - ros-kilted-rclcpp-lifecycle
+  - ros-kilted-rcpputils
+  - ros-kilted-ros-workspace
+  - ros-kilted-sensor-msgs
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libgcc >=14
+  - libstdcxx >=14
+  - libgcc >=14
+  - __glibc >=2.17,<3.0.a0
+  - numpy >=1.23,<3
+  - python_abi 3.12.* *_cp312
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  license: BSD-3-Clause
+  size: 80822
+  timestamp: 1769485283818
+- conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-camera-info-manager-6.1.3-np2py312h61f2ce4_15.conda
+  sha256: 8ec5ed1530f5d3eda5309ac89b0771b941c5ba3f37527190bd64bd79d7751d2c
+  md5: 4faece69f9e9774e68a19ac1ca759801
+  depends:
+  - python
+  - ros-kilted-ament-index-cpp
+  - ros-kilted-camera-calibration-parsers
+  - ros-kilted-rclcpp
+  - ros-kilted-rclcpp-lifecycle
+  - ros-kilted-rcpputils
+  - ros-kilted-ros-workspace
+  - ros-kilted-sensor-msgs
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libstdcxx >=14
+  - libgcc >=14
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - python_abi 3.12.* *_cp312
+  - numpy >=1.23,<3
+  license: BSD-3-Clause
+  size: 81185
+  timestamp: 1769485368044
 - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-chomp-motion-planner-2.14.1-np2py312h2ed9cc7_15.conda
   sha256: c5b72062cc7bd4957cc7a53502d202dda9f72eff4be6a544ee44f4a74820791f
   md5: ba608e98b44f17aa4ded557e9ec9fe82
@@ -22064,6 +22318,79 @@ packages:
   license: Apache-2.0
   size: 229856
   timestamp: 1769483680997
+- conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-compressed-depth-image-transport-5.1.1-np2py312h2ed9cc7_15.conda
+  sha256: e568212af53b9cf2719bd78307f53ce268c98f7dbead32c27a6546e290c691e1
+  md5: 3d1adee5c60b8424715edd89193a3445
+  depends:
+  - python
+  - ros-kilted-cv-bridge
+  - ros-kilted-image-transport
+  - ros-kilted-ros-workspace
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libgcc >=14
+  - libstdcxx >=14
+  - libgcc >=14
+  - __glibc >=2.17,<3.0.a0
+  - numpy >=1.23,<3
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - python_abi 3.12.* *_cp312
+  license: BSD-3-Clause OR MIT
+  size: 310269
+  timestamp: 1769485977699
+- conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-compressed-depth-image-transport-5.1.1-np2py312h61f2ce4_15.conda
+  sha256: 93e17a20d2e9d13cd6d3ef60f8eed421a42ce495bb7411e2a4fd0b05fce889c4
+  md5: 6472260261b8a3333a756bedb9ee90ef
+  depends:
+  - python
+  - ros-kilted-cv-bridge
+  - ros-kilted-image-transport
+  - ros-kilted-ros-workspace
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libstdcxx >=14
+  - libgcc >=14
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - numpy >=1.23,<3
+  - python_abi 3.12.* *_cp312
+  license: BSD-3-Clause OR MIT
+  size: 312833
+  timestamp: 1769485963429
+- conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-compressed-image-transport-5.1.1-np2py312h2ed9cc7_15.conda
+  sha256: eeb10e74c7972e564e2f36f06f56ef1b72e74d367e976060f456133bc6b7aa5e
+  md5: bfb0124af4847d2fecd03a222e5e5047
+  depends:
+  - python
+  - ros-kilted-cv-bridge
+  - ros-kilted-image-transport
+  - ros-kilted-ros-workspace
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libgcc >=14
+  - libstdcxx >=14
+  - libgcc >=14
+  - __glibc >=2.17,<3.0.a0
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - python_abi 3.12.* *_cp312
+  - numpy >=1.23,<3
+  license: BSD-3-Clause
+  size: 317666
+  timestamp: 1769485951506
+- conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-compressed-image-transport-5.1.1-np2py312h61f2ce4_15.conda
+  sha256: f46249768800f4ecb0e0cfa8f83462b2b2aefe2677eba602a0c922b2c65abbc1
+  md5: a076771a0fda29259f1064e252846ba7
+  depends:
+  - python
+  - ros-kilted-cv-bridge
+  - ros-kilted-image-transport
+  - ros-kilted-ros-workspace
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libgcc >=14
+  - libstdcxx >=14
+  - libgcc >=14
+  - python_abi 3.12.* *_cp312
+  - numpy >=1.23,<3
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  license: BSD-3-Clause
+  size: 324715
+  timestamp: 1769485930455
 - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-console-bridge-vendor-1.8.0-np2py312h2ed9cc7_15.conda
   sha256: a3ac7fc473e86bf0bc60e0a7800c08ed24253f091692d842ab4d239d145b3f99
   md5: 03e0f3f9baf49a76546419538cff2ef2
@@ -24404,6 +24731,58 @@ packages:
   license: Apache-2.0
   size: 577452
   timestamp: 1769481135910
+- conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-image-geometry-4.1.0-np2py312hedab9cf_15.conda
+  sha256: 3128a14400f7a79754264b9920f811572285dca1bc54d9995e5fb211543a826a
+  md5: 81c3db0348d1415cf8b74c6c5828fd28
+  depends:
+  - deprecated
+  - libgl-devel
+  - libopencv
+  - libopengl-devel
+  - py-opencv
+  - python
+  - ros-kilted-ros-workspace
+  - ros-kilted-sensor-msgs
+  - ros2-distro-mutex 0.13.* kilted_*
+  - __glibc >=2.17,<3.0.a0
+  - libgcc >=14
+  - libstdcxx >=14
+  - libgcc >=14
+  - python_abi 3.12.* *_cp312
+  - libgl >=1.7.0,<2.0a0
+  - libopencv >=4.12.0,<4.12.1.0a0
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - libopengl >=1.7.0,<2.0a0
+  - py-opencv >=4.12.0,<5.0a0
+  - numpy >=1.23,<3
+  license: Apache-2.0 OR BSD-3-Clause
+  size: 89053
+  timestamp: 1769484368131
+- conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-image-geometry-4.1.0-np2py312h6b1b059_15.conda
+  sha256: 398c237a636ab200ea80dc4cafaefcb95fd0c9dacb11c892c35a69b6489318d0
+  md5: 116eac75227bd0fa9bdd9bcbdf0e5d07
+  depends:
+  - deprecated
+  - libgl-devel
+  - libopencv
+  - libopengl-devel
+  - py-opencv
+  - python
+  - ros-kilted-ros-workspace
+  - ros-kilted-sensor-msgs
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libstdcxx >=14
+  - libgcc >=14
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - libgl >=1.7.0,<2.0a0
+  - py-opencv >=4.12.0,<5.0a0
+  - numpy >=1.23,<3
+  - python_abi 3.12.* *_cp312
+  - libopencv >=4.12.0,<4.12.1.0a0
+  - libopengl >=1.7.0,<2.0a0
+  license: Apache-2.0 OR BSD-3-Clause
+  size: 88658
+  timestamp: 1769484526701
 - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-image-transport-6.1.3-np2py312h2ed9cc7_15.conda
   sha256: 3e667ed9df95b2895d6764f69ed2614239229766076ede1f0e026197f18f20ce
   md5: 3898a6a67242b5ac13e5a35d0a984a47
@@ -24446,6 +24825,45 @@ packages:
   license: BSD-3-Clause
   size: 582882
   timestamp: 1769485633805
+- conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-image-transport-plugins-5.1.1-np2py312h2ed9cc7_15.conda
+  sha256: a712fb9072dceaeea8e1df2f0262d4431cce8a548883b21b2496c8215d61de3b
+  md5: 59784ad74a69f51c569bf2ae4cee412a
+  depends:
+  - python
+  - ros-kilted-compressed-depth-image-transport
+  - ros-kilted-compressed-image-transport
+  - ros-kilted-ros-workspace
+  - ros-kilted-theora-image-transport
+  - ros-kilted-zstd-image-transport
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libstdcxx >=14
+  - libgcc >=14
+  - __glibc >=2.17,<3.0.a0
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - python_abi 3.12.* *_cp312
+  - numpy >=1.23,<3
+  license: BSD-3-Clause
+  size: 22937
+  timestamp: 1769486234323
+- conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-image-transport-plugins-5.1.1-np2py312h61f2ce4_15.conda
+  sha256: aeae3ebe6803cc879874b95b11bf3b9ea9973f45593662eca3eec722643ed5b0
+  md5: dd2308041e534098fe3537e491619dc5
+  depends:
+  - python
+  - ros-kilted-compressed-depth-image-transport
+  - ros-kilted-compressed-image-transport
+  - ros-kilted-ros-workspace
+  - ros-kilted-theora-image-transport
+  - ros-kilted-zstd-image-transport
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libstdcxx >=14
+  - libgcc >=14
+  - numpy >=1.23,<3
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - python_abi 3.12.* *_cp312
+  license: BSD-3-Clause
+  size: 22883
+  timestamp: 1769486176451
 - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-interactive-markers-2.7.1-np2py312h2ed9cc7_15.conda
   sha256: 58dd23fa6664ab6e482e675c44046e26ea3701e1e4063ec29bc93465651aec28
   md5: 18f4e79f7024a59f47264302e8ec7d19
@@ -33506,6 +33924,77 @@ packages:
   license: BSD-3-Clause
   size: 49006
   timestamp: 1769485371194
+- conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-theora-image-transport-5.1.1-np2py312hedab9cf_15.conda
+  sha256: 1839066f1ce849d231bbcdf44561ce44be08d03348b772d46c65edeaea4a9c28
+  md5: 58538076ce3021a5fedf2319b7c788b2
+  depends:
+  - libgl-devel
+  - libogg
+  - libopencv
+  - libopengl-devel
+  - libtheora
+  - py-opencv
+  - python
+  - ros-kilted-cv-bridge
+  - ros-kilted-image-transport
+  - ros-kilted-pluginlib
+  - ros-kilted-rclcpp
+  - ros-kilted-rcutils
+  - ros-kilted-ros-workspace
+  - ros-kilted-rosidl-default-runtime
+  - ros-kilted-sensor-msgs
+  - ros-kilted-std-msgs
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libstdcxx >=14
+  - libgcc >=14
+  - __glibc >=2.17,<3.0.a0
+  - libopencv >=4.12.0,<4.12.1.0a0
+  - py-opencv >=4.12.0,<5.0a0
+  - libogg >=1.3.5,<1.4.0a0
+  - libopengl >=1.7.0,<2.0a0
+  - libtheora >=1.1.1,<1.2.0a0
+  - libgl >=1.7.0,<2.0a0
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - python_abi 3.12.* *_cp312
+  - numpy >=1.23,<3
+  license: BSD-3-Clause
+  size: 436184
+  timestamp: 1769485892492
+- conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-theora-image-transport-5.1.1-np2py312h6b1b059_15.conda
+  sha256: 8b8a34d263fabb2486115a4ace1dadb9d74c0c661fbb0a1451e85606370afc8d
+  md5: aa764cdc6330ecfa3db233a5c1981225
+  depends:
+  - libgl-devel
+  - libogg
+  - libopencv
+  - libopengl-devel
+  - libtheora
+  - py-opencv
+  - python
+  - ros-kilted-cv-bridge
+  - ros-kilted-image-transport
+  - ros-kilted-pluginlib
+  - ros-kilted-rclcpp
+  - ros-kilted-rcutils
+  - ros-kilted-ros-workspace
+  - ros-kilted-rosidl-default-runtime
+  - ros-kilted-sensor-msgs
+  - ros-kilted-std-msgs
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libstdcxx >=14
+  - libgcc >=14
+  - numpy >=1.23,<3
+  - libogg >=1.3.5,<1.4.0a0
+  - libopengl >=1.7.0,<2.0a0
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - libopencv >=4.12.0,<4.12.1.0a0
+  - python_abi 3.12.* *_cp312
+  - libtheora >=1.1.1,<1.2.0a0
+  - libgl >=1.7.0,<2.0a0
+  - py-opencv >=4.12.0,<5.0a0
+  license: BSD-3-Clause
+  size: 444158
+  timestamp: 1769485862542
 - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-tinyxml2-vendor-0.10.1-np2py312h2ed9cc7_15.conda
   sha256: 9a380496ccb6bcd409ed31aed29d922540edf334da9582ced959ba4dbaf4c056
   md5: 3e60e3276f0e46cdbcf2cdc8af8ba9bb
@@ -33972,6 +34461,64 @@ packages:
   license: BSD-3-Clause
   size: 7391
   timestamp: 1769485209938
+- conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-usb-cam-0.8.1-np2py312h2ed9cc7_15.conda
+  sha256: 68e5dcfc7a3864934be5fbb92ea8d8584e55d9f699642d4866fba41c21d5b671
+  md5: 5e0c3053bbbea5bb5d9f8c15d8a91cde
+  depends:
+  - ffmpeg
+  - python
+  - ros-kilted-builtin-interfaces
+  - ros-kilted-camera-info-manager
+  - ros-kilted-cv-bridge
+  - ros-kilted-image-transport
+  - ros-kilted-image-transport-plugins
+  - ros-kilted-rclcpp
+  - ros-kilted-rclcpp-components
+  - ros-kilted-ros-workspace
+  - ros-kilted-rosidl-default-runtime
+  - ros-kilted-sensor-msgs
+  - ros-kilted-std-msgs
+  - ros-kilted-std-srvs
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libstdcxx >=14
+  - libgcc >=14
+  - __glibc >=2.17,<3.0.a0
+  - numpy >=1.23,<3
+  - python_abi 3.12.* *_cp312
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - ffmpeg >=8.0.1,<9.0a0
+  license: BSD-3-Clause
+  size: 269534
+  timestamp: 1769486554843
+- conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-usb-cam-0.8.1-np2py312h61f2ce4_15.conda
+  sha256: 17167fb86520fe3ec95af52d5e4a2f1d7bc3c48b4b0236cf3dd0db3beba01cbc
+  md5: bf2fdf8d770f0426ffb39e8f56a9f618
+  depends:
+  - ffmpeg
+  - python
+  - ros-kilted-builtin-interfaces
+  - ros-kilted-camera-info-manager
+  - ros-kilted-cv-bridge
+  - ros-kilted-image-transport
+  - ros-kilted-image-transport-plugins
+  - ros-kilted-rclcpp
+  - ros-kilted-rclcpp-components
+  - ros-kilted-ros-workspace
+  - ros-kilted-rosidl-default-runtime
+  - ros-kilted-sensor-msgs
+  - ros-kilted-std-msgs
+  - ros-kilted-std-srvs
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libgcc >=14
+  - libstdcxx >=14
+  - libgcc >=14
+  - ffmpeg >=8.0.1,<9.0a0
+  - numpy >=1.23,<3
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - python_abi 3.12.* *_cp312
+  license: BSD-3-Clause
+  size: 267957
+  timestamp: 1769486469025
 - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-vision-msgs-4.2.0-np2py312h2ed9cc7_15.conda
   sha256: d75ac2664e98eaeea89aedc9e1332b6ada4ae9fc65b60e6565dcee3937f3dc84
   md5: 92731e469d5dc396a6df44021557f6a9
@@ -34222,6 +34769,44 @@ packages:
   license: Apache-2.0
   size: 25654
   timestamp: 1769481566988
+- conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-zstd-image-transport-5.1.1-np2py312h2ed9cc7_15.conda
+  sha256: f9aecb7850ae86a3149d47d1bc336a87f3d897d385671e482526f0ac6a34267f
+  md5: 44d5387a1c0a423285f990253241347c
+  depends:
+  - python
+  - ros-kilted-image-transport
+  - ros-kilted-ros-workspace
+  - ros2-distro-mutex 0.13.* kilted_*
+  - zlib
+  - __glibc >=2.17,<3.0.a0
+  - libgcc >=14
+  - libstdcxx >=14
+  - libgcc >=14
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - numpy >=1.23,<3
+  - python_abi 3.12.* *_cp312
+  - libzlib >=1.3.1,<2.0a0
+  license: BSD-3-Clause
+  size: 193250
+  timestamp: 1769486005135
+- conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-zstd-image-transport-5.1.1-np2py312h61f2ce4_15.conda
+  sha256: 15f4d36c04d06fa687a0eb13b1b9ed627b68454f6ff36b8d5b6d8da7b00463f3
+  md5: f6dd535080a268d947c5654f733e1566
+  depends:
+  - python
+  - ros-kilted-image-transport
+  - ros-kilted-ros-workspace
+  - ros2-distro-mutex 0.13.* kilted_*
+  - zlib
+  - libstdcxx >=14
+  - libgcc >=14
+  - numpy >=1.23,<3
+  - python_abi 3.12.* *_cp312
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - libzlib >=1.3.1,<2.0a0
+  license: BSD-3-Clause
+  size: 191597
+  timestamp: 1769485970189
 - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-zstd-vendor-0.32.0-np2py312h2ed9cc7_15.conda
   sha256: 4663aafaec3ab42c4f2d497cf9ccd982309b208461421656ede91057d532d7b6
   md5: 936e17890917944e06f61be5123e13c5
@@ -35985,6 +36570,34 @@ packages:
   - pkg:pypi/wheel?source=hash-mapping
   size: 31858
   timestamp: 1769139207397
+- conda: https://conda.anaconda.org/conda-forge/linux-64/wrapt-2.1.2-py312h4c3975b_0.conda
+  sha256: 5bf21e14a364018a36869a16d9f706fb662c6cb6da3066100ba6822a70f93d2d
+  md5: 7f2ef073d94036f8b16b6ee7d3562a88
+  depends:
+  - __glibc >=2.17,<3.0.a0
+  - libgcc >=14
+  - python >=3.12,<3.13.0a0
+  - python_abi 3.12.* *_cp312
+  license: BSD-2-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/wrapt?source=hash-mapping
+  size: 87514
+  timestamp: 1772794814485
+- conda: https://conda.anaconda.org/conda-forge/linux-aarch64/wrapt-2.1.2-py312hcd1a082_0.conda
+  sha256: 7771d343ecafe1cab14291a17f4331e9e5680bd72d4b51d5aa44d0674eb2a185
+  md5: fb36661901c6da45fd7296fca1cfc48a
+  depends:
+  - libgcc >=14
+  - python >=3.12,<3.13.0a0
+  - python >=3.12,<3.13.0a0 *_cpython
+  - python_abi 3.12.* *_cp312
+  license: BSD-2-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/wrapt?source=hash-mapping
+  size: 87781
+  timestamp: 1772794847949
 - conda: https://conda.anaconda.org/conda-forge/linux-64/x264-1!164.3095-h166bdaf_2.tar.bz2
   sha256: 175315eb3d6ea1f64a6ce470be00fa2ee59980108f246d3072ab8b977cb048a5
   md5: 6c99772d483f566d59e25037fea2c4b1

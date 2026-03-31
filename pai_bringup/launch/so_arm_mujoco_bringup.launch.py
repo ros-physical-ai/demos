@@ -108,7 +108,7 @@ def launch_setup(context, *args, **kwargs):
                     FindPackageShare("pai_bringup"),
                     "config",
                     "rviz",
-                    "so_arm_mujoco.rviz",
+                    "so_arm_101.rviz",
                 ]
             ),
         }.items(),
@@ -119,4 +119,5 @@ def launch_setup(context, *args, **kwargs):
 
 def generate_launch_description():
     """Generate launch description."""
-    return LaunchDescription([OpaqueFunction(function=launch_setup)])
+    declared_arguments = []
+    return LaunchDescription([*declared_arguments, OpaqueFunction(function=launch_setup)])

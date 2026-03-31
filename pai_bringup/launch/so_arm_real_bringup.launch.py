@@ -20,6 +20,7 @@ from launch.actions import (
     IncludeLaunchDescription,
     OpaqueFunction,
 )
+from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
@@ -39,6 +40,10 @@ def launch_setup(context, *args, **kwargs):
     initial_joint_controller = LaunchConfiguration("initial_joint_controller").perform(context)
     launch_rviz = LaunchConfiguration("launch_rviz").perform(context)
     rviz_config_file = LaunchConfiguration("rviz_config_file").perform(context)
+    use_cameras = LaunchConfiguration("use_cameras")
+    cameras_config_file = LaunchConfiguration("cameras_config_file").perform(context)
+    cam_static_xyz = LaunchConfiguration("cam_static_xyz").perform(context)
+    cam_static_rpy = LaunchConfiguration("cam_static_rpy").perform(context)
 
     # Process controller parameters for ros2_control_node
     controllers_file_replaced = ReplaceString(
@@ -82,6 +87,8 @@ def launch_setup(context, *args, **kwargs):
                 f" prefix:={prefix}"
                 f" usb_port:={usb_port}"
                 f" joint_config_file:={joint_config_file}"
+                f" cam_static_xyz:='{cam_static_xyz}'"
+                f" cam_static_rpy:='{cam_static_rpy}'"
             ),
             "use_sim_time": "false",
             "initial_joint_controller": initial_joint_controller,
@@ -90,7 +97,22 @@ def launch_setup(context, *args, **kwargs):
         }.items(),
     )
 
-    return [common, ros2_control_node]
+    cameras_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("pai_bringup"),
+                    "launch",
+                    "include",
+                    "cameras.launch.py",
+                ]
+            )
+        ),
+        condition=IfCondition(use_cameras),
+        launch_arguments={"cameras_config": cameras_config_file}.items(),
+    )
+
+    return [common, ros2_control_node, cameras_launch]
 
 
 def generate_launch_description():
@@ -159,8 +181,38 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "rviz_config_file",
-            default_value=PathJoinSubstitution([FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_gz.rviz"]),
+            default_value=PathJoinSubstitution([FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_101.rviz"]),
             description="RViz config file to use.",
+        ),
+        DeclareLaunchArgument(
+            "use_cameras",
+            default_value="true",
+            description="Launch USB cameras (wrist + static). Set to 'false' to disable cameras.",
+        ),
+        DeclareLaunchArgument(
+            "cameras_config_file",
+            default_value=PathJoinSubstitution(
+                [
+                    FindPackageShare("pai_bringup"),
+                    "config",
+                    "cameras",
+                    "cameras.yaml",
+                ]
+            ),
+            description="Path to camera registry YAML file.",
+        ),
+        DeclareLaunchArgument(
+            "cam_static_xyz",
+            default_value="0.0 0.0 0.50",
+            description="Position of the static (overhead) camera relative to the world frame "
+            "as 'x y z' in metres. Adjust to match your physical camera mount.",
+        ),
+        DeclareLaunchArgument(
+            "cam_static_rpy",
+            default_value="3.6652 0.0 -1.5708",
+            description="Orientation of the static (overhead) camera relative to the world frame "
+            "as 'roll pitch yaw' in radians (camera optical-frame convention: Z-forward, X-right, Y-down). "
+            "Default points straight down with image-down along world -X.",
         ),
     ]
 

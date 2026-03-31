@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<!--
+  Camera frame definitions for the SO-ARM101.
+
+  Adds two fixed-frame camera links to the robot model so that
+  robot_state_publisher publishes their TF automatically:
+
+    - wrist_camera_link   : mounted on the gripper, moves with the end-effector
+    - static_camera_link: static view, fixed relative to base_link
+
+  Usage in a top-level xacro:
+    <xacro:include filename="$(find pai_bringup)/urdf/cameras.xacro"/>
+    <xacro:pai_cameras prefix="$(arg prefix)"/>
+-->
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:macro name="pai_cameras"
+    params="
+      prefix:=''
+      cam_wrist_xyz:='0.0 0.065 -0.03'
+      cam_wrist_rpy:=' 2.618 0.0 0.0'
+      cam_static_xyz:='0.0 0.0 0.50'
+      cam_static_rpy:='3.6652 0.0 -1.5708'
+      include_inertia:='false'
+    ">
+
+    <!-- ── Wrist camera (moves with the gripper) ────────────────────── -->
+    <!-- TODO: Add a visual element (mesh or box) to wrist_camera_link so
+         the camera is visible in RViz / Gazebo. -->
+    <link name="${prefix}wrist_camera_link">
+      <xacro:if value="${include_inertia}">
+        <inertial>
+          <mass value="0.001" />
+          <inertia ixx="1e-7" ixy="0" ixz="0" iyy="1e-7" iyz="0" izz="1e-7" />
+        </inertial>
+      </xacro:if>
+    </link>
+
+    <joint name="${prefix}wrist_camera_joint" type="fixed">
+      <parent link="${prefix}gripper_link" />
+      <child  link="${prefix}wrist_camera_link" />
+      <origin xyz="${cam_wrist_xyz}" rpy="${cam_wrist_rpy}" />
+    </joint>
+
+    <!-- ── Static camera (fixed in the scene) ──────────────────────── -->
+    <link name="static_camera_link">
+      <xacro:if value="${include_inertia}">
+        <inertial>
+          <mass value="0.001" />
+          <inertia ixx="1e-7" ixy="0" ixz="0" iyy="1e-7" iyz="0" izz="1e-7" />
+        </inertial>
+      </xacro:if>
+    </link>
+
+    <joint name="static_camera_joint" type="fixed">
+      <parent link="base_link" />
+      <child  link="static_camera_link" />
+      <origin xyz="${cam_static_xyz}" rpy="${cam_static_rpy}" />
+    </joint>
+
+  </xacro:macro>
+</robot>

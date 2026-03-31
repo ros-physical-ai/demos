@@ -404,14 +404,19 @@
                     material="3d_printed"
                   />
                 </body>
+                <!-- Wrist camera: MuJoCo cameras use OpenGL convention (-Z forward, +Y up).
+                     euler derived from URDF optical RPY (2.618 0 0) via R_mj = R_urdf * Rx(π). -->
+                <camera name="wrist_camera" fovy="55" mode="fixed" resolution="640 480"
+                        pos="0.0 0.065 -0.03" euler="-0.5236 0 0"/>
               </body>
             </body>
           </body>
         </body>
       </body>
-      <!-- Camera: elevated above workspace for full scene visibility (table, tray, cubes, gripper) -->
-      <site name="camera_color_mujoco_frame" pos="0.25 0.0 0.55" euler="0 -0.7 0"/>
-      <camera name="camera" fovy="52" mode="fixed" resolution="1280 720" pos="0.25 0.0 0.55" euler="0 -0.7 0"/>
+      <!-- Static camera: elevated above base_link, tilted 30° toward +X.
+           euler derived from URDF optical RPY (3.6652 0 -1.5708) via R_mj = R_urdf * Rx(π). -->
+      <camera name="static_camera" fovy="55" mode="fixed" resolution="640 480"
+              pos="0.0 0.0 0.50" euler="0 -0.5236 -1.5708"/>
     </body>
   </worldbody>
 

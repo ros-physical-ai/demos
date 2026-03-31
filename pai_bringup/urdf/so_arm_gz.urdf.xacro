@@ -12,6 +12,9 @@
   <xacro:arg name="usb_port" default="/dev/LeRobotFollower" />
   <xacro:arg name="prefix" default="" />
   <xacro:arg name="color" default="0.2 0.7 0.85 1.0" />
+  <!-- Static camera pose – override at launch to match your physical setup -->
+  <xacro:arg name="cam_static_xyz" default="0.0 0.0 0.50" />
+  <xacro:arg name="cam_static_rpy" default="3.6652 0.0 -1.5708" />
 
   <!-- Pose arguments for robot positioning -->
   <xacro:arg name="x" default="0.0" />
@@ -35,6 +38,76 @@
                    roll="$(arg roll)"
                    pitch="$(arg pitch)"
                    yaw="$(arg yaw)" />
+
+  <!-- Camera frames (wrist + static).
+       include_inertia=true adds a minimal <inertial> to each camera link so
+       the URDF→SDF converter keeps them (links without inertia are dropped). -->
+  <xacro:include filename="$(find pai_bringup)/urdf/cameras.xacro" />
+  <xacro:pai_cameras prefix="$(arg prefix)"
+    cam_static_xyz="$(arg cam_static_xyz)"
+    cam_static_rpy="$(arg cam_static_rpy)"
+    include_inertia="true" />
+
+  <!-- Preserve camera fixed joints during URDF→SDF conversion -->
+  <gazebo reference="wrist_camera_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+  <gazebo reference="static_camera_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <!--
+    Gazebo camera sensors.
+
+    The camera links from cameras.xacro use the ROS optical convention
+    (Z-forward, X-right, Y-down).  Gazebo camera sensors look along +X
+    with +Z up, so we add a sensor <pose> rotation to compensate:
+      pitch=-π/2, yaw=+π/2  ⇒  sensor +X → link +Z (forward),
+                                 sensor +Z → link -Y (up).
+  -->
+  <gazebo reference="wrist_camera_link">
+    <sensor name="wrist_camera" type="camera">
+      <gz_frame_id>wrist_camera_link</gz_frame_id>
+      <pose>0 0 0 0 -1.5708 1.5708</pose>
+      <always_on>true</always_on>
+      <update_rate>30</update_rate>
+      <camera>
+        <horizontal_fov>1.2217</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.01</near>
+          <far>100</far>
+        </clip>
+      </camera>
+      <topic>wrist_camera/image_raw</topic>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="static_camera_link">
+    <sensor name="static_camera" type="camera">
+      <gz_frame_id>static_camera_link</gz_frame_id>
+      <pose>0 0 0 0 -1.5708 1.5708</pose>
+      <always_on>true</always_on>
+      <update_rate>30</update_rate>
+      <camera>
+        <horizontal_fov>1.2217</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.01</near>
+          <far>100</far>
+        </clip>
+      </camera>
+      <topic>static_camera/image_raw</topic>
+    </sensor>
+  </gazebo>
 
   <!-- parameters -->
   <xacro:arg name="simulation_controllers" default="" />

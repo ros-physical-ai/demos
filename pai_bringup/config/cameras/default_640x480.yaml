@@ -1,0 +1,32 @@
+# Default (approximate) camera calibration for 640x480 webcams.
+#
+# This provides a plausible pinhole model so that RViz Camera displays
+# work without errors.  The focal length (~500 px) assumes a typical
+# webcam with ~60-70° horizontal FOV.
+#
+# For accurate 3D reconstruction or visual servoing, replace this file
+# with a proper calibration obtained via:
+#   ros2 run camera_calibration cameracalibrator \
+#       --size 8x6 --square 0.025 \
+#       --ros-args --remap image:=/wrist_camera/image_raw
+#
+image_width: 640
+image_height: 480
+camera_name: default_640x480
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [500.0, 0.0, 320.0, 0.0, 500.0, 240.0, 0.0, 0.0, 1.0]
+distortion_model: plumb_bob
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [0.0, 0.0, 0.0, 0.0, 0.0]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [500.0, 0.0, 320.0, 0.0, 0.0, 500.0, 240.0, 0.0, 0.0, 0.0, 1.0, 0.0]

@@ -14,6 +14,9 @@
   <xacro:arg name="joint_config_file" default="" />
   <xacro:arg name="prefix" default="" />
   <xacro:arg name="color" default="0.2 0.7 0.85 1.0" />
+  <!-- Static camera pose – override at launch to match your physical setup -->
+  <xacro:arg name="cam_static_xyz" default="0.0 0.0 0.50" />
+  <xacro:arg name="cam_static_rpy" default="3.6652 0.0 -1.5708" />
 
   <!-- World link (required as parent for the base fixed joint) -->
   <link name="world" />
@@ -21,6 +24,12 @@
   <!-- Robot description -->
   <xacro:include filename="$(arg urdf_file)" />
   <xacro:so_arm101 prefix="$(arg prefix)" color="$(arg color)" />
+
+  <!-- Camera frames (wrist + static) -->
+  <xacro:include filename="$(find pai_bringup)/urdf/cameras.xacro" />
+  <xacro:pai_cameras prefix="$(arg prefix)"
+    cam_static_xyz="$(arg cam_static_xyz)"
+    cam_static_rpy="$(arg cam_static_rpy)" />
 
   <!-- ros2_control description -->
   <xacro:include filename="$(arg ros2_control_file)" />

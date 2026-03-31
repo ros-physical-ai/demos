@@ -1,0 +1,15 @@
+# Camera registry for pai_bringup.
+#
+# Each entry spawns one usb_cam node.  Namespaces determine the
+# published topic prefix:
+#   /wrist_camera/image_raw    (wrist camera)
+#   /static_camera/image_raw   (static camera)
+
+cameras:
+  - name: cam_wrist
+    param_path: usb_cam.yaml
+    namespace: wrist_camera
+
+  - name: cam_static
+    param_path: usb_cam.yaml
+    namespace: static_camera
