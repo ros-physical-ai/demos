@@ -19,6 +19,7 @@ observations:
     type: sensor_msgs/msg/JointState
     selector:
       # All 6 joints: 5 arm joints + 1 gripper jaw
+      # Names must match the joint names in /joint_states (URDF names)
       names:
         [
           position.shoulder_pan_joint,
@@ -44,15 +45,18 @@ actions:
         mode: nearest
         tolerance_ms: 100
     selector:
-      # Joint names matching LeRobot so101_follower motor names (with .pos suffix)
+      # Joint names matching LeRobot so101_follower motor names (with .pos suffix).
+      # These are the features recorded in the LeRobot dataset.
+      # We could be using the same names as in the observation states to be more consistent.
+      # Matching LeRobot's so101_follower motor names is ideal to allow compatibility to lerobot tools like lerobot-replay.
       names:
         [
-          shoulder_pan_joint.pos,
-          shoulder_lift_joint.pos,
-          elbow_flex_joint.pos,
-          wrist_flex_joint.pos,
-          wrist_roll_joint.pos,
-          gripper_joint.pos,
+          shoulder_pan.pos,
+          shoulder_lift.pos,
+          elbow_flex.pos,
+          wrist_flex.pos,
+          wrist_roll.pos,
+          gripper.pos,
         ]
     # Convert radians (ROS) to degrees (LeRobot)
     unit_conversion: rad2deg
