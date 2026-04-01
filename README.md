@@ -177,11 +177,11 @@ With Pixi: `pixi run so-arm-leader`
 
 ## Demos
 
-### Pick and Place with SO-ARM
+### End-to-End Learning Pipeline with SO-ARM
 
-A simple demonstration of training and running a policy with an SO-ARM in sim and real.
+Record demonstrations, train a policy, and deploy it on the robot — in simulation or on real hardware, using any input method (leader arm teleoperation, scripted commands, or custom controllers).
 
-For instructions on training a policy and running inference see [this guide](./demos/so_arm_101/rosetta_end_to_end_demo.md).
+For the full pipeline guide see [End-to-End Learning Pipeline with Rosetta](./demos/so_arm_101/rosetta_end_to_end_demo.md).
 
 ## Linting & Pre-commit
 
