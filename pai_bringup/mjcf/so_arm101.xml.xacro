@@ -375,13 +375,13 @@
                 <body
                   name="jaw_link"
                   pos="0.0202 0.0188 -0.0234"
-                  quat="0.707107 0.707107 -1.85362e-08 1.85362e-08"
+                  quat="0.7042449 0.7042449 0.0635537 -0.0635537"
                 >
                   <joint
                     axis="0 0 1"
                     name="gripper_joint"
                     type="hinge"
-                    range="-0.17453297762778586 1.7453291995659765"
+                    range="0.0 1.70"
                     class="sts3215"
                   />
                   <inertial
@@ -461,7 +461,7 @@
       name="gripper_joint"
       joint="gripper_joint"
       forcerange="-3.35 3.35"
-      ctrlrange="-0.17453 1.74533"
+      ctrlrange="0.0 1.70"
     />
   </actuator>
 
