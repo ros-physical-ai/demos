@@ -205,15 +205,13 @@ def generate_launch_description():
         DeclareLaunchArgument("gazebo_gui", default_value="true", description="Start gazebo with GUI?"),
         DeclareLaunchArgument(
             "world_file",
-            default_value=PathJoinSubstitution(
-                [FindPackageShare("pai_description"), "world", "so_arm_in_lightbox.sdf"]
-            ),
-            description="Gazebo world file (absolute path or filename from the "
-            "gazebosim worlds collection) containing a custom world.",
+            default_value=PathJoinSubstitution([FindPackageShare("pai_description"), "world", "so_arm_table.sdf"]),
+            description="SDF world file (absolute path) to load in Gazebo.",
         ),
-        DeclareLaunchArgument("x", default_value="0.0", description="Robot spawn X position"),
-        DeclareLaunchArgument("y", default_value="-0.488", description="Robot spawn Y position"),
-        DeclareLaunchArgument("z", default_value="0.845", description="Robot spawn Z position"),
+        # Robot spawn pose defaults (arm base position on the table).
+        DeclareLaunchArgument("x", default_value="0.38", description="Robot spawn X position"),
+        DeclareLaunchArgument("y", default_value="0.0", description="Robot spawn Y position"),
+        DeclareLaunchArgument("z", default_value="0.4", description="Robot spawn Z position"),
         DeclareLaunchArgument(
             "roll",
             default_value="0.0",
@@ -226,7 +224,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "yaw",
-            default_value="1.5708",
+            default_value="3.14159",
             description="Robot spawn yaw orientation (radians)",
         ),
         DeclareLaunchArgument(
