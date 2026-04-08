@@ -4,12 +4,15 @@
 # published topic prefix:
 #   /wrist_camera/image_raw    (wrist camera)
 #   /static_camera/image_raw   (static camera)
+#
+# Each camera has its own param file so driver settings (resolution,
+# framerate, pixel_format, etc.) can be tuned independently.
 
 cameras:
   - name: cam_wrist
-    param_path: usb_cam.yaml
+    param_path: usb_cam_wrist.yaml
     namespace: wrist_camera
 
   - name: cam_static
-    param_path: usb_cam.yaml
+    param_path: usb_cam_static.yaml
     namespace: static_camera

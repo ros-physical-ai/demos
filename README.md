@@ -134,6 +134,10 @@ The real-robot bringup launches a **wrist camera** and a **static camera** by de
 > [!IMPORTANT]
 > [Udev rules](#udev-rules) must be configured before using cameras on real hardware. Without them, `/dev/cam_wrist` and `/dev/cam_static` will not exist and the camera nodes will fail to start.
 
+Each camera has its own driver-parameter file (`usb_cam_wrist.yaml`, `usb_cam_static.yaml`) so you can tune resolution, framerate, or pixel format independently — useful when the two cameras are different models.
+
+A default camera-calibration file ([`default_640x480.yaml`](pai_bringup/config/cameras/default_640x480.yaml)) is shipped so that RViz Camera displays work without errors. It is **not** required for policy training or inference. If you need accurate intrinsics (e.g. for 3D reconstruction), replace it with a proper calibration via `ros2 run camera_calibration cameracalibrator`.
+
 Camera frames are defined in [`pai_bringup/urdf/cameras.xacro`](pai_bringup/urdf/cameras.xacro) and published to TF by `robot_state_publisher`. The wrist camera moves with the gripper; the static camera is fixed relative to `base_link`.
 
 To disable cameras:

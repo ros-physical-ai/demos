@@ -1,0 +1,36 @@
+# USB camera parameters – wrist camera.
+#
+# Driver config for the gripper-mounted camera.
+# Device /dev/cam_wrist is a udev symlink.
+# See config/hardware/99-so-arm101-cameras.rules.example for setup.
+
+/**:
+  ros__parameters:
+    framerate: 30.0
+    io_method: "mmap"
+    pixel_format: "mjpeg2rgb"
+    av_device_format: "YUV422P"
+    image_width: 640
+    image_height: 480
+
+    # Let cameras use their own defaults
+    brightness: -1
+    contrast: -1
+    saturation: -1
+    sharpness: -1
+    gain: -1
+
+    # Enable auto adjustments
+    auto_white_balance: true
+    autoexposure: true
+
+    # Disable autofocus (prevents hunting, better for datasets)
+    autofocus: false
+    focus: -1
+
+/wrist_camera/cam_wrist:
+  ros__parameters:
+    video_device: "/dev/cam_wrist"
+    frame_id: "wrist_camera_link"
+    camera_name: "cam_wrist"
+    camera_info_url: "package://pai_bringup/config/cameras/default_640x480.yaml"
