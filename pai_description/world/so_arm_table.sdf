@@ -10,7 +10,6 @@
     <scene>
       <ambient>0.4 0.4 0.4</ambient>
       <grid>false</grid>
-      <sky></sky>
     </scene>
 
     <gui fullscreen="0">
