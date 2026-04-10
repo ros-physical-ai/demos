@@ -29,6 +29,7 @@
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>so_arm100_description</exec_depend>
   <exec_depend>so_arm101_description</exec_depend>
+  <exec_depend>so_arm101_moveit_config</exec_depend>
   <exec_depend>so_arm_gz</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>xacro</exec_depend>
