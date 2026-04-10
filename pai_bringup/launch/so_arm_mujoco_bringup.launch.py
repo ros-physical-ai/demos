@@ -29,63 +29,6 @@ from launch_ros.substitutions import FindPackageShare
 from nav2_common.launch import ReplaceString, RewrittenYaml
 
 
-def _normalize_world_mjcf_eulerseq(mjcf_path):
-    """Neutralize the eulerseq directive emitted by sdformat_mjcf.
-
-    sdformat_mjcf (gz-mujoco) emits ``<compiler eulerseq="XYZ"/>`` in the
-    converted MJCF.  Uppercase ``XYZ`` denotes *extrinsic* rotations
-    (R = Rz · Ry · Rx), whereas MuJoCo's default lowercase ``xyz`` is
-    *intrinsic* (R = Rx · Ry · Rz).
-
-    Because MuJoCo's ``<compiler>`` settings are global — the last one
-    parsed wins and applies to the *entire* model — including the world
-    via ``<include>`` causes the world's ``eulerseq="XYZ"`` to silently
-    override the robot's euler attributes (which were authored for the
-    default intrinsic ``xyz``).  Same numbers, different rotation order →
-    cameras / bodies end up misoriented.
-
-    Neither placing a ``<compiler eulerseq="xyz"/>`` in the scene template
-    nor in the robot file is a robust fix: it would re-interpret any
-    non-identity euler values that sdformat_mjcf emitted under ``XYZ``.
-
-    The correct workaround is to convert every euler attribute in the
-    world MJCF to a quaternion (which is convention-independent) and
-    then strip the ``eulerseq`` directive so it cannot pollute the rest of
-    the model.
-
-    See:
-        https://github.com/gazebosim/gz-mujoco (sdformat_mjcf)
-        https://mujoco.readthedocs.io/en/latest/XMLreference.html#compiler
-    """
-    import math
-    import xml.etree.ElementTree as ET
-
-    def _euler_xyz_extrinsic_to_quat(ex, ey, ez):
-        """Convert extrinsic XYZ euler (radians) to wxyz quaternion."""
-        cx, sx = math.cos(ex / 2), math.sin(ex / 2)
-        cy, sy = math.cos(ey / 2), math.sin(ey / 2)
-        cz, sz = math.cos(ez / 2), math.sin(ez / 2)
-        # Extrinsic XYZ = intrinsic ZYX: q = qz * qy * qx
-        w = cz * cy * cx + sz * sy * sx
-        x = cz * cy * sx - sz * sy * cx
-        y = cz * sy * cx + sz * cy * sx
-        z = sz * cy * cx - cz * sy * sx
-        return w, x, y, z
-
-    tree = ET.parse(mjcf_path)
-    for elem in tree.iter():
-        euler_str = elem.get("euler")
-        if euler_str is not None:
-            ex, ey, ez = (float(v) for v in euler_str.split())
-            w, x, y, z = _euler_xyz_extrinsic_to_quat(ex, ey, ez)
-            elem.set("quat", f"{w} {x} {y} {z}")
-            del elem.attrib["euler"]
-    for comp in tree.findall("compiler"):
-        if "eulerseq" in comp.attrib:
-            del comp.attrib["eulerseq"]
-    tree.write(mjcf_path, xml_declaration=True)
-
-
 def _generate_mjcf_at_launch(pkg_share, world_sdf_path, arm_base_xyz, arm_base_rpy):
     """Convert an SDF world to MJCF, process robot xacro, and compose the scene.
 
@@ -125,8 +68,6 @@ def _generate_mjcf_at_launch(pkg_share, world_sdf_path, arm_base_xyz, arm_base_r
     ret = sdformat_file_to_mjcf(str(sdf_path), str(world_mjcf_out))
     if ret:
         raise RuntimeError(f"sdformat_mjcf conversion failed (exit code {ret}) for {sdf_path}")
-
-    _normalize_world_mjcf_eulerseq(world_mjcf_out)
 
     # Step 2: Process robot xacro → MJCF.
     so_arm101_out = out_dir / "so_arm101.xml"
