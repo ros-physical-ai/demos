@@ -65,9 +65,8 @@ def _generate_mjcf_at_launch(pkg_share, world_sdf_path, arm_base_xyz, arm_base_r
 
     # Step 1: Convert SDF world → MJCF world XML.
     world_mjcf_out = out_dir / "world.xml"
-    ret = sdformat_file_to_mjcf(str(sdf_path), str(world_mjcf_out))
-    if ret:
-        raise RuntimeError(f"sdformat_mjcf conversion failed (exit code {ret}) for {sdf_path}")
+    if sdformat_file_to_mjcf(str(sdf_path), str(world_mjcf_out)):
+        raise RuntimeError(f"sdformat_mjcf conversion failed for {sdf_path}")
 
     # Step 2: Process robot xacro → MJCF.
     so_arm101_out = out_dir / "so_arm101.xml"
