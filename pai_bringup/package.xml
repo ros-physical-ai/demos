@@ -19,6 +19,7 @@
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>mujoco_ros2_control</exec_depend>
+  <exec_depend>pai_assets</exec_depend>
   <exec_depend>pai_description</exec_depend>
   <exec_depend>nav2_common</exec_depend>
   <exec_depend>parallel_gripper_controller</exec_depend>
