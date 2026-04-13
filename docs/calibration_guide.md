@@ -45,11 +45,13 @@ lerobot-calibrate \
 
 ### Leader arm (if using teleoperation)
 
+LeRobot treats the leader as a **teleoperator**, not a `robot` type. Use `--teleop.*` (not `--robot.*`); `so101_leader` is only valid for `--teleop.type`.
+
 ```bash
 lerobot-calibrate \
-    --robot.type=so101_leader \
-    --robot.port=/dev/ttyACM1 \
-    --robot.id=leader_arm
+    --teleop.type=so101_leader \
+    --teleop.port=/dev/ttyACM1 \
+    --teleop.id=leader_arm
 ```
 
 > [!IMPORTANT]
