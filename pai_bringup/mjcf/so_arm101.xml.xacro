@@ -1,7 +1,11 @@
 <?xml version="1.0"?>
 <mujoco model="so_arm101" xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <xacro:include filename="$(find pai_bringup)/config/world/poses_args.xacro"/>
-  <xacro:declare_poses_args/>
+  <xacro:arg name="arm_base_x" default="0.38"/>
+  <xacro:arg name="arm_base_y" default="0.0"/>
+  <xacro:arg name="arm_base_z" default="0.4"/>
+  <xacro:arg name="arm_base_roll" default="0.0"/>
+  <xacro:arg name="arm_base_pitch" default="0.0"/>
+  <xacro:arg name="arm_base_yaw" default="3.14159"/>
   <xacro:arg name="meshdir" default=""/>
 
   <!-- MuJoCo cannot use ROS paths; meshdir is absolute path from launch -->
@@ -67,7 +71,7 @@
 
   <worldbody>
     <!-- Link base (pos for table scene: tray x=0.06, cubes x=0.26-0.32) -->
-    <body name="base_link" pos="$(arg arm_base_x) $(arg arm_base_y) $(arg arm_base_z)" quat="0 0 0 1" childclass="so_arm101">
+    <body name="base_link" pos="$(arg arm_base_x) $(arg arm_base_y) $(arg arm_base_z)" euler="$(arg arm_base_roll) $(arg arm_base_pitch) $(arg arm_base_yaw)" childclass="so_arm101">
       <inertial
         pos="0.0137179 -5.19711e-05 0.0334843"
         mass="0.147"

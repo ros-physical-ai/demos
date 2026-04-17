@@ -1,11 +1,15 @@
 <?xml version="1.0" ?>
+<!--
+  Unified world for the SO-ARM101 table scene.
+  Single source of truth — loaded natively in Gazebo and converted to MJCF
+  at launch time for MuJoCo (via sdformat_mjcf).
+-->
 <sdf version="1.9">
   <world name="pai_world">
 
     <scene>
       <ambient>0.4 0.4 0.4</ambient>
       <grid>false</grid>
-      <sky></sky>
     </scene>
 
     <gui fullscreen="0">
@@ -17,18 +21,15 @@
           <property type="bool" key="showTitleBar">false</property>
           <property type="string" key="state">docked</property>
         </gz-gui>
-
         <engine>ogre2</engine>
-
         <shadows>
           <texture_size light_type="spotlight">2048</texture_size>
         </shadows>
-
         <camera_clip>
           <near>0.05</near>
           <far>50000</far>
         </camera_clip>
-        <camera_pose>-1.0 -1.0 3.0 0.0 0.54 1.11</camera_pose>
+        <camera_pose>-0.5 -0.8 1.5 0.0 0.54 1.11</camera_pose>
       </plugin>
 
       <plugin filename="GlobalIlluminationVct" name="GI">
@@ -45,7 +46,6 @@
         <bounceCount>3</bounceCount>
       </plugin>
 
-      <!-- Plugins that add functionality to the scene -->
       <plugin filename="EntityContextMenuPlugin" name="Entity context menu">
         <gz-gui>
           <property key="state" type="string">floating</property>
@@ -135,19 +135,16 @@
           <property type="bool" key="resizable">false</property>
           <property type="double" key="height">72</property>
           <property type="double" key="z">1</property>
-
           <property type="string" key="state">floating</property>
           <anchors target="3D View">
             <line own="left" target="left"/>
             <line own="bottom" target="bottom"/>
           </anchors>
         </gz-gui>
-
         <play_pause>true</play_pause>
         <step>true</step>
         <start_paused>false</start_paused>
         <use_event>true</use_event>
-
       </plugin>
 
       <!-- World statistics -->
@@ -159,21 +156,18 @@
           <property type="double" key="height">110</property>
           <property type="double" key="width">290</property>
           <property type="double" key="z">1</property>
-
           <property type="string" key="state">floating</property>
           <anchors target="3D View">
             <line own="right" target="right"/>
             <line own="bottom" target="bottom"/>
           </anchors>
         </gz-gui>
-
         <sim_time>true</sim_time>
         <real_time>true</real_time>
         <real_time_factor>true</real_time_factor>
         <iterations>true</iterations>
       </plugin>
 
-      <!-- Insert simple shapes -->
       <plugin filename="Shapes" name="Shapes">
         <gz-gui>
           <property key="resizable" type="bool">false</property>
@@ -187,7 +181,6 @@
         </gz-gui>
       </plugin>
 
-      <!-- Insert lights -->
       <plugin filename="Lights" name="Lights">
         <gz-gui>
           <property key="resizable" type="bool">false</property>
@@ -201,7 +194,6 @@
         </gz-gui>
       </plugin>
 
-      <!-- Translate / rotate -->
       <plugin filename="TransformControl" name="Transform control">
         <gz-gui>
           <property key="resizable" type="bool">false</property>
@@ -215,7 +207,6 @@
         </gz-gui>
       </plugin>
 
-      <!-- Screenshot -->
       <plugin filename="Screenshot" name="Screenshot">
         <gz-gui>
           <property key="resizable" type="bool">false</property>
@@ -229,7 +220,6 @@
         </gz-gui>
       </plugin>
 
-      <!-- Video recorder -->
       <plugin filename="VideoRecorder" name="VideoRecorder">
         <gz-gui>
           <property key="resizable" type="bool">false</property>
@@ -241,7 +231,6 @@
           <property key="showTitleBar" type="bool">false</property>
           <property key="cardBackground" type="string">#777777</property>
         </gz-gui>
-
         <record_video>
           <use_sim_time>true</use_sim_time>
           <lockstep>false</lockstep>
@@ -278,15 +267,7 @@
       </plugin>
     </gui>
 
-    <physics name="2ms" type="bullet-featherstone">
-      <max_step_size>0.002</max_step_size>
-      <real_time_factor>1.0</real_time_factor>
-    </physics>
-    <plugin
-      filename="gz-sim-physics-system"
-      name="gz::sim::systems::Physics">
-      <engine><filename>gz-physics-bullet-featherstone-plugin</filename></engine>
-    </plugin>
+    <!-- System plugins -->
     <plugin
       filename="gz-sim-sensors-system"
       name="gz::sim::systems::Sensors">
@@ -318,8 +299,9 @@
 
     <gravity>0 0 -9.8</gravity>
 
+    <!-- Lighting -->
     <light type="spot" name="spot">
-      <pose>0 0 2.6 0 0 0</pose>
+      <pose>0 0 2.0 0 0 0</pose>
       <cast_shadows>true</cast_shadows>
       <diffuse>1 1 1 1</diffuse>
       <intensity>1.5</intensity>
@@ -335,9 +317,9 @@
       </spot>
     </light>
 
+    <!-- Ground plane -->
     <model name="ground_plane">
       <static>true</static>
-      <pose>0 0 0.8 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -347,44 +329,268 @@
             </plane>
           </geometry>
         </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>3 3</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.2 0.3 0.4 1</ambient>
+            <diffuse>0.2 0.3 0.4 1</diffuse>
+          </material>
+        </visual>
       </link>
     </model>
 
-    <include>
-      <uri>
-        model://Lightbox
-      </uri>
-      <name>light_box</name>
-      <pose>0 0 0.810 0 0 -1.57</pose>
+    <!--
+      Table: box top (660mm x 600mm x 26mm) + 4 legs (30mm x 30mm x 367mm).
+      Table top half-sizes: 0.33 0.3 0.013
+      Leg half-sizes: 0.015 0.015 0.1835
+      Leg offset from center: ±0.315 along X, ±0.285 along Y
+      Leg Z offset: -0.1965 (below table top center)
+    -->
+    <model name="table">
       <static>true</static>
-    </include>
+      <pose>0.2 0.0 0.38 0 0 0</pose>
+      <link name="table_top">
+        <collision name="collision">
+          <geometry>
+            <box><size>0.66 0.6 0.026</size></box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box><size>0.66 0.6 0.026</size></box>
+          </geometry>
+          <material>
+            <ambient>0.18 0.18 0.2 1</ambient>
+            <diffuse>0.18 0.18 0.2 1</diffuse>
+            <specular>0.12 0.12 0.12 1</specular>
+          </material>
+        </visual>
+      </link>
+      <link name="leg_fl">
+        <pose>-0.315 0.285 -0.1965 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.03 0.03 0.367</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.03 0.03 0.367</size></box></geometry>
+          <material>
+            <ambient>0.82 0.84 0.86 1</ambient>
+            <diffuse>0.82 0.84 0.86 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="leg_fr">
+        <pose>0.315 0.285 -0.1965 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.03 0.03 0.367</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.03 0.03 0.367</size></box></geometry>
+          <material>
+            <ambient>0.82 0.84 0.86 1</ambient>
+            <diffuse>0.82 0.84 0.86 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="leg_bl">
+        <pose>-0.315 -0.285 -0.1965 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.03 0.03 0.367</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.03 0.03 0.367</size></box></geometry>
+          <material>
+            <ambient>0.82 0.84 0.86 1</ambient>
+            <diffuse>0.82 0.84 0.86 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="leg_br">
+        <pose>0.315 -0.285 -0.1965 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.03 0.03 0.367</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.03 0.03 0.367</size></box></geometry>
+          <material>
+            <ambient>0.82 0.84 0.86 1</ambient>
+            <diffuse>0.82 0.84 0.86 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <joint name="leg_fl_joint" type="fixed">
+        <parent>table_top</parent><child>leg_fl</child>
+      </joint>
+      <joint name="leg_fr_joint" type="fixed">
+        <parent>table_top</parent><child>leg_fr</child>
+      </joint>
+      <joint name="leg_bl_joint" type="fixed">
+        <parent>table_top</parent><child>leg_bl</child>
+      </joint>
+      <joint name="leg_br_joint" type="fixed">
+        <parent>table_top</parent><child>leg_br</child>
+      </joint>
+    </model>
 
-    <include>
-      <uri>
-        model://Camera_Arm
-      </uri>
-      <name>camera_arm</name>
-      <pose>0.0 -0.46 0.810 0 0 0</pose>
+    <!--
+      Tray: 120mm x 160mm x 20mm, floor + 4 walls.
+      Short edge (120mm) along X, long edge (160mm) along Y.
+    -->
+    <model name="tray">
       <static>true</static>
-    </include>
+      <pose>0.06 0.0 0.3945 0 0 0</pose>
+      <link name="tray_floor">
+        <collision name="collision">
+          <geometry><box><size>0.12 0.16 0.003</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.12 0.16 0.003</size></box></geometry>
+          <material>
+            <ambient>0.95 0.95 0.96 1</ambient>
+            <diffuse>0.95 0.95 0.96 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+          </material>
+        </visual>
+      </link>
+      <link name="tray_wall_f">
+        <pose>0 0.0785 0.0115 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.12 0.006 0.02</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.12 0.006 0.02</size></box></geometry>
+          <material>
+            <ambient>0.95 0.95 0.96 1</ambient>
+            <diffuse>0.95 0.95 0.96 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="tray_wall_b">
+        <pose>0 -0.0785 0.0115 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.12 0.006 0.02</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.12 0.006 0.02</size></box></geometry>
+          <material>
+            <ambient>0.95 0.95 0.96 1</ambient>
+            <diffuse>0.95 0.95 0.96 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="tray_wall_l">
+        <pose>-0.0585 0 0.0115 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.006 0.16 0.02</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.006 0.16 0.02</size></box></geometry>
+          <material>
+            <ambient>0.95 0.95 0.96 1</ambient>
+            <diffuse>0.95 0.95 0.96 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <link name="tray_wall_r">
+        <pose>0.0585 0 0.0115 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.006 0.16 0.02</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.006 0.16 0.02</size></box></geometry>
+          <material>
+            <ambient>0.95 0.95 0.96 1</ambient>
+            <diffuse>0.95 0.95 0.96 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <joint name="wall_f_joint" type="fixed">
+        <parent>tray_floor</parent><child>tray_wall_f</child>
+      </joint>
+      <joint name="wall_b_joint" type="fixed">
+        <parent>tray_floor</parent><child>tray_wall_b</child>
+      </joint>
+      <joint name="wall_l_joint" type="fixed">
+        <parent>tray_floor</parent><child>tray_wall_l</child>
+      </joint>
+      <joint name="wall_r_joint" type="fixed">
+        <parent>tray_floor</parent><child>tray_wall_r</child>
+      </joint>
+    </model>
 
-    <include>
-      <uri>
-        model://Cube
-      </uri>
-      <name>cube</name>
-      <pose>0.085812 -0.231733 0.810 -1.571 0 0</pose>
-      <static>false</static>
-    </include>
+    <!-- Cube small: 25mm, 0.02 kg, red -->
+    <model name="cube_small">
+      <pose>0.28 -0.1 0.4055 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>0.02</mass>
+        </inertial>
+        <collision name="collision">
+          <geometry><box><size>0.025 0.025 0.025</size></box></geometry>
+          <surface>
+            <friction><ode><mu>0.7</mu><mu2>0.7</mu2></ode></friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.025 0.025 0.025</size></box></geometry>
+          <material>
+            <ambient>0.9 0.3 0.2 1</ambient>
+            <diffuse>0.9 0.3 0.2 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
 
-    <include>
-      <uri>
-        model://Tray
-      </uri>
-      <name>tray</name>
-      <pose>0.340199 -0.449733 0.810 0 0 -1.57</pose>
-      <static>false</static>
-    </include>
+    <!-- Cube medium: 31.2mm, 0.04 kg, green -->
+    <model name="cube_medium">
+      <pose>0.16 0.05 0.4086 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>0.04</mass>
+        </inertial>
+        <collision name="collision">
+          <geometry><box><size>0.0312 0.0312 0.0312</size></box></geometry>
+          <surface>
+            <friction><ode><mu>0.7</mu><mu2>0.7</mu2></ode></friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.0312 0.0312 0.0312</size></box></geometry>
+          <material>
+            <ambient>0.2 0.7 0.4 1</ambient>
+            <diffuse>0.2 0.7 0.4 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Cube large: 37.6mm, 0.08 kg, blue -->
+    <model name="cube_large">
+      <pose>0.26 0.12 0.4118 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>0.08</mass>
+        </inertial>
+        <collision name="collision">
+          <geometry><box><size>0.0376 0.0376 0.0376</size></box></geometry>
+          <surface>
+            <friction><ode><mu>0.7</mu><mu2>0.7</mu2></ode></friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.0376 0.0376 0.0376</size></box></geometry>
+          <material>
+            <ambient>0.2 0.4 0.9 1</ambient>
+            <diffuse>0.2 0.4 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
 
   </world>
 </sdf>

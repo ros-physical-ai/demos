@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!--
+  MuJoCo scene template that composes a converted world MJCF with the
+  hand-tuned robot MJCF (so_arm101.xml).
+
+  This file is processed by xacro at launch time. The world_mjcf_path arg
+  points to the MJCF file produced by sdformat_mjcf from the canonical
+  SDF world, and robot_mjcf_path points to the processed so_arm101.xml.
+-->
+<mujoco model="so_arm101 scene" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="world_mjcf_path" default=""/>
+  <xacro:arg name="robot_mjcf_path" default="so_arm101.xml"/>
+
+  <!-- Include robot (hand-tuned dynamics, actuators, contacts) -->
+  <include file="$(arg robot_mjcf_path)" />
+
+  <!-- Include converted world (table, tray, cubes, lights) -->
+  <include file="$(arg world_mjcf_path)" />
+
+  <statistic center="0 -0.01 0.45" extent="1.5" />
+
+  <!-- MuJoCo-specific visual settings (not expressible in SDF) -->
+  <visual>
+    <headlight diffuse="0.8 0.8 0.8" ambient="0.4 0.4 0.4" specular="0.1 0.1 0.1" />
+    <rgba haze="0.15 0.25 0.35 1" />
+    <global azimuth="45" elevation="-20" />
+  </visual>
+
+  <!-- Skybox and groundplane textures (MuJoCo-specific rendering) -->
+  <asset>
+    <texture
+      type="skybox"
+      builtin="gradient"
+      rgb1="0.6 0.6 0.6"
+      rgb2="0.4 0.4 0.4"
+      width="512"
+      height="3072"
+    />
+    <texture
+      type="2d"
+      name="groundplane"
+      builtin="checker"
+      mark="edge"
+      rgb1="0.2 0.3 0.4"
+      rgb2="0.1 0.2 0.3"
+      markrgb="0.8 0.8 0.8"
+      width="300"
+      height="300"
+    />
+    <material
+      name="groundplane"
+      texture="groundplane"
+      texuniform="true"
+      texrepeat="5 5"
+      reflectance="0.2"
+    />
+  </asset>
+</mujoco>

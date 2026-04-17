@@ -20,34 +20,80 @@ from pathlib import Path
 import xacro
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, OpaqueFunction
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterFile
 from launch_ros.substitutions import FindPackageShare
 from nav2_common.launch import ReplaceString, RewrittenYaml
 
 
-def _generate_mjcf_at_launch(pkg_share):
-    """Run xacro on scene and so_arm101 xacros, write to temp dir. Poses from poses_args.xacro."""
+def _generate_mjcf_at_launch(pkg_share, world_sdf_path, arm_base_xyz, arm_base_rpy):
+    """Convert an SDF world to MJCF, process robot xacro, and compose the scene.
+
+    Pipeline:
+      1. Convert SDF world → MJCF world XML (via sdformat_mjcf)
+      2. Process so_arm101.xml.xacro → so_arm101.xml (hand-tuned robot, unchanged)
+      3. Process scene_template.xml.xacro → scene.xml (composes world + robot)
+    """
+    # sdformat_mjcf expects unversioned modules (`sdformat`, `gz.math`), but
+    # robostack-kilted ships versioned ones (`sdformat15`, `gz.math8`).
+    import sys
+
+    import gz.math8
+    import sdformat15
+
+    sys.modules.setdefault("sdformat", sdformat15)
+    sys.modules.setdefault("gz.math", gz.math8)
+
+    from sdformat_mjcf.sdformat_to_mjcf.sdformat_to_mjcf import sdformat_file_to_mjcf
+
     mjcf_dir = Path(pkg_share) / "mjcf"
-    scene_xacro = mjcf_dir / "scene.xml.xacro"
+    scene_template_xacro = mjcf_dir / "scene_template.xml.xacro"
     so_arm101_xacro = mjcf_dir / "so_arm101.xml.xacro"
-    if not scene_xacro.exists() or not so_arm101_xacro.exists():
+    if not scene_template_xacro.exists() or not so_arm101_xacro.exists():
         raise FileNotFoundError(
-            f"MJCF xacro sources not found. Ensure mjcf/ is installed. Looked for {scene_xacro} and {so_arm101_xacro}"
+            f"MJCF xacro sources not found. Ensure mjcf/ is installed. "
+            f"Looked for {scene_template_xacro} and {so_arm101_xacro}"
         )
+    sdf_path = Path(world_sdf_path)
+    if not sdf_path.exists():
+        raise FileNotFoundError(f"SDF world file not found: {sdf_path}")
 
     out_dir = Path(tempfile.mkdtemp(prefix="pai_bringup_mjcf_"))
-    so_arm101_out = out_dir / "so_arm101.xml"
-    scene_out = out_dir / "scene.xml"
 
+    # Step 1: Convert SDF world → MJCF world XML.
+    world_mjcf_out = out_dir / "world.xml"
+    if sdformat_file_to_mjcf(str(sdf_path), str(world_mjcf_out)):
+        raise RuntimeError(f"sdformat_mjcf conversion failed for {sdf_path}")
+
+    # Step 2: Process robot xacro → MJCF.
+    so_arm101_out = out_dir / "so_arm101.xml"
     meshdir = Path(get_package_share_directory("so_arm101_description")) / "meshes"
-    doc = xacro.process_file(str(so_arm101_xacro), mappings={"meshdir": str(meshdir)})
+    doc = xacro.process_file(
+        str(so_arm101_xacro),
+        mappings={
+            "meshdir": str(meshdir),
+            "arm_base_x": arm_base_xyz[0],
+            "arm_base_y": arm_base_xyz[1],
+            "arm_base_z": arm_base_xyz[2],
+            "arm_base_roll": arm_base_rpy[0],
+            "arm_base_pitch": arm_base_rpy[1],
+            "arm_base_yaw": arm_base_rpy[2],
+        },
+    )
     so_arm101_out.write_text(doc.toxml())
 
-    doc = xacro.process_file(str(scene_xacro))
+    # Step 3: Compose scene from template.
+    scene_out = out_dir / "scene.xml"
+    doc = xacro.process_file(
+        str(scene_template_xacro),
+        mappings={
+            "world_mjcf_path": str(world_mjcf_out),
+            "robot_mjcf_path": str(so_arm101_out),
+        },
+    )
     scene_out.write_text(doc.toxml())
 
     return str(scene_out)
@@ -56,7 +102,18 @@ def _generate_mjcf_at_launch(pkg_share):
 def launch_setup(context, *args, **kwargs):
     """Set up nodes for the SO ARM MuJoCo bringup."""
     pkg_share = PathJoinSubstitution([FindPackageShare("pai_bringup")]).perform(context)
-    mujoco_model = _generate_mjcf_at_launch(pkg_share)
+    world_sdf_path = LaunchConfiguration("world_file").perform(context)
+    arm_base_xyz = (
+        LaunchConfiguration("x").perform(context),
+        LaunchConfiguration("y").perform(context),
+        LaunchConfiguration("z").perform(context),
+    )
+    arm_base_rpy = (
+        LaunchConfiguration("roll").perform(context),
+        LaunchConfiguration("pitch").perform(context),
+        LaunchConfiguration("yaw").perform(context),
+    )
+    mujoco_model = _generate_mjcf_at_launch(pkg_share, world_sdf_path, arm_base_xyz, arm_base_rpy)
     description_xacro_args = f"mujoco_model:={mujoco_model}"
 
     ros2_controllers_file = PathJoinSubstitution(
@@ -119,5 +176,17 @@ def launch_setup(context, *args, **kwargs):
 
 def generate_launch_description():
     """Generate launch description."""
-    declared_arguments = []
+    declared_arguments = [
+        DeclareLaunchArgument(
+            "world_file",
+            default_value=PathJoinSubstitution([FindPackageShare("pai_description"), "world", "so_arm_table.sdf"]),
+            description="SDF world file to convert and load in MuJoCo.",
+        ),
+        DeclareLaunchArgument("x", default_value="0.38", description="Robot arm base X position"),
+        DeclareLaunchArgument("y", default_value="0.0", description="Robot arm base Y position"),
+        DeclareLaunchArgument("z", default_value="0.4", description="Robot arm base Z position"),
+        DeclareLaunchArgument("roll", default_value="0.0", description="Robot arm base roll orientation (radians)"),
+        DeclareLaunchArgument("pitch", default_value="0.0", description="Robot arm base pitch orientation (radians)"),
+        DeclareLaunchArgument("yaw", default_value="3.14159", description="Robot arm base yaw orientation (radians)"),
+    ]
     return LaunchDescription([*declared_arguments, OpaqueFunction(function=launch_setup)])
