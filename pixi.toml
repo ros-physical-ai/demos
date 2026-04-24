@@ -46,22 +46,6 @@ rosetta-record-mujoco = { cmd = [
   "contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml",
   "bag_base_dir:=datasets/so_arm101_mujoco/bags",
 ] }
-# Run LeRobot inference node
-# Download model first: python pai_bringup/test/download_lerobot_model
-# Override: pixi run lerobot-inference --ros-args -p policy_path:=/path/to/model
-lerobot-inference = { cmd = [
-  "python3",
-  "pai_bringup/scripts/lerobot_inference_node",
-  "--ros-args",
-  "-p",
-  "camera_topic:=/camera",
-  "-p",
-  "command_topic:=/forward_position_controller/commands",
-  "-p",
-  "task:=Move to blue cube",
-  "-p",
-  "device:=cuda",
-]}
 test-joints = { cmd = [
   "ros2",
   "topic",

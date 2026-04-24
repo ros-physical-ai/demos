@@ -93,26 +93,6 @@ This is useful for interactive debugging, testing, and running multiple commands
 Note: When running ROS 2 commands manually in the shell, ensure the Zenoh router is running.
 Start it in a separate terminal using `pixi run start_zenoh`.
 
-For example, to launch the LeRobot inference node:
-
-Terminal 1 (start Zenoh router):
-
-```bash
-pixi run start_zenoh
-```
-
-Terminal 2 (run inference node):
-
-```bash
-pixi shell
-
-# Replace the model path to match your environment
-python3 pai_bringup/scripts/lerobot_inference_node \
-  --ros-args-p policy_path:=outputs/train/act_move_to_cube/checkpoints/last/pretrained_model
-```
-
-For more details on training models, inference parameters, and usage, see [so_arm_demo.md](./so_arm_demo.md).
-
 Additional resources for using Pixi can be found at this [blog](https://jafarabdi.github.io/blog/2025/ros2-pixi-dev/).
 
 ### Scene Configuration

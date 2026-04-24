@@ -9,15 +9,8 @@ endif()
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY config launch mjcf scripts urdf
+  DIRECTORY config launch mjcf urdf
   DESTINATION share/${PROJECT_NAME}
-)
-
-# Install Python scripts and wrappers
-install(
-  PROGRAMS
-    scripts/lerobot_inference_node
-  DESTINATION lib/${PROJECT_NAME}
 )
 
 ament_package()
