@@ -181,6 +181,59 @@ With Pixi: `pixi run so-arm-leader`
 
 Record demonstrations, train a policy, and deploy it on the robot — in simulation or on real hardware, using any input method (leader arm teleoperation, scripted commands, or custom controllers).
 
+#### Recording episodes
+
+<table>
+<tr>
+<td align="center"><b>Simulation</b></td>
+<td align="center"><b>Real Hardware</b></td>
+</tr>
+<tr>
+<td>
+
+https://github.com/user-attachments/assets/9bd16f15-358f-44e2-80f8-df01aaca47c0
+
+</td>
+<td>
+
+https://github.com/user-attachments/assets/bcc907b0-0914-43be-89ee-5bd161139264
+
+</td>
+</tr>
+<tr>
+<td align="center"><em>Recording episodes in Gazebo via leader arm teleoperation</em></td>
+<td align="center"><em>Recording episodes on real SO-ARM101</em></td>
+</tr>
+</table>
+
+#### Trained policy inference
+
+<table>
+<tr>
+<td align="center"><b>Simulation</b></td>
+<td align="center"><b>Real Hardware</b></td>
+</tr>
+<tr>
+<td>
+
+https://github.com/user-attachments/assets/9183df05-4db4-46b4-90ef-56cfd50b56c2
+
+</td>
+<td>
+
+https://github.com/user-attachments/assets/51beafa7-4d85-4a53-b0db-ec593f663850
+
+</td>
+</tr>
+<tr>
+<td align="center"><em>Trained policy running in Gazebo</em></td>
+<td align="center"><em>Trained policy running on real SO-ARM101</em></td>
+</tr>
+</table>
+
+> [!NOTE]
+> These videos show an **ACT** policy trained on the recorded episodes. The goal here is to demonstrate the full **Record → Train → Deploy** pipeline — not to showcase optimal policy performance, which depends on the number of episodes, model selection, and hyperparameter tuning.
+
 For the full pipeline guide see [End-to-End Learning Pipeline with Rosetta](./demos/so_arm_101/rosetta_end_to_end_demo.md).
 
 ## Linting & Pre-commit

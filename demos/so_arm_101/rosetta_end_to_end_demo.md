@@ -11,6 +11,9 @@ This guide explains the full Record → Train → Deploy pipeline using [Rosetta
 
 The pipeline is **not tied to a specific task**. The same workflow applies whether you are teaching the robot to pick and place objects, sort items, wave, or perform any other manipulation behavior — only the recorded demonstrations define what the policy learns.
 
+> [!TIP]
+> See the [main README](../../README.md#demos) for videos of the full pipeline in action — recording demonstrations via leader arm teleoperation and deploying trained policies, in both simulation and on real hardware.
+
 ## Prerequisites
 
 Follow the main [README](../../README.md) to set up the workspace:
