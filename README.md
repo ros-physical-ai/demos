@@ -301,4 +301,3 @@ Other demos: fully open-source physical AI projects on ROS.
 
 - [Agentic mobile manipulator](https://github.com/RobotecAI/agentic-mobile-manipulator), a comprehensive demo project using a hardware-in-the-loop setup with O3DE and all the software and inference running on-board.
 
-test
