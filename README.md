@@ -94,7 +94,7 @@ source ~/ws_pai/install/setup.bash
 ros2 launch pai_bringup so_arm_gz_bringup.launch.py
 ```
 
-**With Pixi:** 
+**With Pixi:**
 
 > [!IMPORTANT]
 > This project uses `rmw_zenoh` as the ROS 2 middleware. The Zenoh router must
@@ -106,6 +106,7 @@ ros2 launch pai_bringup so_arm_gz_bringup.launch.py
 > ```
 >
 > Then open a second terminal for the commands below.
+>
 > ```bash
 > pixi run so-arm-gz
 > ```
@@ -118,7 +119,7 @@ ros2 launch pai_bringup so_arm_gz_bringup.launch.py
 ros2 launch pai_bringup so_arm_mujoco_bringup.launch.py
 ```
 
-**With Pixi:** 
+**With Pixi:**
 
 > [!IMPORTANT]
 > This project uses `rmw_zenoh` as the ROS 2 middleware. The Zenoh router must
@@ -130,10 +131,10 @@ ros2 launch pai_bringup so_arm_mujoco_bringup.launch.py
 > ```
 >
 > Then open a second terminal for the commands below.
+>
 > ```bash
 > pixi run so-arm-mujoco
 > ```
-
 
 ### Real hardware
 
@@ -300,4 +301,3 @@ With Pixi: `pixi run lint`
 Other demos: fully open-source physical AI projects on ROS.
 
 - [Agentic mobile manipulator](https://github.com/RobotecAI/agentic-mobile-manipulator), a comprehensive demo project using a hardware-in-the-loop setup with O3DE and all the software and inference running on-board.
-
