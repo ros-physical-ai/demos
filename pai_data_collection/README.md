@@ -43,12 +43,13 @@ ros2 launch rosetta episode_recorder_launch.py \
     bag_base_dir:=datasets/so_arm101/bags
 ```
 
-4. Start episode:
+4. Start the keyboard controller (in a new terminal):
 
 ```bash
-ros2 action send_goal /record_episode \
-    rosetta_interfaces/action/RecordEpisode "{prompt: 'move arm'}" --feedback
+ros2 run rosetta episode_keyboard_node
 ```
+
+Press `t` to set a task prompt, then `r` (or `→`) to start recording.
 
 5. Move the arm:
 
@@ -68,11 +69,11 @@ There is simple script to run some of these commands sequentially:
 $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/scripts/arm_demo_positions.sh
 ```
 
-6. Finish episode: Cancel the action goal (Ctrl+C in the terminal where `send_goal` was run, or use an action client to cancel).
+6. Finish episode: Press `s` (or `←`) to stop and save, or `d` to discard.
 
 This will save a rosbag that corresponds to that episode.
 
-7. Record more episodes: Repeat steps 4, 5, 6.
+7. Record more episodes: Repeat from step 4 (press `r` again — no need to restart the keyboard controller).
 
 #### Workflow Overview
 
@@ -83,15 +84,18 @@ flowchart LR
     pixi run so-arm-gz"]
     B --> C["3. Start Episode Recorder
     ros2 launch rosetta episode_recorder_launch.py ..."]
-    C --> D["4. Start Episode
-    ros2 action send_goal /record_episode ..."]
-    D --> E["5. Move the Arm
+    C --> D["4. Start Keyboard Controller
+    ros2 run rosetta episode_keyboard_node"]
+    D --> E["5. Start Episode
+    Press r"]
+    E --> F["6. Move the Arm
     ros2 topic pub ..."]
-    E --> F["6. Finish Episode / Cancel action goal
-    Ctrl+C"]
-    F --> G{More episodes?}
-    G -- Yes --> D
-    G -- No --> H["Done Recording Rosbags"]
+    F --> G["7. Finish Episode
+    Press s (save) or d (discard)"]
+    G --> H{More episodes?}
+    H -- Yes --> E
+    H -- No --> I["Done Recording Rosbags"]
+
 ```
 
 ### MuJoCo-based data collection
@@ -101,9 +105,10 @@ Use MuJoCo simulation with the same `so_arm101.yaml` contract.
 1. Start zenoh router: `pixi run start_zenoh`
 2. Start MuJoCo + camera relay: `pixi run so-arm-mujoco`
 3. Start rosetta recorder: `pixi run rosetta-record-mujoco`
-4. Start episode: `ros2 action send_goal /record_episode rosetta_interfaces/action/RecordEpisode "{prompt: 'move arm'}" --feedback`
-5. Move the arm: `$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/scripts/arm_demo_positions.sh` (or `ros2 topic pub`; MuJoCo must already be running from step 2)
-6. Cancel the action goal to finish the episode
+4. Start keyboard controller (new terminal): `ros2 run rosetta episode_keyboard_node`
+5. Press `t` to set a prompt, `r` to start recording
+6. Move the arm: `$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/scripts/arm_demo_positions.sh` (or `ros2 topic pub`; MuJoCo must already be running from step 2)
+7. Press `s` to save or `d` to discard the episode
 
 ## Convert Rosbag to LeRobot
 
