@@ -38,6 +38,15 @@ so-arm-leader = { cmd = ["ros2", "launch", "pai_leader_teleop", "leader_bringup.
 so-arm-real = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_real_bringup.launch.py"] }
 so-arm-gz = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_gz_bringup.launch.py"] }
 so-arm-mujoco = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_mujoco_bringup.launch.py"] }
+ur5e-gz = { cmd = ["ros2", "launch", "pai_bringup", "ur5e_gz_bringup.launch.py"] }
+ur5e-rosetta-record = { cmd = [
+  "ros2",
+  "launch",
+  "rosetta",
+  "episode_recorder_launch.py",
+  "contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/ur5e.yaml",
+  "bag_base_dir:=datasets/ur5e_gz/bags",
+] }
 rosetta-record-mujoco = { cmd = [
   "ros2",
   "launch",
@@ -143,6 +152,7 @@ ros-kilted-rmw-zenoh-cpp = "*"
 # Camera driver
 ros-kilted-usb-cam = "*"
 ros-kilted-camera-calibration = ">=6.0.11,<7"
+ros-kilted-ros2-control = ">=5.11.3,<6"
 
 [pypi-dependencies]
 huggingface-hub = "*"

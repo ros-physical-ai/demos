@@ -434,6 +434,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydocstyle-6.3.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyflakes-3.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.20.0-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/pygraphviz-1.14-py312hcdbcef4_3.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyparsing-3.3.2-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyqt-5.15.11-py312h82c0db2_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyqt-builder-1.18.2-pyhd8ed1ab_1.conda
@@ -671,12 +672,15 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros-gz-interfaces-2.1.12-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros-gz-sim-2.1.12-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros-workspace-1.0.3-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2-control-5.11.3-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2-control-cmake-0.3.0-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2-control-test-assets-5.11.3-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2action-0.38.2-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2bag-0.32.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2cli-0.38.2-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2cli-common-extensions-0.4.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2component-0.38.2-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2controlcli-5.11.3-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2doctor-0.38.2-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2interface-0.38.2-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2launch-0.28.5-np2py312h2ed9cc7_15.conda
@@ -1404,6 +1408,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydocstyle-6.3.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyflakes-3.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.20.0-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pygraphviz-1.14-py312h9c35e9e_3.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyparsing-3.3.2-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyqt-5.15.11-py312hc13527c_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyqt-builder-1.18.2-pyhd8ed1ab_1.conda
@@ -1641,12 +1646,15 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros-gz-interfaces-2.1.12-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros-gz-sim-2.1.12-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros-workspace-1.0.3-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2-control-5.11.3-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2-control-cmake-0.3.0-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2-control-test-assets-5.11.3-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2action-0.38.2-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2bag-0.32.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2cli-0.38.2-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2cli-common-extensions-0.4.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2component-0.38.2-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2controlcli-5.11.3-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2doctor-0.38.2-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2interface-0.38.2-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2launch-0.28.5-np2py312h61f2ce4_15.conda
@@ -2372,6 +2380,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydocstyle-6.3.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyflakes-3.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.19.2-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/pygraphviz-1.14-py312hcdbcef4_3.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyparsing-3.3.2-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyqt-5.15.11-py312h82c0db2_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyqt-builder-1.18.2-pyhd8ed1ab_1.conda
@@ -2609,12 +2618,15 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros-gz-interfaces-2.1.12-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros-gz-sim-2.1.12-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros-workspace-1.0.3-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2-control-5.11.3-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2-control-cmake-0.3.0-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2-control-test-assets-5.11.3-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2action-0.38.2-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2bag-0.32.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2cli-0.38.2-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2cli-common-extensions-0.4.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2component-0.38.2-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2controlcli-5.11.3-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2doctor-0.38.2-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2interface-0.38.2-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2launch-0.28.5-np2py312h2ed9cc7_15.conda
@@ -3341,6 +3353,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydocstyle-6.3.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyflakes-3.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.19.2-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pygraphviz-1.14-py312h9c35e9e_3.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyparsing-3.3.2-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyqt-5.15.11-py312hc13527c_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyqt-builder-1.18.2-pyhd8ed1ab_1.conda
@@ -3578,12 +3591,15 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros-gz-interfaces-2.1.12-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros-gz-sim-2.1.12-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros-workspace-1.0.3-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2-control-5.11.3-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2-control-cmake-0.3.0-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2-control-test-assets-5.11.3-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2action-0.38.2-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2bag-0.32.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2cli-0.38.2-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2cli-common-extensions-0.4.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2component-0.38.2-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2controlcli-5.11.3-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2doctor-0.38.2-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2interface-0.38.2-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2launch-0.28.5-np2py312h61f2ce4_15.conda
@@ -4308,6 +4324,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydocstyle-6.3.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyflakes-3.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.20.0-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/pygraphviz-1.14-py312hcdbcef4_3.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyparsing-3.3.2-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyqt-5.15.11-py312h82c0db2_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyqt-builder-1.18.2-pyhd8ed1ab_1.conda
@@ -4545,12 +4562,15 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros-gz-interfaces-2.1.12-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros-gz-sim-2.1.12-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros-workspace-1.0.3-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2-control-5.11.3-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2-control-cmake-0.3.0-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2-control-test-assets-5.11.3-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2action-0.38.2-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2bag-0.32.0-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2cli-0.38.2-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2cli-common-extensions-0.4.1-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2component-0.38.2-np2py312h2ed9cc7_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2controlcli-5.11.3-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2doctor-0.38.2-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2interface-0.38.2-np2py312h2ed9cc7_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2launch-0.28.5-np2py312h2ed9cc7_15.conda
@@ -5278,6 +5298,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydocstyle-6.3.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyflakes-3.4.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.20.0-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pygraphviz-1.14-py312h9c35e9e_3.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyparsing-3.3.2-pyhcf101f3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pyqt-5.15.11-py312hc13527c_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyqt-builder-1.18.2-pyhd8ed1ab_1.conda
@@ -5515,12 +5536,15 @@ environments:
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros-gz-interfaces-2.1.12-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros-gz-sim-2.1.12-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros-workspace-1.0.3-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2-control-5.11.3-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2-control-cmake-0.3.0-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2-control-test-assets-5.11.3-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2action-0.38.2-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2bag-0.32.0-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2cli-0.38.2-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2cli-common-extensions-0.4.1-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2component-0.38.2-np2py312h61f2ce4_15.conda
+      - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2controlcli-5.11.3-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2doctor-0.38.2-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2interface-0.38.2-np2py312h61f2ce4_15.conda
       - conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2launch-0.28.5-np2py312h61f2ce4_15.conda
@@ -19539,6 +19563,36 @@ packages:
   - pkg:pypi/pygments?source=compressed-mapping
   size: 893031
   timestamp: 1774796815820
+- conda: https://conda.anaconda.org/conda-forge/linux-64/pygraphviz-1.14-py312hcdbcef4_3.conda
+  sha256: 8637238af2d7f46fb532fdbd0468ccaca22ea92fc70912d2cae45b7cc6eb26e9
+  md5: 1f7333772f14e05d3156e891535b43c3
+  depends:
+  - __glibc >=2.17,<3.0.a0
+  - graphviz >=14.1.0,<15.0a0
+  - libgcc >=14
+  - python >=3.12,<3.13.0a0
+  - python_abi 3.12.* *_cp312
+  license: BSD-3-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/pygraphviz?source=hash-mapping
+  size: 146648
+  timestamp: 1768734950935
+- conda: https://conda.anaconda.org/conda-forge/linux-aarch64/pygraphviz-1.14-py312h9c35e9e_3.conda
+  sha256: 761ab604a3747cc03cd8af79961fd0a94a4ca64c438f2c24520d9b0a32e06370
+  md5: 8f8d3be17552e746343f48288d41c98f
+  depends:
+  - graphviz >=14.1.0,<15.0a0
+  - libgcc >=14
+  - python >=3.12,<3.13.0a0
+  - python >=3.12,<3.13.0a0 *_cpython
+  - python_abi 3.12.* *_cp312
+  license: BSD-3-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/pygraphviz?source=hash-mapping
+  size: 148133
+  timestamp: 1768734995833
 - pypi: https://files.pythonhosted.org/packages/59/4f/ac3fa906ae8a375a536b12794128c5efacade9eaa917a35dfd27ce0c7400/pynput-1.8.1-py2.py3-none-any.whl
   name: pynput
   version: 1.8.1
@@ -30135,6 +30189,55 @@ packages:
   license: Apache-2.0
   size: 35474
   timestamp: 1769480963173
+- conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2-control-5.11.3-np2py312h2ed9cc7_15.conda
+  sha256: f2ebef17a6c287b1cf9c7b6211f0eef1f47851f57752c8b23f6c50962e434a40
+  md5: 926bddd6e0465a83a77754fbe5748901
+  depends:
+  - python
+  - ros-kilted-controller-interface
+  - ros-kilted-controller-manager
+  - ros-kilted-controller-manager-msgs
+  - ros-kilted-hardware-interface
+  - ros-kilted-joint-limits
+  - ros-kilted-ros-workspace
+  - ros-kilted-ros2-control-test-assets
+  - ros-kilted-ros2controlcli
+  - ros-kilted-transmission-interface
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libgcc >=14
+  - libstdcxx >=14
+  - libgcc >=14
+  - __glibc >=2.17,<3.0.a0
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - numpy >=1.23,<3
+  - python_abi 3.12.* *_cp312
+  license: Apache-2.0
+  size: 22543
+  timestamp: 1769488212940
+- conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2-control-5.11.3-np2py312h61f2ce4_15.conda
+  sha256: 2dc3dc7c9c46732ea1808675c7e622a7811aa8d85ed9e47224662e640d6fcb41
+  md5: ba7505613194ed15e3dc0cbd4852fa91
+  depends:
+  - python
+  - ros-kilted-controller-interface
+  - ros-kilted-controller-manager
+  - ros-kilted-controller-manager-msgs
+  - ros-kilted-hardware-interface
+  - ros-kilted-joint-limits
+  - ros-kilted-ros-workspace
+  - ros-kilted-ros2-control-test-assets
+  - ros-kilted-ros2controlcli
+  - ros-kilted-transmission-interface
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libgcc >=14
+  - libstdcxx >=14
+  - libgcc >=14
+  - python_abi 3.12.* *_cp312
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - numpy >=1.23,<3
+  license: Apache-2.0
+  size: 22525
+  timestamp: 1769487854462
 - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2-control-cmake-0.3.0-np2py312h2ed9cc7_15.conda
   sha256: 098ae315bef029372b1d1579462595dad9dd90e1476ab9456e5d933c8921d295
   md5: b5f116c63ad58d46cb91051d215fa8a2
@@ -30168,6 +30271,38 @@ packages:
   license: Apache-2.0
   size: 28476
   timestamp: 1769482215715
+- conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2-control-test-assets-5.11.3-np2py312h2ed9cc7_15.conda
+  sha256: ee210a18742e683b7082685f83877e6f9d4d180cebfa4a5776a96e2685a4e5e4
+  md5: 4ac5bd58d787502659ae34332d7060a8
+  depends:
+  - python
+  - ros-kilted-ros-workspace
+  - ros2-distro-mutex 0.13.* kilted_*
+  - __glibc >=2.17,<3.0.a0
+  - libstdcxx >=14
+  - libgcc >=14
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - numpy >=1.23,<3
+  - python_abi 3.12.* *_cp312
+  license: Apache-2.0
+  size: 31378
+  timestamp: 1769481202320
+- conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2-control-test-assets-5.11.3-np2py312h61f2ce4_15.conda
+  sha256: 17ea131c57d024bed03895a5f8e0220b98072453e7112290dc726acf6412bda7
+  md5: 26fb288a8e52367e24160ee0573ee123
+  depends:
+  - python
+  - ros-kilted-ros-workspace
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libgcc >=14
+  - libstdcxx >=14
+  - libgcc >=14
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - numpy >=1.23,<3
+  - python_abi 3.12.* *_cp312
+  license: Apache-2.0
+  size: 31346
+  timestamp: 1769481537720
 - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2action-0.38.2-np2py312h2ed9cc7_15.conda
   sha256: 019a522c85604fb61ea63555db41f0fc34728bbf3e02a16b9ab606d39b97c822
   md5: 2540513e607e09f60f03e44e67d8cdb4
@@ -30412,6 +30547,56 @@ packages:
   license: Apache-2.0
   size: 38233
   timestamp: 1769486429950
+- conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2controlcli-5.11.3-np2py312h2ed9cc7_15.conda
+  sha256: 2c9a6c2fa1aaa987ae197e84cda2da28dc9b3222fa99a9524ccac34b002370e2
+  md5: b168f3d9c79cb525f9be87360b4a25a9
+  depends:
+  - pygraphviz
+  - python
+  - ros-kilted-controller-manager
+  - ros-kilted-controller-manager-msgs
+  - ros-kilted-rcl-interfaces
+  - ros-kilted-rclpy
+  - ros-kilted-ros-workspace
+  - ros-kilted-ros2cli
+  - ros-kilted-ros2node
+  - ros-kilted-ros2param
+  - ros-kilted-rosidl-runtime-py
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libgcc >=14
+  - __glibc >=2.17,<3.0.a0
+  - libstdcxx >=14
+  - libgcc >=14
+  - python_abi 3.12.* *_cp312
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  - numpy >=1.23,<3
+  license: Apache-2.0
+  size: 78207
+  timestamp: 1769487733677
+- conda: https://prefix.dev/robostack-kilted/linux-aarch64/ros-kilted-ros2controlcli-5.11.3-np2py312h61f2ce4_15.conda
+  sha256: 69e7c150ebc3e17b2e6d4f96b7235f375970d0d489b90abe1d43dfb7f0766cf2
+  md5: 10ff6e164aca8bd911fd5bfbeea8ecc1
+  depends:
+  - pygraphviz
+  - python
+  - ros-kilted-controller-manager
+  - ros-kilted-controller-manager-msgs
+  - ros-kilted-rcl-interfaces
+  - ros-kilted-rclpy
+  - ros-kilted-ros-workspace
+  - ros-kilted-ros2cli
+  - ros-kilted-ros2node
+  - ros-kilted-ros2param
+  - ros-kilted-rosidl-runtime-py
+  - ros2-distro-mutex 0.13.* kilted_*
+  - libstdcxx >=14
+  - libgcc >=14
+  - numpy >=1.23,<3
+  - python_abi 3.12.* *_cp312
+  - ros2-distro-mutex >=0.13.0,<0.14.0a0
+  license: Apache-2.0
+  size: 77712
+  timestamp: 1769487455144
 - conda: https://prefix.dev/robostack-kilted/linux-64/ros-kilted-ros2doctor-0.38.2-np2py312h2ed9cc7_15.conda
   sha256: 024d3173d9b396631fef798e11e392044b789705ac1f96a97ce4e631227d6c8c
   md5: 347c995b1718be605216299c014c609e

@@ -1,0 +1,75 @@
+robot_type: ur5e
+
+# Recording parameters
+fps: 50
+
+observations:
+  - key: observation.images.wrist_left
+    topic: /wrist_left_camera/image_raw
+    type: sensor_msgs/msg/Image
+    image:
+      resize: [480, 480]
+    align: { strategy: hold, stamp: header, tol_ms: 100 }
+    qos: { reliability: best_effort, history: keep_last, depth: 10 }
+
+  - key: observation.images.wrist_center
+    topic: /wrist_center_camera/image_raw
+    type: sensor_msgs/msg/Image
+    image:
+      resize: [480, 480]
+    align: { strategy: hold, stamp: header, tol_ms: 100 }
+    qos: { reliability: best_effort, history: keep_last, depth: 10 }
+
+  - key: observation.images.wrist_right
+    topic: /wrist_right_camera/image_raw
+    type: sensor_msgs/msg/Image
+    image:
+      resize: [480, 480]
+    align: { strategy: hold, stamp: header, tol_ms: 100 }
+    qos: { reliability: best_effort, history: keep_last, depth: 10 }
+
+  - key: observation.state
+    topic: /joint_states
+    type: sensor_msgs/msg/JointState
+    selector:
+      # 6 UR joints. Names must match the URDF / /joint_states content.
+      names:
+        [
+          position.shoulder_pan_joint,
+          position.shoulder_lift_joint,
+          position.elbow_joint,
+          position.wrist_1_joint,
+          position.wrist_2_joint,
+          position.wrist_3_joint,
+        ]
+    align: { strategy: hold, stamp: header, tol_ms: 100 }
+    qos: { reliability: reliable, history: keep_last, depth: 50 }
+
+actions:
+  - key: action
+    publish:
+      topic: /forward_position_controller/commands
+      type: std_msgs/msg/Float64MultiArray
+      layout: flat
+      qos: { reliability: reliable, history: keep_last, depth: 10 }
+      strategy:
+        mode: nearest
+        tolerance_ms: 100
+    selector:
+      # Match the observation joint order (radians end-to-end).
+      names:
+        [
+          shoulder_pan.pos,
+          shoulder_lift.pos,
+          elbow.pos,
+          wrist_1.pos,
+          wrist_2.pos,
+          wrist_3.pos,
+        ]
+    from_tensor:
+      # UR5e joint range is [-2*pi, 2*pi]; clamp generously to catch outliers.
+      clamp: [-6.283185, 6.283185]
+    safety_behavior: hold
+
+recording:
+  storage: mcap

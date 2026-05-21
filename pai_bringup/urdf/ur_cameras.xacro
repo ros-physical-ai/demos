@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!--
+  Wrist-mounted camera frames for the UR5e Phase B bringup.
+
+  Adds three fixed camera links (left, center, right) attached to the
+  UR end-effector via a single mount link rigidly fixed to `tool0`.
+  Each camera link uses the ROS optical convention (Z-forward, X-right,
+  Y-down). The matching <gazebo> sensor blocks live in
+  ur5e_gz.urdf.xacro and apply a sensor <pose> rotation so the gz
+  camera (X-forward) renders along the link's optical Z axis.
+-->
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:macro name="ur_wrist_cameras"
+    params="
+      parent:='tool0'
+      mount_xyz:='0.0 0.0 0.0'
+      mount_rpy:='0.0 0.0 0.0'
+      cam_left_xyz:='0.0  0.06 0.05'
+      cam_left_rpy:='0.0 -0.30 0.0'
+      cam_center_xyz:='0.0 0.0 0.05'
+      cam_center_rpy:='0.0  0.0 0.0'
+      cam_right_xyz:='0.0 -0.06 0.05'
+      cam_right_rpy:='0.0 -0.30 0.0'
+      include_inertia:='true'
+    ">
+
+    <!-- Mount plate rigidly fixed to the UR tool flange. -->
+    <link name="wrist_camera_mount">
+      <xacro:if value="${include_inertia}">
+        <inertial>
+          <mass value="0.001"/>
+          <inertia ixx="1e-7" ixy="0" ixz="0" iyy="1e-7" iyz="0" izz="1e-7"/>
+        </inertial>
+      </xacro:if>
+    </link>
+
+    <joint name="wrist_camera_mount_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child  link="wrist_camera_mount"/>
+      <origin xyz="${mount_xyz}" rpy="${mount_rpy}"/>
+    </joint>
+
+    <xacro:macro name="_ur_camera_link" params="name xyz rpy">
+      <link name="${name}_camera_link">
+        <xacro:if value="${include_inertia}">
+          <inertial>
+            <mass value="0.001"/>
+            <inertia ixx="1e-7" ixy="0" ixz="0" iyy="1e-7" iyz="0" izz="1e-7"/>
+          </inertial>
+        </xacro:if>
+      </link>
+      <joint name="${name}_camera_joint" type="fixed">
+        <parent link="wrist_camera_mount"/>
+        <child  link="${name}_camera_link"/>
+        <origin xyz="${xyz}" rpy="${rpy}"/>
+      </joint>
+    </xacro:macro>
+
+    <xacro:_ur_camera_link name="wrist_left"   xyz="${cam_left_xyz}"   rpy="${cam_left_rpy}"/>
+    <xacro:_ur_camera_link name="wrist_center" xyz="${cam_center_xyz}" rpy="${cam_center_rpy}"/>
+    <xacro:_ur_camera_link name="wrist_right"  xyz="${cam_right_xyz}"  rpy="${cam_right_rpy}"/>
+
+  </xacro:macro>
+</robot>

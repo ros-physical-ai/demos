@@ -1,0 +1,25 @@
+# UR5e ros2_control configuration for the Phase A LeRobot pipeline.
+#
+# - joint_state_broadcaster publishes /joint_states.
+# - forward_position_controller exposes
+#   /forward_position_controller/commands (Float64MultiArray) so Rosetta
+#   and lerobot inference can drive the 6 UR joints with a single topic.
+controller_manager:
+  ros__parameters:
+    update_rate: 100
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    forward_position_controller:
+      type: position_controllers/JointGroupPositionController
+
+forward_position_controller:
+  ros__parameters:
+    joints:
+      - shoulder_pan_joint
+      - shoulder_lift_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint
+      - wrist_3_joint

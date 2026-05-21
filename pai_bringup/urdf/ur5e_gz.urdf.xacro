@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<!--
+  UR5e in Gazebo (gz sim) for the Phase A LeRobot pipeline.
+
+  Phase A scope:
+    - Bare 6-DoF UR arm using the official ur_description macros.
+    - GazeboSim ros2_control plugin with the position command interface
+      so forward_position_controller can drive it directly from Rosetta.
+
+  Phase B additions (gated by the `enable_wrist_cameras` arg, default
+  true): three wrist-mounted Basler-style cameras (left/center/right)
+  and the matching gz-sim camera sensors. F/T sensor + Hand-E gripper
+  remain deferred.
+-->
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+
+  <xacro:arg name="name" default="ur"/>
+
+  <!-- UR variant: ur3, ur5, ur10, ur3e, ur5e, ur7e, ur10e, ... -->
+  <xacro:arg name="ur_type" default="ur5e"/>
+
+  <!-- Path to the ros2_control controllers YAML, passed through to the
+       gz_ros2_control plugin's <parameters> tag. -->
+  <xacro:arg name="simulation_controllers" default=""/>
+  <xacro:arg name="ros_namespace" default=""/>
+
+  <!-- Spawn pose of the robot base (relative to the world frame). -->
+  <xacro:arg name="x" default="0.0"/>
+  <xacro:arg name="y" default="0.0"/>
+  <xacro:arg name="z" default="0.0"/>
+  <xacro:arg name="roll" default="0.0"/>
+  <xacro:arg name="pitch" default="0.0"/>
+  <xacro:arg name="yaw" default="0.0"/>
+
+  <!-- Phase B: enable the three wrist-mounted cameras + gz sensors. -->
+  <xacro:arg name="enable_wrist_cameras" default="true"/>
+  <xacro:property name="enable_wrist_cameras" value="$(arg enable_wrist_cameras)"/>
+
+  <xacro:include filename="$(find ur_description)/urdf/ur_macro.xacro"/>
+  <xacro:include filename="$(find ur_description)/urdf/inc/ur_joint_control.xacro"/>
+  <xacro:include filename="$(find pai_bringup)/urdf/ur_cameras.xacro"/>
+
+  <!-- World root and a fixed mount link the UR is attached to. -->
+  <link name="world"/>
+  <link name="ur_mount"/>
+
+  <joint name="ur_mount_joint" type="fixed">
+    <origin xyz="$(arg x) $(arg y) $(arg z)" rpy="$(arg roll) $(arg pitch) $(arg yaw)"/>
+    <parent link="world"/>
+    <child link="ur_mount"/>
+  </joint>
+
+  <!-- UR arm using the official macro from Universal_Robots_ROS2_Description. -->
+  <xacro:ur_robot
+    name="$(arg name)"
+    tf_prefix=""
+    parent="ur_mount"
+    joint_limits_parameters_file="$(find ur_description)/config/$(arg ur_type)/joint_limits.yaml"
+    kinematics_parameters_file="$(find ur_description)/config/$(arg ur_type)/default_kinematics.yaml"
+    physical_parameters_file="$(find ur_description)/config/$(arg ur_type)/physical_parameters.yaml"
+    visual_parameters_file="$(find ur_description)/config/$(arg ur_type)/visual_parameters.yaml"
+    safety_limits="false"
+    safety_pos_margin="0.15"
+    safety_k_position="20"
+    force_abs_paths="true"
+  >
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ur_robot>
+
+  <!-- Gazebo ros2_control plugin -->
+  <gazebo>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(arg simulation_controllers)</parameters>
+      <ros>
+        <namespace>$(arg ros_namespace)</namespace>
+      </ros>
+    </plugin>
+  </gazebo>
+
+  <!-- ros2_control system: GazeboSimSystem + the standard UR joint
+       command/state interfaces (position + velocity + effort). -->
+  <ros2_control name="GazeboSimSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+
+    <xacro:ur_joint_control_description
+      tf_prefix=""
+      initial_positions="${dict(
+        shoulder_pan_joint=0.0,
+        shoulder_lift_joint=-1.5708,
+        elbow_joint=1.5708,
+        wrist_1_joint=-1.5708,
+        wrist_2_joint=-1.5708,
+        wrist_3_joint=0.0)}"
+    />
+  </ros2_control>
+
+  <!-- Phase B: wrist-mounted cameras (left / center / right). -->
+  <xacro:if value="${enable_wrist_cameras}">
+    <xacro:ur_wrist_cameras parent="tool0" include_inertia="true"/>
+
+    <!-- Preserve the camera fixed joints during URDF→SDF conversion -->
+    <gazebo reference="wrist_camera_mount_joint">
+      <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+    <gazebo reference="wrist_left_camera_joint">
+      <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+    <gazebo reference="wrist_center_camera_joint">
+      <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+    <gazebo reference="wrist_right_camera_joint">
+      <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+
+    <!--
+      gz-sim camera sensors. Each camera link uses the ROS optical
+      convention (Z-forward); gz cameras look along +X with +Z up, so
+      the sensor <pose> rotates pitch=-π/2, yaw=+π/2 to map sensor +X
+      onto link +Z.
+    -->
+    <xacro:macro name="_ur_gz_camera" params="link topic">
+      <gazebo reference="${link}">
+        <sensor name="${link}" type="camera">
+          <gz_frame_id>${link}</gz_frame_id>
+          <pose>0 0 0 0 -1.5708 1.5708</pose>
+          <always_on>true</always_on>
+          <update_rate>30</update_rate>
+          <camera>
+            <horizontal_fov>1.2217</horizontal_fov>
+            <image>
+              <width>640</width>
+              <height>480</height>
+              <format>R8G8B8</format>
+            </image>
+            <clip>
+              <near>0.01</near>
+              <far>100</far>
+            </clip>
+          </camera>
+          <topic>${topic}</topic>
+        </sensor>
+      </gazebo>
+    </xacro:macro>
+
+    <xacro:_ur_gz_camera link="wrist_left_camera_link"   topic="wrist_left_camera/image_raw"/>
+    <xacro:_ur_gz_camera link="wrist_center_camera_link" topic="wrist_center_camera/image_raw"/>
+    <xacro:_ur_gz_camera link="wrist_right_camera_link"  topic="wrist_right_camera/image_raw"/>
+  </xacro:if>
+
+</robot>

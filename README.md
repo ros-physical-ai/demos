@@ -68,7 +68,7 @@ source ~/ws_pai/install/setup.bash
 
 | Package                 | Description                                                                                                                                                    |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **pai_bringup**         | Main bringup package — launches the SO-ARM101 in Gazebo, MuJoCo, or on real hardware with ros2_control, RViz, camera bridge, and optional LeRobot inference    |
+| **pai_bringup**         | Main bringup package — launches the SO-ARM101 or UR5e in Gazebo, MuJoCo, or on real hardware with ros2_control, RViz, camera bridge, and optional LeRobot inference    |
 | **pai_leader_teleop**   | Leader-follower teleoperation — brings up a physical leader SO-ARM101 to control a follower arm via ros2_control                                               |
 | **pai_data_collection** | Configuration and scripts for collecting demonstration datasets via the Rosetta ROS 2–LeRobot bridge                                                           |
 | **pai_description**     | Scene-level SDF world definitions — single source of truth for both Gazebo (loaded natively) and MuJoCo (converted to MJCF at launch time via `sdformat_mjcf`) |
@@ -83,6 +83,7 @@ source ~/ws_pai/install/setup.bash
 | [mujoco_ros2_control](https://github.com/ros-controls/mujoco_ros2_control)                                        | ros2_control integration with the MuJoCo physics simulator                            |
 | [rosetta](https://github.com/iblnkn/rosetta) / [rosetta_interfaces](https://github.com/iblnkn/rosetta_interfaces) | ROS 2–LeRobot bridge for recording demonstration datasets                             |
 | [lerobot-robot-rosetta](https://github.com/iblnkn/lerobot-robot-rosetta)                                          | LeRobot Robot plugin for Rosetta — bridges ROS 2 topics to LeRobot's Robot interface  |
+| [Universal_Robots_ROS2_Description](https://github.com/UniversalRobots/Universal_Robots_ROS2_Description)          | UR5e URDF, meshes, and per-variant configuration (v4.3.0)                              |
 
 ## Launching the SO-ARM101
 
@@ -235,6 +236,89 @@ https://github.com/user-attachments/assets/51beafa7-4d85-4a53-b0db-ec593f663850
 > These videos show an **ACT** policy trained on the recorded episodes. The goal here is to demonstrate the full **Record → Train → Deploy** pipeline — not to showcase optimal policy performance, which depends on the number of episodes, model selection, and hyperparameter tuning.
 
 For the full pipeline guide see [End-to-End Learning Pipeline with Rosetta](./demos/so_arm_101/rosetta_end_to_end_demo.md).
+
+## UR5e Industrial Robot Support (Phases A + B)
+
+This repository also supports the **UR5e** industrial arm from
+Universal Robots in Gazebo, sharing the same Record → Train → Deploy
+pipeline as the SO-ARM101. Phase A drives the 6 UR joints with a
+standard `forward_position_controller`, mirroring the SO-ARM101 setup.
+Phase B adds three wrist-mounted cameras (left / center / right) so a
+policy can be trained on visual observations.
+
+### Robot Configuration
+
+| Component | Details |
+|---|---|
+| Arm | Universal Robots UR5e (6 joints) |
+| Gripper | Not yet integrated |
+| Cameras | 3 × wrist-mounted (`wrist_left_camera`, `wrist_center_camera`, `wrist_right_camera`), 640×480 @ 30 Hz |
+| Force/Torque | Not yet integrated |
+| Simulation | Gazebo (gz sim) |
+
+### Launching the UR5e
+
+#### Gazebo
+
+```bash
+ros2 launch pai_bringup ur5e_gz_bringup.launch.py
+```
+
+With Pixi: `pixi run ur5e-gz`
+
+The launch spawns:
+- `robot_state_publisher` (UR5e URDF from `ur_description` + wrist camera frames),
+- `gz sim` with the `pai_description` empty-ground world,
+- the UR5e robot model with three wrist-mounted gz camera sensors,
+- `joint_state_broadcaster` and `forward_position_controller`,
+- a `ros_gz_bridge` exposing `/clock`, `/wrist_{left,center,right}_camera/image_raw`, and `/wrist_{left,center,right}_camera/camera_info`,
+- and (optionally) RViz with the upstream UR view config.
+
+Wrist cameras can be disabled at launch time:
+
+```bash
+ros2 launch pai_bringup ur5e_gz_bringup.launch.py enable_wrist_cameras:=false
+```
+
+#### Manual joint move
+
+```bash
+ros2 topic pub --once /forward_position_controller/commands \
+  std_msgs/msg/Float64MultiArray \
+  '{data: [0.0, -1.2, 1.5, -1.5, -1.5, 0.0]}'
+```
+
+#### Recording Episodes
+
+```bash
+ros2 launch rosetta episode_recorder_launch.py \
+    contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/ur5e.yaml \
+    bag_base_dir:=datasets/ur5e_gz/bags
+```
+
+With Pixi: `pixi run ur5e-rosetta-record`
+
+### Pipeline
+
+```
+Recording → rosetta episode_recorder → rosbag → LeRobot dataset
+Training  → lerobot-train (ACT, SmolVLA, ...)
+Deploy    → rosetta_client (Float64MultiArray) → forward_position_controller
+                                                     ↓
+                                               UR5e in Gazebo
+```
+
+### Future work
+
+F/T sensor support, a Robotiq Hand-E gripper, and Cartesian/joint
+impedance control are tracked in [`aic_plan.md`](./aic_plan.md)
+(remaining Phase B item B.8 and Phase C). They are not yet implemented.
+
+### Dependencies
+
+UR5e support depends on
+[`Universal_Robots_ROS2_Description`](https://github.com/UniversalRobots/Universal_Robots_ROS2_Description)
+v4.3.0, imported automatically via `pai.repos`.
 
 ## Linting & Pre-commit
 
