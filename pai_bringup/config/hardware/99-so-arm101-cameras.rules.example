@@ -45,7 +45,7 @@
 # 5. Verify:
 #
 #        ls -la /dev/cam_wrist /dev/cam_static
-#  
+#
 #      If you install ffmpeg (sudo apt install ffmpeg), you can also verify by streaming the video using your new device name.
 #
 #        ffplay -f v4l2 -input_format mjpeg -video_size 1280x720 /dev/cam_static
