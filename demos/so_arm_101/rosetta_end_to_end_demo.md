@@ -204,7 +204,7 @@ For replaying directly on a physical robot without the ROS 2 control stack:
 ```bash
 lerobot-replay \
     --robot.type=so101_follower \
-    --robot.port=/dev/ttyACM0 \
+    --robot.port=/dev/so101_follower \
     --robot.id=my_awesome_arm \
     --dataset.repo_id=<dataset_name> \
     --dataset.root=<datasets_directory>/<dataset_name> \

@@ -39,7 +39,7 @@ To optionally use a calibration file with the leader:
 
 ```bash
 ros2 launch pai_leader_teleop leader_bringup.launch.py \
-    usb_port:=/dev/ttyACM1 \
+    usb_port:=/dev/so101_leader \
     joint_config_file:=$(ros2 pkg prefix pai_bringup)/share/pai_bringup/config/hardware/leader.yaml
 ```
 
@@ -51,10 +51,10 @@ Two terminals are needed:
 
 ```bash
 # 1. Follower arm bringup (existing pai_bringup, default namespace)
-ros2 launch pai_bringup so_arm_real_bringup.launch.py usb_port:=/dev/ttyACM0
+ros2 launch pai_bringup so_arm_real_bringup.launch.py usb_port:=/dev/so101_follower
 
 # 2. Leader arm bringup + teleop relay
-ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM1
+ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/so101_leader
 ```
 
 ## Launch arguments
@@ -63,7 +63,7 @@ ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM1
 
 | Argument                  | Default                                                     | Description                                                                                                 |
 | ------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `usb_port`                | `/dev/ttyACM1`                                              | USB port for the leader arm servo bus                                                                       |
+| `usb_port`                | `/dev/so101_leader`                                         | USB port for the leader arm servo bus                                                                       |
 | `namespace`               | `leader`                                                    | ROS namespace for leader nodes                                                                              |
 | `use_sim_time`            | `false`                                                     | Use simulation time (set to `true` when the follower is simulated)                                          |
 | `prefix`                  | `""`                                                        | Joint name prefix                                                                                           |
@@ -80,7 +80,7 @@ ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM1
 To launch RViz alongside the leader arm for real-time visualization, pass `launch_rviz:=true`:
 
 ```bash
-ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM1 launch_rviz:=true
+ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/so101_leader launch_rviz:=true
 ```
 
 RViz is automatically configured to use the leader's namespaced TF topics (`/leader/tf`, `/leader/tf_static`), so it displays the leader model without interfering with the follower's visualization.
@@ -88,7 +88,7 @@ RViz is automatically configured to use the leader's namespaced TF topics (`/lea
 To use a custom RViz config file:
 
 ```bash
-ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM1 launch_rviz:=true \
+ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/so101_leader launch_rviz:=true \
     rviz_config_file:=/path/to/custom.rviz
 ```
 
@@ -111,5 +111,5 @@ To pair the real leader arm with a simulated follower (e.g. MuJoCo or Gazebo), p
 ros2 launch pai_bringup so_arm_mujoco_bringup.launch.py
 
 # 2. Real leader arm with sim time + teleop relay
-ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM1 use_sim_time:=true
+ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/so101_leader use_sim_time:=true
 ```

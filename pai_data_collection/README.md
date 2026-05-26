@@ -155,7 +155,7 @@ Using local LeRobot dataset (from within the pixi environment):
 ```bash
 lerobot-replay \
     --robot.type=so101_follower \
-    --robot.port=/dev/ttyACM0 \
+    --robot.port=/dev/so101_follower \
     --robot.id=my_awesome_arm \
     --dataset.repo_id=move_arm \
     --dataset.root=datasets_lerobot/move_arm \
