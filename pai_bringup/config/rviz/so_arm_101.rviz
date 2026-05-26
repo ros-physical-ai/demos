@@ -200,6 +200,304 @@ Visualization Manager:
               {}
       Update Interval: 0
       Value: true
+    - Class: rviz_2d_plot_plugin/Plot2D
+      Clear History: false
+      Enabled: true
+      Grid:
+        Major Grid: true
+        Minor Divisions: 1
+        Minor Grid: true
+        X Major Ticks: 6
+        Y Major Ticks: 5
+      Layout:
+        Height: 220
+        Horizontal Alignment: Right
+        Vertical Alignment: Top
+        Width: 420
+        X Offset: 10
+        Y Offset: 10
+      Legend:
+        Enabled: true
+        Position: Top Left
+        Show Values: true
+        X Offset: 4
+        Y Offset: 4
+      Name: "2DPlot: Observations"
+      Pause Plot: false
+      Plot Mode: Time Series
+      QoS:
+        Depth: 10
+        Durability: Volatile
+        Reliability: Reliable
+      References:
+        Preset: None
+        Preset Tolerance: 0.10000000149011612
+        Preset Value: 0
+        Reference Count: 0
+      Series:
+        Series 1:
+          Color: 255; 80; 80
+          Field: position[3]
+          Label: shoulder_pan
+          Line Alpha: 1
+          Line Style: Solid
+          Line Width: 2
+          Plot Style: Line
+          Topic: /joint_states
+          Unit: rad
+          Value: true
+          Value Offset: 0
+          Value Scale: 1
+          X Field: ""
+          Y Field: ""
+        Series 2:
+          Color: 255; 160; 50
+          Field: position[2]
+          Label: shoulder_lift
+          Line Alpha: 1
+          Line Style: Solid
+          Line Width: 2
+          Plot Style: Line
+          Topic: /joint_states
+          Unit: rad
+          Value: true
+          Value Offset: 0
+          Value Scale: 1
+          X Field: ""
+          Y Field: ""
+        Series 3:
+          Color: 200; 220; 50
+          Field: position[0]
+          Label: elbow_flex
+          Line Alpha: 1
+          Line Style: Solid
+          Line Width: 2
+          Plot Style: Line
+          Topic: /joint_states
+          Unit: rad
+          Value: true
+          Value Offset: 0
+          Value Scale: 1
+          X Field: ""
+          Y Field: ""
+        Series 4:
+          Color: 50; 200; 80
+          Field: position[4]
+          Label: wrist_flex
+          Line Alpha: 1
+          Line Style: Solid
+          Line Width: 2
+          Plot Style: Line
+          Topic: /joint_states
+          Unit: rad
+          Value: true
+          Value Offset: 0
+          Value Scale: 1
+          X Field: ""
+          Y Field: ""
+        Series 5:
+          Color: 80; 170; 255
+          Field: position[5]
+          Label: wrist_roll
+          Line Alpha: 1
+          Line Style: Solid
+          Line Width: 2
+          Plot Style: Line
+          Topic: /joint_states
+          Unit: rad
+          Value: true
+          Value Offset: 0
+          Value Scale: 1
+          X Field: ""
+          Y Field: ""
+        Series 6:
+          Color: 200; 80; 255
+          Field: position[1]
+          Label: gripper
+          Line Alpha: 1
+          Line Style: Solid
+          Line Width: 2
+          Plot Style: Line
+          Topic: /joint_states
+          Unit: rad
+          Value: true
+          Value Offset: 0
+          Value Scale: 1
+          X Field: ""
+          Y Field: ""
+        Series Count: 6
+      Style:
+        Axis Color: 230; 230; 230
+        Background Alpha: 0.7450980544090271
+        Background Color: 0; 0; 0
+        Font Size: 8
+        Grid Color: 130; 130; 130
+        Text Color: 245; 245; 245
+        Title: Observations
+      Time:
+        Refresh Rate: 20
+        Time Source: Receive Time
+        Window Seconds: 30
+        XY History Mode: Rolling Time Window
+      Value: true
+      X Axis:
+        Auto Scale: true
+        Axis Scale: Independent
+        X Max: 1
+        X Min: -1
+      Y Axis:
+        Auto Scale: true
+        Y Max: 1
+        Y Min: -1
+    - Class: rviz_2d_plot_plugin/Plot2D
+      Clear History: false
+      Enabled: true
+      Grid:
+        Major Grid: true
+        Minor Divisions: 1
+        Minor Grid: true
+        X Major Ticks: 6
+        Y Major Ticks: 5
+      Layout:
+        Height: 220
+        Horizontal Alignment: Right
+        Vertical Alignment: Top
+        Width: 420
+        X Offset: 10
+        Y Offset: 240
+      Legend:
+        Enabled: true
+        Position: Top Left
+        Show Values: true
+        X Offset: 4
+        Y Offset: 4
+      Name: "2DPlot: Actions"
+      Pause Plot: false
+      Plot Mode: Time Series
+      QoS:
+        Depth: 10
+        Durability: Volatile
+        Reliability: Reliable
+      References:
+        Preset: None
+        Preset Tolerance: 0.10000000149011612
+        Preset Value: 0
+        Reference Count: 0
+      Series:
+        Series 1:
+          Color: 255; 80; 80
+          Field: data[0]
+          Label: shoulder_pan
+          Line Alpha: 1
+          Line Style: Solid
+          Line Width: 2
+          Plot Style: Line
+          Topic: /forward_position_controller/commands
+          Unit: rad
+          Value: true
+          Value Offset: 0
+          Value Scale: 1
+          X Field: ""
+          Y Field: ""
+        Series 2:
+          Color: 255; 160; 50
+          Field: data[1]
+          Label: shoulder_lift
+          Line Alpha: 1
+          Line Style: Solid
+          Line Width: 2
+          Plot Style: Line
+          Topic: /forward_position_controller/commands
+          Unit: rad
+          Value: true
+          Value Offset: 0
+          Value Scale: 1
+          X Field: ""
+          Y Field: ""
+        Series 3:
+          Color: 200; 220; 50
+          Field: data[2]
+          Label: elbow_flex
+          Line Alpha: 1
+          Line Style: Solid
+          Line Width: 2
+          Plot Style: Line
+          Topic: /forward_position_controller/commands
+          Unit: rad
+          Value: true
+          Value Offset: 0
+          Value Scale: 1
+          X Field: ""
+          Y Field: ""
+        Series 4:
+          Color: 50; 200; 80
+          Field: data[3]
+          Label: wrist_flex
+          Line Alpha: 1
+          Line Style: Solid
+          Line Width: 2
+          Plot Style: Line
+          Topic: /forward_position_controller/commands
+          Unit: rad
+          Value: true
+          Value Offset: 0
+          Value Scale: 1
+          X Field: ""
+          Y Field: ""
+        Series 5:
+          Color: 80; 170; 255
+          Field: data[4]
+          Label: wrist_roll
+          Line Alpha: 1
+          Line Style: Solid
+          Line Width: 2
+          Plot Style: Line
+          Topic: /forward_position_controller/commands
+          Unit: rad
+          Value: true
+          Value Offset: 0
+          Value Scale: 1
+          X Field: ""
+          Y Field: ""
+        Series 6:
+          Color: 200; 80; 255
+          Field: data[5]
+          Label: gripper
+          Line Alpha: 1
+          Line Style: Solid
+          Line Width: 2
+          Plot Style: Line
+          Topic: /forward_position_controller/commands
+          Unit: rad
+          Value: true
+          Value Offset: 0
+          Value Scale: 1
+          X Field: ""
+          Y Field: ""
+        Series Count: 6
+      Style:
+        Axis Color: 230; 230; 230
+        Background Alpha: 0.7450980544090271
+        Background Color: 0; 0; 0
+        Font Size: 8
+        Grid Color: 130; 130; 130
+        Text Color: 245; 245; 245
+        Title: Actions
+      Time:
+        Refresh Rate: 20
+        Time Source: Receive Time
+        Window Seconds: 30
+        XY History Mode: Rolling Time Window
+      Value: true
+      X Axis:
+        Auto Scale: true
+        Axis Scale: Independent
+        X Max: 1
+        X Min: -1
+      Y Axis:
+        Auto Scale: true
+        Y Max: 1
+        Y Min: -1
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -261,10 +559,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.30039849877357483
+      Pitch: 0.06539854407310486
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.988595485687256
+      Yaw: 0.8604108095169067
     Saved: ~
 Window Geometry:
   Displays:
