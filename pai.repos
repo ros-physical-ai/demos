@@ -13,8 +13,8 @@ repositories:
     version: cd4340cc3878142def1f88845518f2b29647c7c2
   rosetta:
     type: git
-    url: https://github.com/francocipollone/rosetta.git
-    version: francocipollone/recorder_keyboard
+    url: https://github.com/iblnkn/rosetta.git
+    version: d43b960cfbc939ea4379d7b0f4e092750358bdbd
   rosetta_interfaces:
     type: git
     url: https://github.com/iblnkn/rosetta_interfaces.git
