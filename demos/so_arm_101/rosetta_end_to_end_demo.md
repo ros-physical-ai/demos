@@ -82,23 +82,34 @@ Recording captures rosbags of demonstration episodes through the Rosetta episode
 3. **Start the episode recorder** — points to the contract and an output directory for bags.
 4. **For each episode:**
    a. Reset the robot to a starting pose.
-   b. Trigger recording via the `/record_episode` ROS 2 action (the `prompt` field is metadata stored with the episode).
+   b. Start recording (`r` key in the keyboard controller, or via the `/episode_recorder/record_episode` action).
    c. Perform the task — via leader teleop, scripted commands, or any other method.
-   d. Stop recording (`Ctrl+C` on the action goal) to save the rosbag.
+   d. Stop recording (`s` to save, `d` to discard and re-record).
 5. **Repeat** to collect as many episodes as needed.
 
 The commands:
 
 ```bash
-# Start the episode recorder (works with any backend)
+# Terminal 1: Start the episode recorder (works with any backend)
 ros2 launch rosetta episode_recorder_launch.py \
     contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     bag_base_dir:=<output_directory>
 
-# Trigger an episode
-ros2 action send_goal /record_episode \
-    rosetta_interfaces/action/RecordEpisode "{prompt: '<task description>'}" --feedback
+# Terminal 2: Start the keyboard controller
+ros2 run rosetta episode_keyboard_node
 ```
+
+Keyboard controls:
+
+| Key       | Action                                |
+| --------- | ------------------------------------- |
+| `r` / `→` | Start recording                       |
+| `s` / `←` | Stop and save                         |
+| `d` / `⌫` | Discard episode (stop + delete bag)   |
+| `t`       | Edit task prompt for the next episode |
+
+> [!NOTE]
+> You can also trigger recording directly via the ROS 2 action interface if you prefer scripted control: `ros2 action send_goal /episode_recorder/record_episode rosetta_interfaces/action/RecordEpisode "{prompt: '<task>'}"`. Stop by pressing `Ctrl+C` on that command.
 
 > [!NOTE]
 > The input method doesn't matter to the recorder — anything that publishes to the topics defined in the contract gets captured. Leader arm teleop, scripted commands, MoveIt planning, or a custom controller all work the same way.
@@ -276,6 +287,16 @@ ros2 launch rosetta episode_recorder_launch.py \
     bag_base_dir:=datasets/so_arm101/bags
 ```
 
+### Step 3b — Start the Keyboard Controller
+
+In a **separate terminal**, start the keyboard controller. This is how you start, save, and discard episodes:
+
+```bash
+ros2 run rosetta episode_keyboard_node
+```
+
+First, set the task prompt with `t`, type `move arm forward`, then press `Enter`.
+
 ### Step 4 — Record 3 Episodes
 
 For each episode, repeat the following cycle:
@@ -289,12 +310,7 @@ ros2 topic pub /forward_position_controller/commands std_msgs/msg/Float64MultiAr
 
 Hold for a few seconds, then `Ctrl+C`.
 
-**b) Start recording an episode:**
-
-```bash
-ros2 action send_goal /record_episode \
-    rosetta_interfaces/action/RecordEpisode "{prompt: 'move arm forward'}" --feedback
-```
+**b) Start recording** — press `r` (or `→`) in the keyboard controller terminal.
 
 **c) Perform the task** — command the arm to reach forward:
 
@@ -305,7 +321,7 @@ ros2 topic pub /forward_position_controller/commands std_msgs/msg/Float64MultiAr
 
 Hold for a few seconds, then `Ctrl+C`.
 
-**d) Stop recording** — `Ctrl+C` in the terminal where `send_goal` is running. This saves the rosbag.
+**d) Stop recording** — press `s` (or `←`) in the keyboard controller terminal to save the episode. Press `d` instead to discard and re-record.
 
 Repeat (a)–(d) **3 times**.
 
@@ -316,14 +332,16 @@ flowchart LR
     pixi run so-arm-gz"]
     B --> C["3. Start Recorder
     ros2 launch rosetta ..."]
-    C --> D["a) Send Arm Home
+    C --> Ck["3b. Start Keyboard Controller
+    ros2 run rosetta episode_keyboard_node"]
+    Ck --> D["a) Send Arm Home
     all joints → 0"]
     D --> E["b) Start Episode
-    /record_episode action"]
+    press r in keyboard controller"]
     E --> F["c) Move Arm Forward
     shoulder_lift=1.56, elbow=-1.56"]
-    F --> G["d) Stop Recording
-    Ctrl+C"]
+    F --> G["d) Save Episode
+    press s in keyboard controller"]
     G --> H{More episodes?}
     H -- Yes --> D
     H -- No --> I["3 episodes recorded"]
