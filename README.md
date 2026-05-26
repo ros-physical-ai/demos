@@ -139,12 +139,21 @@ ros2 launch pai_bringup so_arm_mujoco_bringup.launch.py
 ### Real hardware
 
 ```bash
-ros2 launch pai_bringup so_arm_real_bringup.launch.py
+ros2 launch pai_bringup so_arm_real_bringup.launch.py usb_port:=/dev/so101_follower
 ```
 
-With Pixi: `pixi run so-arm-real`
+With Pixi:
+
+```bash
+pixi run so-arm-real usb_port:=/dev/so101_follower
+```
 
 #### Configuring the real robot
+
+##### Udev rules
+
+Stable device symlinks (`/dev/cam_wrist`, `/dev/cam_static`) prevent arms and cameras from swapping after a reboot.
+See [pai_bringup/config/hardware/99-so-arm101.rules.example](pai_bringup/config/hardware/99-so-arm101.rules.example) for setup instructions.
 
 ##### Servo calibration
 
@@ -154,7 +163,8 @@ See the full [Calibration Guide](./docs/calibration_guide.md) for step-by-step i
 
 ##### Cameras
 
-The real-robot bringup launches a **wrist camera** and a **static camera** by default using [usb_cam](https://github.com/ros-drivers/usb_cam). Both publish at 640×480 @ 30 fps:
+The real-robot bringup launches a **wrist camera** and a **static camera** by default using [usb_cam](https://github.com/ros-drivers/usb_cam).
+Both publish at 640×480 @ 30 fps:
 
 | Topic                      | Frame                | Device            |
 | -------------------------- | -------------------- | ----------------- |
@@ -167,43 +177,49 @@ The real-robot bringup launches a **wrist camera** and a **static camera** by de
 Each camera has its own driver-parameter file (`usb_cam_wrist.yaml`, `usb_cam_static.yaml`) so you can tune resolution, framerate, or pixel format independently — useful when the two cameras are different models.
 
 > [!NOTE]
-> A default camera-calibration file ([`default_640x480.yaml`](pai_bringup/config/cameras/default_640x480.yaml)) is shipped so that RViz Camera displays work without errors. It is **NOT** required for policy training or inference — the policy consumes raw pixel observations and joint-position actions, so camera intrinsics (focal length, principal point, distortion coefficients) never enter the learning or inference pipeline. We publish `camera_info` with placeholder intrinsics for standard ROS tooling (e.g. RViz, image_proc), not for LeRobot. If you need accurate intrinsics (e.g. for 3D reconstruction), replace the default file with a proper calibration via `ros2 run camera_calibration cameracalibrator` or your tool of preference.
+> A default camera-calibration file ([`default_640x480.yaml`](pai_bringup/config/cameras/default_640x480.yaml)) is shipped so that RViz Camera displays work without errors.
+> It is **NOT** required for policy training or inference — the policy consumes raw pixel observations and joint-position actions, so camera intrinsics (focal length, principal point, distortion coefficients) never enter the learning or inference pipeline.
+> We publish `camera_info` with placeholder intrinsics for standard ROS tooling (e.g. RViz, image_proc), not for LeRobot.
+> If you need accurate intrinsics (e.g. for 3D reconstruction), replace the default file with a proper calibration via `ros2 run camera_calibration cameracalibrator` or your tool of preference.
 
-Camera frames are defined in [`pai_bringup/urdf/cameras.xacro`](pai_bringup/urdf/cameras.xacro) and published to TF by `robot_state_publisher`. The wrist camera moves with the gripper; the static camera is fixed relative to `base_link`.
+Camera frames are defined in [`pai_bringup/urdf/cameras.xacro`](pai_bringup/urdf/cameras.xacro) and published to TF by `robot_state_publisher`.
+The wrist camera moves with the gripper; the static camera is fixed relative to `base_link`.
 
 To disable cameras:
 
 ```bash
-ros2 launch pai_bringup so_arm_real_bringup.launch.py use_cameras:=false
+ros2 launch pai_bringup so_arm_real_bringup.launch.py usb_port:=/dev/so101_follower use_cameras:=false
 ```
 
 The static camera position and orientation can be overridden at launch time to match your physical mounting:
 
 ```bash
 ros2 launch pai_bringup so_arm_real_bringup.launch.py \
+    usb_port:=/dev/so101_follower \
     cam_static_xyz:="0.0 0.0 0.50" \
     cam_static_rpy:="3.6652 0.0 -1.5708"
 ```
 
 > [!NOTE]
-> In simulation (Gazebo / MuJoCo), the same two cameras are rendered by the simulator and bridged to the same ROS topics. Camera TF frames come from the same `cameras.xacro`.
+> In simulation (Gazebo / MuJoCo), the same two cameras are rendered by the simulator and bridged to the same ROS topics.
+> Camera TF frames come from the same `cameras.xacro`.
 
 > [!NOTE]
 > [gscam](https://github.com/ros-drivers/gscam) (GStreamer) offers better timestamp fidelity but is not available from robostack and must be compiled from source.
-
-##### Udev rules
-
-Stable device symlinks (`/dev/cam_wrist`, `/dev/cam_static`) prevent cameras from swapping after a reboot. See [pai_bringup/config/hardware/99-so-arm101-cameras.rules.example](pai_bringup/config/hardware/99-so-arm101-cameras.rules.example) for setup instructions.
 
 ### Leader arm teleoperation
 
 You can use a leader SO-ARM101 to teleoperate the follower arm (sim or real):
 
 ```bash
-ros2 launch pai_leader_teleop leader_bringup.launch.py
+ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/so101_leader
 ```
 
-With Pixi: `pixi run so-arm-leader`
+With Pixi:
+
+```bash
+pixi run so-arm-leader usb_port:=/dev/so101_leader
+```
 
 ## Demos
 

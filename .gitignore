@@ -11,6 +11,9 @@ build/*
 install/*
 log/*
 
+# IDE metadata
+.vscode
+
 # lerobot
 logs
 outputs

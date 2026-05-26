@@ -25,7 +25,7 @@ joints so the human can move the arm freely.  Joint states are
 published to /leader/joint_states.
 
 Usage:
-    ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/ttyACM1
+    ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/so101_leader
 """
 
 from launch import LaunchDescription
@@ -168,7 +168,7 @@ def generate_launch_description():
     declared_arguments = [
         DeclareLaunchArgument(
             "usb_port",
-            default_value="/dev/ttyACM1",
+            default_value="/dev/so101_leader",
             description="USB port for the leader arm Feetech servo bus.",
         ),
         DeclareLaunchArgument(
