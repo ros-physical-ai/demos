@@ -28,9 +28,13 @@ Nodes launched:
   - rviz2 (optional, delayed until joint_state_broadcaster is ready)
 """
 
+import os
+
+from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction, RegisterEventHandler
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction, RegisterEventHandler
 from launch.event_handlers import OnProcessExit
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import (
     Command,
     FindExecutable,
@@ -51,6 +55,7 @@ def launch_setup(context, *args, **kwargs):
     activate_joint_controller = LaunchConfiguration("activate_joint_controller").perform(context).lower() == "true"
     launch_rviz = LaunchConfiguration("launch_rviz").perform(context).lower() == "true"
     rviz_config_file = LaunchConfiguration("rviz_config_file").perform(context)
+    launch_rerun = LaunchConfiguration("launch_rerun").perform(context).lower() == "true"
 
     # Build robot description via xacro
     xacro_cmd = [
@@ -133,6 +138,24 @@ def launch_setup(context, *args, **kwargs):
         )
         nodes.append(delay_rviz_after_joint_state_broadcaster)
 
+    if launch_rerun:
+        rerun_visualizer = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(
+                    get_package_share_directory("pai_rerun_visualizer"),
+                    "launch",
+                    "visualizer.launch.py",
+                )
+            ),
+        )
+        delay_rerun_after_joint_state_broadcaster = RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=joint_state_broadcaster_spawner,
+                on_exit=[rerun_visualizer],
+            ),
+        )
+        nodes.append(delay_rerun_after_joint_state_broadcaster)
+
     return nodes
 
 
@@ -181,6 +204,11 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "rviz_config_file",
             description="RViz config file to use.",
+        ),
+        DeclareLaunchArgument(
+            "launch_rerun",
+            default_value="true",
+            description="Launch the pai_rerun_visualizer node.",
         ),
     ]
 

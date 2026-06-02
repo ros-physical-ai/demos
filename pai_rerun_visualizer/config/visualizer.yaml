@@ -1,0 +1,41 @@
+# Parameters for the pai_rerun_visualizer node.
+# Topic names default to the flat names used across the gazebo, mujoco and real
+# SO-ARM101 bringups.
+/**:
+  ros__parameters:
+    # Spatial layer topics
+    robot_description_topic: /robot_description
+    joint_states_topic: /joint_states
+    wrist_image_topic: /wrist_camera/image_raw
+    wrist_camera_info_topic: /wrist_camera/camera_info
+    static_image_topic: /static_camera/image_raw
+    static_camera_info_topic: /static_camera/camera_info
+
+    # Action / ML layer topics
+    forward_commands_topic: /forward_position_controller/commands
+    action_chunk_topic: /inference/action_chunk
+
+    # Forward-kinematics end-effector frame used for the predicted path.
+    ee_frame: gripper_frame_link
+
+    # Optical convention for the rr.Pinhole frustum (RDF = standard camera optical).
+    camera_xyz: RDF
+
+    # Joint order matching the forward_position_controller "commands" payload.
+    cmd_joints:
+      - shoulder_pan_joint
+      - shoulder_lift_joint
+      - elbow_flex_joint
+      - wrist_flex_joint
+      - wrist_roll_joint
+      - gripper_joint
+
+    # Predicted trajectory colour (RGB 0-255).
+    trajectory_color: [0, 255, 0]
+
+    # Rerun viewer: "web" (gRPC + browser) or "native" (desktop app).
+    viewer: web
+    rerun_memory_limit: 512MB
+
+    # Maximum update rate for the visualizer (Hz).
+    viz_max_hz: 30.
