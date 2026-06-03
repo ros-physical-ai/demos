@@ -19,7 +19,7 @@
     ee_frame: gripper_frame_link
 
     # Optical convention for the rr.Pinhole frustum (RDF = standard camera optical).
-    camera_xyz: RDF
+    camera_optical_convention: RDF
 
     # Joint order matching the forward_position_controller "commands" payload.
     cmd_joints:

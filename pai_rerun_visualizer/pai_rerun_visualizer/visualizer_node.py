@@ -114,7 +114,7 @@ class VisualizerNode(Node):
         topics: Topics,
         cmd_joint_order: list[str],
         ee_frame: str,
-        camera_xyz: str,
+        camera_optical_convention: str,
         trajectory_color: tuple[int, int, int],
         viz_max_hz: float = 30.0,
     ) -> None:
@@ -124,7 +124,7 @@ class VisualizerNode(Node):
             topics: Grouped ROS topic names for all subscriptions.
             cmd_joint_order: Ordered joint names matching ``forward_commands`` array indices.
             ee_frame: URDF frame used as the end-effector for trajectory FK.
-            camera_xyz: Rerun ``ViewCoordinates`` key (e.g. ``"RDF"``) for camera orientation.
+            camera_optical_convention: Rerun ``ViewCoordinates`` key (e.g. ``"RDF"``) for camera orientation.
             trajectory_color: RGB tuple for the predicted action-chunk path overlay.
             viz_max_hz: Maximum rate (Hz) at which 3D transforms and camera images are
                 sent to Rerun.  Scalar time-series are exempt and always logged at the
@@ -136,7 +136,7 @@ class VisualizerNode(Node):
         self._topics = topics
         self._cmd_joint_order = list(cmd_joint_order)
         self._ee_frame = ee_frame
-        self._camera_xyz = _VIEW_COORDS.get(camera_xyz.upper(), rr.ViewCoordinates.RDF)
+        self._camera_optical_convention = _VIEW_COORDS.get(camera_optical_convention.upper(), rr.ViewCoordinates.RDF)
         self._traj_color = trajectory_color
         self._viz_min_interval_s: float = 1.0 / max(viz_max_hz, 0.1)
 
@@ -340,7 +340,9 @@ class VisualizerNode(Node):
         self._cam_info[cam_name] = (k, msg.width, msg.height, msg.header.frame_id)
         rr.log(
             f"cameras/{cam_name}",
-            rr.Pinhole(image_from_camera=k, resolution=[msg.width, msg.height], camera_xyz=self._camera_xyz),
+            rr.Pinhole(
+                image_from_camera=k, resolution=[msg.width, msg.height], camera_xyz=self._camera_optical_convention
+            ),
             static=True,
         )
 
@@ -424,7 +426,7 @@ def main() -> None:
     static_image = str(_declare(bootstrap, "static_image_topic", "/static_camera/image_raw"))
     static_info = str(_declare(bootstrap, "static_camera_info_topic", "/static_camera/camera_info"))
     ee_frame = str(_declare(bootstrap, "ee_frame", "gripper_frame_link"))
-    camera_xyz = str(_declare(bootstrap, "camera_xyz", "RDF"))
+    camera_optical_convention = str(_declare(bootstrap, "camera_optical_convention", "RDF"))
     cmd_joints = list(
         _declare(
             bootstrap,
@@ -490,7 +492,7 @@ def main() -> None:
         topics,
         cmd_joint_order=cmd_joints,
         ee_frame=ee_frame,
-        camera_xyz=camera_xyz,
+        camera_optical_convention=camera_optical_convention,
         trajectory_color=(int(traj_color[0]), int(traj_color[1]), int(traj_color[2])),
         viz_max_hz=viz_max_hz,
     )
