@@ -40,6 +40,7 @@ def launch_setup(context, *args, **kwargs):
     initial_joint_controller = LaunchConfiguration("initial_joint_controller").perform(context)
     description_file = LaunchConfiguration("description_file").perform(context)
     launch_rviz = LaunchConfiguration("launch_rviz").perform(context)
+    launch_rerun = LaunchConfiguration("launch_rerun").perform(context)
     rviz_config_file = LaunchConfiguration("rviz_config_file").perform(context)
     gazebo_gui = LaunchConfiguration("gazebo_gui").perform(context)
     world_file = LaunchConfiguration("world_file")
@@ -100,6 +101,7 @@ def launch_setup(context, *args, **kwargs):
             "activate_joint_controller": activate_joint_controller,
             "launch_rviz": launch_rviz,
             "rviz_config_file": rviz_config_file,
+            "launch_rerun": launch_rerun,
         }.items(),
     )
 
@@ -197,6 +199,9 @@ def generate_launch_description():
             description="URDF/XACRO description file (absolute path) with the robot.",
         ),
         DeclareLaunchArgument("launch_rviz", default_value="true", description="Launch RViz?"),
+        DeclareLaunchArgument(
+            "launch_rerun", default_value="true", description="Launch the pai_rerun_visualizer node?"
+        ),
         DeclareLaunchArgument(
             "rviz_config_file",
             default_value=PathJoinSubstitution([FindPackageShare("pai_bringup"), "config", "rviz", "so_arm_101.rviz"]),

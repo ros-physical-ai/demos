@@ -39,6 +39,7 @@ def launch_setup(context, *args, **kwargs):
     ros2_control_file = LaunchConfiguration("ros2_control_file").perform(context)
     initial_joint_controller = LaunchConfiguration("initial_joint_controller").perform(context)
     launch_rviz = LaunchConfiguration("launch_rviz").perform(context)
+    launch_rerun = LaunchConfiguration("launch_rerun").perform(context)
     rviz_config_file = LaunchConfiguration("rviz_config_file").perform(context)
     use_cameras = LaunchConfiguration("use_cameras")
     cameras_config_file = LaunchConfiguration("cameras_config_file").perform(context)
@@ -94,6 +95,7 @@ def launch_setup(context, *args, **kwargs):
             "initial_joint_controller": initial_joint_controller,
             "launch_rviz": launch_rviz,
             "rviz_config_file": rviz_config_file,
+            "launch_rerun": launch_rerun,
         }.items(),
     )
 
@@ -178,6 +180,11 @@ def generate_launch_description():
             "launch_rviz",
             default_value="true",
             description="Launch RViz?",
+        ),
+        DeclareLaunchArgument(
+            "launch_rerun",
+            default_value="true",
+            description="Launch the pai_rerun_visualizer node?",
         ),
         DeclareLaunchArgument(
             "rviz_config_file",

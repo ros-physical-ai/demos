@@ -38,6 +38,7 @@ so-arm-leader = { cmd = ["ros2", "launch", "pai_leader_teleop", "leader_bringup.
 so-arm-real = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_real_bringup.launch.py"] }
 so-arm-gz = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_gz_bringup.launch.py"] }
 so-arm-mujoco = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_mujoco_bringup.launch.py"] }
+rerun-viz = { cmd = ["ros2", "launch", "pai_rerun_visualizer", "visualizer.launch.py"] }
 rosetta-record-mujoco = { cmd = [
   "ros2",
   "launch",
@@ -78,6 +79,7 @@ range-v3 = ">=0.12.0,<0.13"
 python = "3.12.*"
 pip = "*"
 numpy = ">=1.26.4,<3"
+pinocchio = "*"
 # Explicitly installing pillow through Conda (rather that letting pip pull it an as transitive dependency)
 # to avoid related issue to: libtiff.so.6: undefined symbol: jpeg12_write_raw_data, version LIBJPEG_8.0.
 pillow = "*"

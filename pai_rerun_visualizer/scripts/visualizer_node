@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+from pai_rerun_visualizer.visualizer_node import main
+
+if __name__ == "__main__":
+    main()

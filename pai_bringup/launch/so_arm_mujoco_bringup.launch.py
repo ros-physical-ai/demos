@@ -101,6 +101,8 @@ def _generate_mjcf_at_launch(pkg_share, world_sdf_path, arm_base_xyz, arm_base_r
 
 def launch_setup(context, *args, **kwargs):
     """Set up nodes for the SO ARM MuJoCo bringup."""
+    launch_rviz = LaunchConfiguration("launch_rviz").perform(context)
+    launch_rerun = LaunchConfiguration("launch_rerun").perform(context)
     pkg_share = PathJoinSubstitution([FindPackageShare("pai_bringup")]).perform(context)
     world_sdf_path = LaunchConfiguration("world_file").perform(context)
     arm_base_xyz = (
@@ -160,6 +162,7 @@ def launch_setup(context, *args, **kwargs):
             ),
             "description_xacro_args": description_xacro_args,
             "use_sim_time": "true",
+            "launch_rviz": launch_rviz,
             "rviz_config_file": PathJoinSubstitution(
                 [
                     FindPackageShare("pai_bringup"),
@@ -168,6 +171,7 @@ def launch_setup(context, *args, **kwargs):
                     "so_arm_101.rviz",
                 ]
             ),
+            "launch_rerun": launch_rerun,
         }.items(),
     )
 
@@ -188,5 +192,9 @@ def generate_launch_description():
         DeclareLaunchArgument("roll", default_value="0.0", description="Robot arm base roll orientation (radians)"),
         DeclareLaunchArgument("pitch", default_value="0.0", description="Robot arm base pitch orientation (radians)"),
         DeclareLaunchArgument("yaw", default_value="3.14159", description="Robot arm base yaw orientation (radians)"),
+        DeclareLaunchArgument("launch_rviz", default_value="true", description="Launch RViz?"),
+        DeclareLaunchArgument(
+            "launch_rerun", default_value="true", description="Launch the pai_rerun_visualizer node?"
+        ),
     ]
     return LaunchDescription([*declared_arguments, OpaqueFunction(function=launch_setup)])
