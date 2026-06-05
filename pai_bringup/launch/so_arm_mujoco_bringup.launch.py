@@ -194,7 +194,7 @@ def generate_launch_description():
         DeclareLaunchArgument("yaw", default_value="3.14159", description="Robot arm base yaw orientation (radians)"),
         DeclareLaunchArgument("launch_rviz", default_value="true", description="Launch RViz?"),
         DeclareLaunchArgument(
-            "launch_rerun", default_value="true", description="Launch the pai_rerun_visualizer node?"
+            "launch_rerun", default_value="false", description="Launch the pai_rerun_visualizer node?"
         ),
     ]
     return LaunchDescription([*declared_arguments, OpaqueFunction(function=launch_setup)])

@@ -200,7 +200,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument("launch_rviz", default_value="true", description="Launch RViz?"),
         DeclareLaunchArgument(
-            "launch_rerun", default_value="true", description="Launch the pai_rerun_visualizer node?"
+            "launch_rerun", default_value="false", description="Launch the pai_rerun_visualizer node?"
         ),
         DeclareLaunchArgument(
             "rviz_config_file",
