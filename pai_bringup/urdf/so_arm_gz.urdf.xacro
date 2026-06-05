@@ -121,6 +121,16 @@
     usb_port="$(arg usb_port)"
   />
 
+  <!-- Gripper friction overrides -->
+  <gazebo reference="$(arg prefix)jaw_link">
+    <mu>0.8</mu>
+    <mu2>0.8</mu2>
+  </gazebo>
+  <gazebo reference="$(arg prefix)gripper_link">
+    <mu>0.8</mu>
+    <mu2>0.8</mu2>
+  </gazebo>
+
   <gazebo reference="world">
   </gazebo>
   <gazebo>
