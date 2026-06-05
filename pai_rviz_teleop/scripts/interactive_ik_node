@@ -72,7 +72,7 @@ ARM_JOINTS = [
 # Full joint ordering expected by the forward_position_controller
 # (position_controllers/JointGroupPositionController). The gripper is appended;
 # its value is driven by the menu toggle rather than the IK.
-COMMAND_JOINTS = ARM_JOINTS + ["gripper_joint"]
+COMMAND_JOINTS = [*ARM_JOINTS, "gripper_joint"]
 
 
 def transient_local_qos(depth=1):
@@ -170,9 +170,7 @@ class InteractiveIKNode(Node):
 
         # ROS interfaces.
         self._command_pub = self.create_publisher(Float64MultiArray, command_topic, 10)
-        self._joint_state_sub = self.create_subscription(
-            JointState, "/joint_states", self._joint_state_cb, 10
-        )
+        self._joint_state_sub = self.create_subscription(JointState, "/joint_states", self._joint_state_cb, 10)
         self._marker_server = InteractiveMarkerServer(self, "interactive_ik")
 
         # Right-click context menu on the marker.
@@ -206,9 +204,7 @@ class InteractiveIKNode(Node):
             result["urdf"] = msg.data
             event.set()
 
-        sub = self.create_subscription(
-            String, "/robot_description", _cb, transient_local_qos()
-        )
+        sub = self.create_subscription(String, "/robot_description", _cb, transient_local_qos())
         self.get_logger().info("Waiting for /robot_description ...")
         while rclpy.ok() and not event.is_set():
             rclpy.spin_once(self, timeout_sec=0.1)
@@ -248,18 +244,14 @@ class InteractiveIKNode(Node):
         if not self.model.existFrame(self.ee_frame):
             available = [f.name for f in self.model.frames]
             raise RuntimeError(
-                f"End-effector frame '{self.ee_frame}' not found in model. "
-                f"Available frames: {available}"
+                f"End-effector frame '{self.ee_frame}' not found in model. Available frames: {available}"
             )
 
         # The reduced model preserves the arm joints; record their q-index so
         # we can map /joint_states into the configuration vector.
-        self._model_joint_names = [
-            self.model.names[jid] for jid in range(1, self.model.njoints)
-        ]
+        self._model_joint_names = [self.model.names[jid] for jid in range(1, self.model.njoints)]
         self.get_logger().info(
-            f"Built reduced Pinocchio model with joints {self._model_joint_names} "
-            f"(nq={self.model.nq})."
+            f"Built reduced Pinocchio model with joints {self._model_joint_names} (nq={self.model.nq})."
         )
 
         # Differential IK tasks. The frame task is retargeted every tick.
@@ -401,9 +393,7 @@ class InteractiveIKNode(Node):
             self._gripper_target = self.gripper_closed if to_open < to_closed else self.gripper_open
             target = self._gripper_target
         state = "open" if target == self.gripper_open else "closed"
-        self.get_logger().info(
-            f"Gripper toggling {state} -> {target:.3f} rad at {self.gripper_speed:.2f} rad/s."
-        )
+        self.get_logger().info(f"Gripper toggling {state} -> {target:.3f} rad at {self.gripper_speed:.2f} rad/s.")
 
     def _on_reset(self, feedback: InteractiveMarkerFeedback):
         """Snap the marker and IK target back to the current joint states."""
@@ -480,7 +470,7 @@ class InteractiveIKNode(Node):
                         solver=self.qp_solver,
                         limits=[self._velocity_limit],
                     )
-                except Exception as exc:  # noqa: BLE001 - log and skip a tick
+                except Exception as exc:
                     self.get_logger().warn(f"IK solve failed: {exc}", throttle_duration_sec=2.0)
                     return
 
@@ -553,9 +543,7 @@ class InteractiveIKNode(Node):
 
     @staticmethod
     def _pose_to_se3(pose: Pose) -> "pin.SE3":
-        quat = pin.Quaternion(
-            pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z
-        )
+        quat = pin.Quaternion(pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z)
         translation = np.array([pose.position.x, pose.position.y, pose.position.z])
         return pin.SE3(quat.normalized().toRotationMatrix(), translation)
 
