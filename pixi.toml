@@ -175,3 +175,6 @@ ROS_DISTRO = "kilted"
 RMW_IMPLEMENTATION = "rmw_zenoh_cpp"
 # uv/PyPI: large wheels (e.g. torch) need a longer per-request timeout than the default 30s
 UV_HTTP_TIMEOUT = "600"
+# Ignore the user site-packages dir (~/.local/lib/pythonX.Y/site-packages) so stray
+# pip --user installs (e.g. cmeel .pth files) don't leak into the pixi environment.
+PYTHONNOUSERSITE = "1"
