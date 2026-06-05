@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>pai_rviz_teleop</name>
+  <version>0.1.0</version>
+  <description>
+    Interactive marker differential inverse kinematics demo for the SO-ARM101.
+    Drag a 6-DOF RViz interactive marker and have the arm's tool frame follow it
+    using the Pink differential IK solver, streaming commands to the
+    joint_trajectory_controller running against the MuJoCo simulation.
+  </description>
+  <maintainer email="sebas.a.castro@gmail.com">Sebastian Castro</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>interactive_markers</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>pai_bringup</exec_depend>
+  <exec_depend>position_controllers</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>visualization_msgs</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

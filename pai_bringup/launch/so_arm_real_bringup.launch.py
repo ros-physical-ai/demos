@@ -183,7 +183,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "launch_rerun",
-            default_value="true",
+            default_value="false",
             description="Launch the pai_rerun_visualizer node?",
         ),
         DeclareLaunchArgument(

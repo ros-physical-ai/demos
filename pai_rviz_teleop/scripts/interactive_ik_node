@@ -1,0 +1,568 @@
+#!/usr/bin/env python3
+
+# Copyright (C) 2026 Sebastian Castro
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""Interactive marker differential IK demo for the SO-ARM101.
+
+This node lets you drag a 6-DOF RViz interactive marker and have the arm's
+tool frame follow it in real time. The pipeline is:
+
+  1. Build a Pinocchio model from ``/robot_description`` (the URDF published
+     by ``robot_state_publisher``), then lock the gripper joint so that only
+     the five arm joints participate in the IK.
+  2. Spawn an ``interactive_markers`` 6-DOF control whose initial pose is the
+     current tool-frame pose (computed via forward kinematics from
+     ``/joint_states``).
+  3. On every control tick, solve a differential IK QP with Pink: a
+     ``FrameTask`` pulls the tool frame toward the marker pose and a low-weight
+     ``PostureTask`` regularizes the solution. The resulting joint velocity is
+     integrated and the new configuration is streamed to the
+     ``forward_position_controller`` (``position_controllers/JointGroupPositionController``)
+     as a ``Float64MultiArray`` of joint positions.
+
+Drag the marker in RViz and watch ``/joint_states`` to confirm the arm moves.
+"""
+
+import threading
+
+import numpy as np
+import pinocchio as pin
+import rclpy
+from geometry_msgs.msg import Pose
+from interactive_markers import InteractiveMarkerServer, MenuHandler
+from pink import solve_ik
+from pink.configuration import Configuration
+from pink.limits import VelocityLimit
+from pink.tasks import FrameTask, PostureTask
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+from rclpy.node import Node
+from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSProfile, QoSReliabilityPolicy
+from sensor_msgs.msg import JointState
+from std_msgs.msg import Float64MultiArray
+from visualization_msgs.msg import (
+    InteractiveMarker,
+    InteractiveMarkerControl,
+    InteractiveMarkerFeedback,
+    Marker,
+)
+
+# The five arm joints solved by the IK, in order. The gripper joint is
+# intentionally excluded (locked) from the IK since it does not move the
+# tool frame.
+ARM_JOINTS = [
+    "shoulder_pan_joint",
+    "shoulder_lift_joint",
+    "elbow_flex_joint",
+    "wrist_flex_joint",
+    "wrist_roll_joint",
+]
+
+# Full joint ordering expected by the forward_position_controller
+# (position_controllers/JointGroupPositionController). The gripper is appended;
+# its value is driven by the menu toggle rather than the IK.
+COMMAND_JOINTS = [*ARM_JOINTS, "gripper_joint"]
+
+
+def transient_local_qos(depth=1):
+    """QoS matching latched publishers such as ``/robot_description``."""
+    return QoSProfile(
+        history=QoSHistoryPolicy.KEEP_LAST,
+        depth=depth,
+        reliability=QoSReliabilityPolicy.RELIABLE,
+        durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
+    )
+
+
+class InteractiveIKNode(Node):
+    """Drives the SO-ARM101 tool frame to follow a 6-DOF interactive marker."""
+
+    def __init__(self):
+        """Initialize parameters, wait for the URDF, and build the IK problem."""
+        super().__init__("interactive_ik_node")
+
+        self.declare_parameter("ee_frame", "gripper_frame_link")
+        # The marker is anchored in (and its pose interpreted relative to) the
+        # model root frame. Pink's get_transform_frame_to_world / FrameTask
+        # targets are expressed in this same frame, so it must match the URDF
+        # root link ("world" for the SO-ARM101 descriptions).
+        self.declare_parameter("root_frame", "world")
+        self.declare_parameter("control_rate", 50.0)
+        self.declare_parameter("position_cost", 0.5)
+        self.declare_parameter("orientation_cost", 0.1)
+        self.declare_parameter("posture_cost", 1e-3)
+        # Levenberg-Marquardt damping on the FrameTask. Regularizes the QP in
+        # near-singular directions so the commanded joint velocity stays bounded
+        # instead of blowing up (the main cause of occasional oscillation).
+        self.declare_parameter("lm_damping", 1e-2)
+        # Per-joint velocity cap (rad/s) enforced as a QP constraint in the IK
+        # solve. The URDF velocity limit is 10 rad/s (effectively unbounded), so
+        # this tighter cap is what actually smooths fast/jerky motion.
+        self.declare_parameter("max_joint_velocity", 2.0)
+        # Marker-inactivity timeout (s). Once no drag feedback has arrived for
+        # this long, the arm is considered idle: the loop stops solving and
+        # republishing so the controller just holds the last setpoint. This
+        # eliminates the steady-state jitter from re-solving residual error.
+        self.declare_parameter("inactivity_timeout", 0.3)
+        # Marker move deadband: minimum pose change (norm of the 6D log of the
+        # delta transform, mixing metres and radians) for a feedback update to
+        # count. Updates below this are ignored, so holding the mouse down on the
+        # marker without actually moving it does not refresh activity and the arm
+        # stays idle instead of jittering on residual error.
+        self.declare_parameter("marker_deadband", 2e-3)
+        # Command topic of the position_controllers/JointGroupPositionController
+        # (forward_position_controller). It expects a Float64MultiArray with one
+        # entry per configured joint, in COMMAND_JOINTS order.
+        self.declare_parameter("command_topic", "/forward_position_controller/commands")
+        self.declare_parameter("qp_solver", "quadprog")
+        # Gripper toggle menu: open/closed setpoints (rad) and animation speed.
+        self.declare_parameter("gripper_open_position", 1.7)
+        self.declare_parameter("gripper_closed_position", 0.0)
+        self.declare_parameter("gripper_speed", 1.0)  # rad/s
+        # SE3 low-pass filter on the marker target. Per-tick interpolation
+        # fraction along the geodesic from the filtered pose toward the raw
+        # marker pose, in (0, 1]. 1.0 disables filtering; smaller is smoother.
+        self.declare_parameter("target_lowpass_alpha", 0.5)
+
+        self.ee_frame = self.get_parameter("ee_frame").value
+        self.root_frame = self.get_parameter("root_frame").value
+        self.control_rate = float(self.get_parameter("control_rate").value)
+        self.position_cost = float(self.get_parameter("position_cost").value)
+        self.orientation_cost = float(self.get_parameter("orientation_cost").value)
+        self.posture_cost = float(self.get_parameter("posture_cost").value)
+        self.lm_damping = float(self.get_parameter("lm_damping").value)
+        self.max_joint_velocity = float(self.get_parameter("max_joint_velocity").value)
+        self.inactivity_timeout = float(self.get_parameter("inactivity_timeout").value)
+        self.marker_deadband = float(self.get_parameter("marker_deadband").value)
+        self.qp_solver = self.get_parameter("qp_solver").value
+        self.gripper_open = float(self.get_parameter("gripper_open_position").value)
+        self.gripper_closed = float(self.get_parameter("gripper_closed_position").value)
+        self.gripper_speed = float(self.get_parameter("gripper_speed").value)
+        self.lowpass_alpha = float(np.clip(self.get_parameter("target_lowpass_alpha").value, 1e-3, 1.0))
+        command_topic = self.get_parameter("command_topic").value
+
+        # State shared between the joint-state callback, marker feedback, and
+        # the control loop. Guarded by a lock since callbacks run in parallel.
+        self._lock = threading.Lock()
+        self._latest_joint_positions = None  # dict: joint name -> position
+        self._target_pose = None  # raw SE3 target from the marker (root frame)
+        self._target_filtered = None  # low-pass-filtered SE3 target fed to the IK
+        self._last_marker_activity = None  # rclpy Time of the last drag feedback
+        self._gripper_position = 0.0  # last measured gripper position
+        self._gripper_cmd = None  # commanded gripper position (animated)
+        self._gripper_target = None  # open/closed setpoint; None => hold command
+        self._marker_initialized = False
+
+        # Build the Pinocchio model from the latched robot_description.
+        urdf_xml = self._wait_for_robot_description()
+        self._build_model(urdf_xml)
+
+        # ROS interfaces.
+        self._command_pub = self.create_publisher(Float64MultiArray, command_topic, 10)
+        self._joint_state_sub = self.create_subscription(JointState, "/joint_states", self._joint_state_cb, 10)
+        self._marker_server = InteractiveMarkerServer(self, "interactive_ik")
+
+        # Right-click context menu on the marker.
+        self._menu_handler = MenuHandler()
+        self._menu_handler.insert("Toggle gripper (open/close)", callback=self._on_toggle_gripper)
+        self._menu_handler.insert("Reset to current joint states", callback=self._on_reset)
+
+        # Control loop on its own callback group so it is not starved by
+        # subscription callbacks.
+        self._control_group = MutuallyExclusiveCallbackGroup()
+        self._control_timer = self.create_timer(
+            1.0 / self.control_rate, self._control_loop, callback_group=self._control_group
+        )
+
+        self.get_logger().info(
+            f"Interactive IK ready. Drag the marker in RViz; tool frame "
+            f"'{self.ee_frame}' will follow. Streaming to '{command_topic}'."
+        )
+
+    # ------------------------------------------------------------------
+    # Model construction
+    # ------------------------------------------------------------------
+    def _wait_for_robot_description(self):
+        """Block until the latched ``/robot_description`` URDF is received."""
+        from std_msgs.msg import String
+
+        result = {}
+        event = threading.Event()
+
+        def _cb(msg):
+            result["urdf"] = msg.data
+            event.set()
+
+        sub = self.create_subscription(String, "/robot_description", _cb, transient_local_qos())
+        self.get_logger().info("Waiting for /robot_description ...")
+        while rclpy.ok() and not event.is_set():
+            rclpy.spin_once(self, timeout_sec=0.1)
+        self.destroy_subscription(sub)
+        if "urdf" not in result:
+            raise RuntimeError("Did not receive /robot_description")
+        self.get_logger().info("Received robot description.")
+        return result["urdf"]
+
+    def _build_model(self, urdf_xml):
+        """Build the full model, then reduce it to the five arm joints."""
+        full_model = pin.buildModelFromXML(urdf_xml)
+
+        # Clamp the gripper open/closed setpoints to the URDF joint limits so
+        # the toggle never commands past the mechanical range.
+        if full_model.existJointName("gripper_joint"):
+            gid = full_model.getJointId("gripper_joint")
+            qidx = full_model.joints[gid].idx_q
+            lo = float(full_model.lowerPositionLimit[qidx])
+            hi = float(full_model.upperPositionLimit[qidx])
+            self.gripper_open = float(np.clip(self.gripper_open, lo, hi))
+            self.gripper_closed = float(np.clip(self.gripper_closed, lo, hi))
+
+        # Lock every joint that is not one of the arm joints (e.g. the
+        # gripper) so the IK only actuates ARM_JOINTS. The locked joints are
+        # pinned at their neutral configuration.
+        locked_joint_ids = []
+        for jid in range(1, full_model.njoints):  # joint 0 is the universe
+            name = full_model.names[jid]
+            if name not in ARM_JOINTS:
+                locked_joint_ids.append(jid)
+
+        q_ref = pin.neutral(full_model)
+        self.model = pin.buildReducedModel(full_model, locked_joint_ids, q_ref)
+        self.data = self.model.createData()
+
+        if not self.model.existFrame(self.ee_frame):
+            available = [f.name for f in self.model.frames]
+            raise RuntimeError(
+                f"End-effector frame '{self.ee_frame}' not found in model. Available frames: {available}"
+            )
+
+        # The reduced model preserves the arm joints; record their q-index so
+        # we can map /joint_states into the configuration vector.
+        self._model_joint_names = [self.model.names[jid] for jid in range(1, self.model.njoints)]
+        self.get_logger().info(
+            f"Built reduced Pinocchio model with joints {self._model_joint_names} (nq={self.model.nq})."
+        )
+
+        # Differential IK tasks. The frame task is retargeted every tick.
+        self._frame_task = FrameTask(
+            self.ee_frame,
+            position_cost=self.position_cost,
+            orientation_cost=self.orientation_cost,
+            lm_damping=self.lm_damping,
+        )
+        self._posture_task = PostureTask(cost=self.posture_cost)
+
+        # Velocity limit enforced by the QP solve. VelocityLimit reads the
+        # model's velocityLimit, so override it with the tunable per-joint cap
+        # before constructing the limit.
+        self.model.velocityLimit[:] = self.max_joint_velocity
+        self._velocity_limit = VelocityLimit(self.model)
+
+        # Configuration starts at neutral until the first /joint_states arrives.
+        self._q = pin.neutral(self.model)
+        self._configuration = Configuration(self.model, self.data, self._q)
+        self._posture_task.set_target(self._q)
+
+    # ------------------------------------------------------------------
+    # ROS callbacks
+    # ------------------------------------------------------------------
+    def _joint_state_cb(self, msg: JointState):
+        """Cache the latest arm joint positions from the simulator."""
+        positions = dict(zip(msg.name, msg.position, strict=False))
+        with self._lock:
+            self._latest_joint_positions = positions
+            if "gripper_joint" in positions:
+                self._gripper_position = positions["gripper_joint"]
+            if not self._marker_initialized:
+                self._try_initialize_marker(positions)
+
+    def _try_initialize_marker(self, positions):
+        """Place the marker at the current tool pose once joint states arrive.
+
+        Caller must hold ``self._lock``.
+        """
+        if not all(j in positions for j in self._model_joint_names):
+            return
+
+        q = np.array([positions[j] for j in self._model_joint_names])
+        self._q = q
+        self._configuration.update(q)
+        # NB: the posture task target stays at the neutral pose set in
+        # _build_model -- it is a fixed rest-pose regularizer, not retargeted to
+        # the current configuration.
+
+        tool_pose = self._configuration.get_transform_frame_to_world(self.ee_frame)
+        self._target_pose = tool_pose.copy()
+        self._target_filtered = tool_pose.copy()
+        self._frame_task.set_target(tool_pose)
+
+        # Hold the gripper at its measured position until the menu toggles it.
+        self._gripper_cmd = positions.get("gripper_joint", 0.0)
+        self._gripper_target = None
+
+        self._spawn_marker(tool_pose)
+        self._marker_initialized = True
+        self.get_logger().info("Interactive marker initialized at current tool pose.")
+
+    def _spawn_marker(self, pose: "pin.SE3"):
+        """Create the 6-DOF interactive marker at the given SE3 pose."""
+        int_marker = InteractiveMarker()
+        int_marker.header.frame_id = self.root_frame
+        int_marker.name = "ee_target"
+        int_marker.description = "SO-ARM101 IK target"
+        int_marker.scale = 0.12
+        int_marker.pose = self._se3_to_pose(pose)
+
+        # A small sphere so the control handles have something to anchor to.
+        sphere = Marker()
+        sphere.type = Marker.SPHERE
+        sphere.scale.x = sphere.scale.y = sphere.scale.z = 0.03
+        sphere.color.r = 0.1
+        sphere.color.g = 0.8
+        sphere.color.b = 1.0
+        sphere.color.a = 0.6
+        # MENU interaction so right/left-clicking the sphere opens the context
+        # menu (toggle gripper / reset).
+        sphere_control = InteractiveMarkerControl()
+        sphere_control.always_visible = True
+        sphere_control.interaction_mode = InteractiveMarkerControl.MENU
+        sphere_control.markers.append(sphere)
+        int_marker.controls.append(sphere_control)
+
+        # Add 3 translation + 3 rotation controls (standard 6-DOF gizmo).
+        for axis, (x, y, z) in (("x", (1, 0, 0)), ("y", (0, 1, 0)), ("z", (0, 0, 1))):
+            for mode, suffix in (
+                (InteractiveMarkerControl.MOVE_AXIS, "move"),
+                (InteractiveMarkerControl.ROTATE_AXIS, "rotate"),
+            ):
+                control = InteractiveMarkerControl()
+                control.name = f"{suffix}_{axis}"
+                control.orientation.w = 1.0
+                control.orientation.x = float(x)
+                control.orientation.y = float(y)
+                control.orientation.z = float(z)
+                control.interaction_mode = mode
+                int_marker.controls.append(control)
+
+        self._marker_server.insert(int_marker, feedback_callback=self._marker_feedback)
+        self._menu_handler.apply(self._marker_server, int_marker.name)
+        self._marker_server.applyChanges()
+
+    def _marker_feedback(self, feedback: InteractiveMarkerFeedback):
+        """Update the raw IK target when the marker is dragged past the deadband.
+
+        RViz emits POSE_UPDATE feedback even while the mouse is held down without
+        moving. Ignoring sub-deadband changes means a held-still marker does not
+        refresh activity, so the arm goes idle instead of jittering. Comparing
+        against the last *accepted* target lets slow drags still accumulate
+        through the deadband.
+        """
+        if feedback.event_type != InteractiveMarkerFeedback.POSE_UPDATE:
+            return
+        target = self._pose_to_se3(feedback.pose)
+        now = self.get_clock().now()
+        with self._lock:
+            if self._target_pose is not None:
+                delta = float(np.linalg.norm(pin.log6(self._target_pose.actInv(target)).vector))
+                if delta < self.marker_deadband:
+                    return
+            self._target_pose = target
+            self._last_marker_activity = now
+
+    # ------------------------------------------------------------------
+    # Menu callbacks
+    # ------------------------------------------------------------------
+    def _on_toggle_gripper(self, feedback: InteractiveMarkerFeedback):
+        """Flip the gripper setpoint between open and closed (animated)."""
+        with self._lock:
+            reference = self._gripper_target if self._gripper_target is not None else self._gripper_cmd
+            # Move toward whichever setpoint is farther from the current one.
+            to_open = abs(reference - self.gripper_open)
+            to_closed = abs(reference - self.gripper_closed)
+            self._gripper_target = self.gripper_closed if to_open < to_closed else self.gripper_open
+            target = self._gripper_target
+        state = "open" if target == self.gripper_open else "closed"
+        self.get_logger().info(f"Gripper toggling {state} -> {target:.3f} rad at {self.gripper_speed:.2f} rad/s.")
+
+    def _on_reset(self, feedback: InteractiveMarkerFeedback):
+        """Snap the marker and IK target back to the current joint states."""
+        with self._lock:
+            positions = self._latest_joint_positions
+            if positions is None or not all(j in positions for j in self._model_joint_names):
+                self.get_logger().warn("Reset ignored: joint states not available yet.")
+                return
+            q = np.array([positions[j] for j in self._model_joint_names])
+            self._q = q
+            self._configuration.update(q)
+            tool_pose = self._configuration.get_transform_frame_to_world(self.ee_frame)
+            self._target_pose = tool_pose.copy()
+            self._target_filtered = tool_pose.copy()
+            # Mark the marker idle so the arm holds the reset pose instead of
+            # resuming the pre-reset jitter.
+            self._last_marker_activity = None
+            # Stop any in-flight gripper motion and hold the measured position.
+            self._gripper_cmd = positions.get("gripper_joint", self._gripper_cmd)
+            self._gripper_target = None
+            pose_msg = self._se3_to_pose(tool_pose)
+
+        # Pass no header so the marker keeps its original (untimestamped) header
+        # from insert(). Supplying a stamped header makes RViz transform the
+        # marker via TF at that exact stamp; if it doesn't line up the marker
+        # does not actually move, desyncing it from the internal target and
+        # corrupting the next drag's pose error.
+        self._marker_server.setPose("ee_target", pose_msg)
+        self._marker_server.applyChanges()
+        self.get_logger().info("Reset marker and IK target to current joint states.")
+
+    # ------------------------------------------------------------------
+    # Control loop
+    # ------------------------------------------------------------------
+    def _control_loop(self):
+        """Solve differential IK toward the (filtered) marker and stream it.
+
+        The whole tick runs under ``self._lock``. The Pink ``Configuration`` and
+        Pinocchio ``data`` are shared mutable state that menu callbacks (reset)
+        and the marker feedback also touch from other executor threads, so the
+        filter step, solve, integration and ``_q`` write must be atomic with
+        respect to them. Without this, a reset landing mid-solve corrupts the
+        solver data and/or gets clobbered by a stale integrated configuration.
+        The QP solve is sub-millisecond, so holding the lock is cheap.
+        """
+        dt = 1.0 / self.control_rate
+        now = self.get_clock().now()
+        with self._lock:
+            if not self._marker_initialized or self._target_pose is None:
+                return
+
+            # Marker idle? Once no drag feedback has arrived for the timeout, the
+            # arm holds: we skip the solve so residual error is not re-commanded
+            # every tick (the source of steady-state jitter). Tracking resumes
+            # automatically on the next drag, which refreshes the timestamp.
+            arm_active = self._last_marker_activity is not None and (
+                (now - self._last_marker_activity).nanoseconds * 1e-9 < self.inactivity_timeout
+            )
+
+            if arm_active:
+                # SE3 low-pass: step the filtered target a fraction alpha along
+                # the geodesic toward the raw marker pose (Pinocchio log/exp).
+                twist = pin.log6(self._target_filtered.actInv(self._target_pose)).vector
+                self._target_filtered = self._target_filtered * pin.exp6(self.lowpass_alpha * twist)
+
+                q = self._q
+                self._configuration.update(q)
+                self._frame_task.set_target(self._target_filtered)
+                try:
+                    velocity = solve_ik(
+                        self._configuration,
+                        [self._frame_task, self._posture_task],
+                        dt,
+                        solver=self.qp_solver,
+                        limits=[self._velocity_limit],
+                    )
+                except Exception as exc:
+                    self.get_logger().warn(f"IK solve failed: {exc}", throttle_duration_sec=2.0)
+                    return
+
+                q_next = pin.integrate(self.model, q, velocity * dt)
+                # Clamp to joint limits so we never command past the URDF bounds.
+                q_next = np.clip(q_next, self.model.lowerPositionLimit, self.model.upperPositionLimit)
+                self._q = q_next
+
+            # Animate the gripper independently of arm motion.
+            gripper_before = self._gripper_cmd
+            self._step_gripper(dt)
+            gripper_active = self._gripper_cmd != gripper_before
+
+            # When nothing is moving, hold position and publish nothing so the
+            # controller keeps the last setpoint (no jitter).
+            if not (arm_active or gripper_active):
+                return
+
+            q_cmd = self._q
+            gripper = self._gripper_cmd
+
+        self._publish_command(q_cmd, gripper)
+
+    def _step_gripper(self, dt):
+        """Advance the commanded gripper position toward its setpoint.
+
+        Caller must hold ``self._lock``. Does nothing until a toggle sets a
+        target, so the gripper is simply held at its initial command.
+        """
+        if self._gripper_target is None:
+            return
+        step = self.gripper_speed * dt
+        diff = self._gripper_target - self._gripper_cmd
+        if abs(diff) <= step:
+            self._gripper_cmd = self._gripper_target
+        else:
+            self._gripper_cmd += float(np.sign(diff)) * step
+        lo, hi = sorted((self.gripper_closed, self.gripper_open))
+        self._gripper_cmd = float(np.clip(self._gripper_cmd, lo, hi))
+
+    def _publish_command(self, q, gripper):
+        """Publish a Float64MultiArray to the forward_position_controller.
+
+        The controller expects one value per configured joint in
+        COMMAND_JOINTS order: the five IK arm joints followed by the gripper,
+        which holds its initial command until the menu toggle animates it.
+        """
+        q_by_name = dict(zip(self._model_joint_names, q, strict=True))
+        q_by_name["gripper_joint"] = gripper
+
+        cmd = Float64MultiArray()
+        cmd.data = [float(q_by_name[name]) for name in COMMAND_JOINTS]
+        self._command_pub.publish(cmd)
+
+    # ------------------------------------------------------------------
+    # Conversions
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _se3_to_pose(transform: "pin.SE3") -> Pose:
+        quat = pin.Quaternion(transform.rotation)
+        pose = Pose()
+        pose.position.x = float(transform.translation[0])
+        pose.position.y = float(transform.translation[1])
+        pose.position.z = float(transform.translation[2])
+        pose.orientation.x = float(quat.x)
+        pose.orientation.y = float(quat.y)
+        pose.orientation.z = float(quat.z)
+        pose.orientation.w = float(quat.w)
+        return pose
+
+    @staticmethod
+    def _pose_to_se3(pose: Pose) -> "pin.SE3":
+        quat = pin.Quaternion(pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z)
+        translation = np.array([pose.position.x, pose.position.y, pose.position.z])
+        return pin.SE3(quat.normalized().toRotationMatrix(), translation)
+
+
+def main(args=None):
+    """Entry point for the interactive IK node."""
+    rclpy.init(args=args)
+    node = InteractiveIKNode()
+    executor = rclpy.executors.MultiThreadedExecutor()
+    executor.add_node(node)
+    try:
+        executor.spin()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
+
+
+if __name__ == "__main__":
+    main()

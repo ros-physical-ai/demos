@@ -38,6 +38,7 @@ so-arm-leader = { cmd = ["ros2", "launch", "pai_leader_teleop", "leader_bringup.
 so-arm-real = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_real_bringup.launch.py"] }
 so-arm-gz = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_gz_bringup.launch.py"] }
 so-arm-mujoco = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_mujoco_bringup.launch.py"] }
+so-arm-rviz-ik = { cmd = ["ros2", "launch", "pai_rviz_teleop", "interactive_ik_demo.launch.py"] }
 rerun-viz = { cmd = ["ros2", "launch", "pai_rerun_visualizer", "visualizer.launch.py"] }
 rosetta-record-mujoco = { cmd = [
   "ros2",
@@ -98,6 +99,7 @@ ros-kilted-rclpy = "*"
 ros-kilted-robot-state-publisher = "*"
 ros-kilted-ros-gz-bridge = "*"
 ros-kilted-ros-gz-sim = "*"
+ros-kilted-ros2controlcli = "*"
 # From pai_data_collection
 ros-kilted-rosbag2 = ">=0.32.0,<0.33"
 ros-kilted-rosbag2-py = "*"
@@ -145,6 +147,8 @@ ros-kilted-rmw-zenoh-cpp = "*"
 # Camera driver
 ros-kilted-usb-cam = "*"
 ros-kilted-camera-calibration = ">=6.0.11,<7"
+# Differential inverse kinematics (Pink) + Pinocchio backend for the interactive marker IK demo.
+pink = ">=3.1,<5"
 
 [pypi-dependencies]
 huggingface-hub = "*"
