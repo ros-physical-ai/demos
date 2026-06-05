@@ -359,6 +359,14 @@
           <geometry>
             <box><size>0.66 0.6 0.026</size></box>
           </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
         </collision>
         <visual name="visual">
           <geometry>
@@ -461,6 +469,14 @@
         <pose>0 0.0785 0.0115 0 0 0</pose>
         <collision name="collision">
           <geometry><box><size>0.12 0.006 0.02</size></box></geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
         </collision>
         <visual name="visual">
           <geometry><box><size>0.12 0.006 0.02</size></box></geometry>
@@ -474,6 +490,14 @@
         <pose>0 -0.0785 0.0115 0 0 0</pose>
         <collision name="collision">
           <geometry><box><size>0.12 0.006 0.02</size></box></geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
         </collision>
         <visual name="visual">
           <geometry><box><size>0.12 0.006 0.02</size></box></geometry>
@@ -487,6 +511,14 @@
         <pose>-0.0585 0 0.0115 0 0 0</pose>
         <collision name="collision">
           <geometry><box><size>0.006 0.16 0.02</size></box></geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
         </collision>
         <visual name="visual">
           <geometry><box><size>0.006 0.16 0.02</size></box></geometry>
@@ -500,6 +532,14 @@
         <pose>0.0585 0 0.0115 0 0 0</pose>
         <collision name="collision">
           <geometry><box><size>0.006 0.16 0.02</size></box></geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.5</mu>
+                <mu2>0.5</mu2>
+              </ode>
+            </friction>
+          </surface>
         </collision>
         <visual name="visual">
           <geometry><box><size>0.006 0.16 0.02</size></box></geometry>
@@ -525,16 +565,26 @@
 
     <!-- Cube small: 25mm, 0.02 kg, red -->
     <model name="cube_small">
-      <pose>0.28 -0.1 0.4055 0 0 0</pose>
+      <pose>0.16 -0.11 0.41 0 0 0.06</pose>
       <link name="link">
         <inertial>
           <mass>0.02</mass>
+          <inertia>
+            <ixx>0.000002083</ixx><ixy>0</ixy><ixz>0</ixz>
+            <iyy>0.000002083</iyy><iyz>0</iyz>
+            <izz>0.000002083</izz>
+          </inertia>
         </inertial>
         <collision name="collision">
           <geometry><box><size>0.025 0.025 0.025</size></box></geometry>
-          <surface>
-            <friction><ode><mu>0.7</mu><mu2>0.7</mu2></ode></friction>
-          </surface>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
         </collision>
         <visual name="visual">
           <geometry><box><size>0.025 0.025 0.025</size></box></geometry>
@@ -548,16 +598,26 @@
 
     <!-- Cube medium: 31.2mm, 0.04 kg, green -->
     <model name="cube_medium">
-      <pose>0.16 0.05 0.4086 0 0 0</pose>
+      <pose>0.17 0.05 0.41 0 0 0</pose>
       <link name="link">
         <inertial>
           <mass>0.04</mass>
+          <inertia>
+            <ixx>0.000006490</ixx><ixy>0</ixy><ixz>0</ixz>
+            <iyy>0.000006490</iyy><iyz>0</iyz>
+            <izz>0.000006490</izz>
+          </inertia>
         </inertial>
         <collision name="collision">
           <geometry><box><size>0.0312 0.0312 0.0312</size></box></geometry>
-          <surface>
-            <friction><ode><mu>0.7</mu><mu2>0.7</mu2></ode></friction>
-          </surface>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
         </collision>
         <visual name="visual">
           <geometry><box><size>0.0312 0.0312 0.0312</size></box></geometry>
@@ -571,16 +631,26 @@
 
     <!-- Cube large: 37.6mm, 0.08 kg, blue -->
     <model name="cube_large">
-      <pose>0.26 0.12 0.4118 0 0 0</pose>
+      <pose>0.12 0.20 0.41 0 0 -0.73</pose>
       <link name="link">
         <inertial>
           <mass>0.08</mass>
+          <inertia>
+            <ixx>0.000018850</ixx><ixy>0</ixy><ixz>0</ixz>
+            <iyy>0.000018850</iyy><iyz>0</iyz>
+            <izz>0.000018850</izz>
+          </inertia>
         </inertial>
         <collision name="collision">
-          <geometry><box><size>0.0376 0.0376 0.0376</size></box></geometry>
-          <surface>
-            <friction><ode><mu>0.7</mu><mu2>0.7</mu2></ode></friction>
-          </surface>
+          <geometry><box><size>0.0356 0.0356 0.0356</size></box></geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
         </collision>
         <visual name="visual">
           <geometry><box><size>0.0376 0.0376 0.0376</size></box></geometry>
