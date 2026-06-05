@@ -13,6 +13,7 @@ log/*
 
 # IDE metadata
 .vscode
+node_modules/
 
 # lerobot
 logs
