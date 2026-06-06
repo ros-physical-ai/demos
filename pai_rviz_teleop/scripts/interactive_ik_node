@@ -112,6 +112,10 @@ class InteractiveIKNode(Node):
         # solve. The URDF velocity limit is 10 rad/s (effectively unbounded), so
         # this tighter cap is what actually smooths fast/jerky motion.
         self.declare_parameter("max_joint_velocity", 2.0)
+        # Per-joint acceleration cap (rad/s^2) enforced as a QP constraint. Bounds
+        # how fast the commanded joint velocity may change between ticks, which
+        # smooths the snap when a drag starts, stops, or reverses.
+        self.declare_parameter("max_joint_acceleration", 10.0)
         # Marker-inactivity timeout (s). Once no drag feedback has arrived for
         # this long, the arm is considered idle: the loop stops solving and
         # republishing so the controller just holds the last setpoint. This
@@ -147,6 +151,7 @@ class InteractiveIKNode(Node):
         self.posture_cost = float(self.get_parameter("posture_cost").value)
         self.lm_damping = float(self.get_parameter("lm_damping").value)
         self.max_joint_velocity = float(self.get_parameter("max_joint_velocity").value)
+        self.max_joint_acceleration = float(self.get_parameter("max_joint_acceleration").value)
         self.inactivity_timeout = float(self.get_parameter("inactivity_timeout").value)
         self.marker_deadband = float(self.get_parameter("marker_deadband").value)
         self.qp_solver = self.get_parameter("qp_solver").value
@@ -233,6 +238,7 @@ class InteractiveIKNode(Node):
             posture_cost=self.posture_cost,
             lm_damping=self.lm_damping,
             max_joint_velocity=self.max_joint_velocity,
+            max_joint_acceleration=self.max_joint_acceleration,
             qp_solver=self.qp_solver,
         )
         # The reduced model preserves the arm joints; this is the order used to
@@ -445,6 +451,11 @@ class InteractiveIKNode(Node):
                 except Exception as exc:
                     self.get_logger().warn(f"IK solve failed: {exc}", throttle_duration_sec=2.0)
                     return
+            else:
+                # Idle: we command no arm motion, so tell the solver it is
+                # stationary. The AccelerationLimit then ramps from rest when
+                # tracking resumes, instead of lurching from a stale velocity.
+                self._solver.set_zero_velocity()
 
             # Animate the gripper independently of arm motion.
             gripper_before = self._gripper_cmd

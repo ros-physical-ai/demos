@@ -43,7 +43,7 @@ import numpy as np
 import pinocchio as pin
 from pink import solve_ik
 from pink.configuration import Configuration
-from pink.limits import ConfigurationLimit, VelocityLimit
+from pink.limits import AccelerationLimit, ConfigurationLimit, VelocityLimit
 from pink.tasks import FrameTask, PostureTask
 
 
@@ -66,6 +66,7 @@ class DifferentialIKSolver:
         posture_cost: float = 1e-3,
         lm_damping: float = 1e-2,
         max_joint_velocity: float = 2.0,
+        max_joint_acceleration: float = 10.0,
         qp_solver: str = "quadprog",
     ):
         """Build the reduced Pinocchio model and the differential IK tasks.
@@ -83,6 +84,10 @@ class DifferentialIKSolver:
                 bounded.
             max_joint_velocity: Per-joint velocity cap (rad/s) enforced as a QP
                 constraint.
+            max_joint_acceleration: Per-joint acceleration cap (rad/s^2) enforced
+                as a QP constraint, bounding how fast the commanded joint
+                velocity may change between ticks (smooths jerk on drag
+                start/stop/reverse).
             qp_solver: QP backend used by Pink (e.g. ``"quadprog"``).
 
         """
@@ -131,9 +136,16 @@ class DifferentialIKSolver:
         # integrated configuration inside the URDF joint position bounds as a
         # proper QP constraint (no post-hoc clamping). The VelocityLimit reads
         # the model's velocityLimit, so override it with the tunable per-joint
-        # cap (the URDF limits are effectively unbounded) before constructing it.
+        # cap (the URDF limits are effectively unbounded) first. The
+        # AccelerationLimit bounds the change in commanded velocity between
+        # ticks, which smooths the jerk on drag start/stop/reverse.
         self.model.velocityLimit[:] = max_joint_velocity
-        self._limits = [ConfigurationLimit(self.model), VelocityLimit(self.model)]
+        self._accel_limit = AccelerationLimit(self.model, np.full(self.model.nv, max_joint_acceleration))
+        self._limits = [ConfigurationLimit(self.model), VelocityLimit(self.model), self._accel_limit]
+
+        # Velocity commanded by the previous solve, fed to the AccelerationLimit
+        # so it can bound the change in velocity.
+        self._last_velocity = np.zeros(self.model.nv)
 
         # Start at the neutral configuration until a frontend seeds it.
         self._q = pin.neutral(self.model)
@@ -163,6 +175,21 @@ class DifferentialIKSolver:
         """Seed the internal configuration (e.g. from measured joint states)."""
         self._q = np.asarray(q, dtype=float)
         self._configuration.update(self._q)
+        # A reset is a discontinuous jump, so the arm is at rest afterward.
+        self.set_zero_velocity()
+
+    def set_zero_velocity(self) -> None:
+        """Mark the arm as stationary (no motion commanded this tick).
+
+        The AccelerationLimit ramps the next solve's velocity from the one we
+        last commanded. On any tick where we command no motion -- a frontend
+        gating the solve while idle, or a failed solve -- the arm holds, so that
+        commanded velocity is zero. Calling this keeps that memory honest, so
+        the arm ramps up from rest on resume instead of lurching from a stale
+        pre-idle velocity (and the QP cannot wedge against an infeasible braking
+        constraint that only a reset would clear).
+        """
+        self._last_velocity = np.zeros(self.model.nv)
 
     def forward_kinematics(self, q: np.ndarray | None = None) -> "pin.SE3":
         """Return the tool-frame pose for ``q`` (defaults to the current one)."""
@@ -209,13 +236,23 @@ class DifferentialIKSolver:
         q = self._q
         self._configuration.update(q)
         self._frame_task.set_target(target_pose)
-        velocity = solve_ik(
-            self._configuration,
-            [self._frame_task, self._posture_task],
-            dt,
-            solver=self.qp_solver,
-            limits=self._limits,
-        )
+        # The AccelerationLimit constrains the new velocity relative to the one
+        # we last commanded, so hand it that velocity each tick.
+        self._accel_limit.set_last_integration(self._last_velocity, dt)
+        try:
+            velocity = solve_ik(
+                self._configuration,
+                [self._frame_task, self._posture_task],
+                dt,
+                solver=self.qp_solver,
+                limits=self._limits,
+            )
+        except Exception:
+            # No motion was commanded, so the arm holds at ``q``: treat this tick
+            # as stationary so the AccelerationLimit can recover next tick.
+            self.set_zero_velocity()
+            raise
+        self._last_velocity = velocity
         q_next = pin.integrate(self.model, q, velocity * dt)
         self._q = q_next
         return q_next

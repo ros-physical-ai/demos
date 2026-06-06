@@ -79,6 +79,7 @@ ros2 topic echo /joint_states
 | `posture_cost`            | `1e-3`                                  | PostureTask regularization weight.                                                                         |
 | `lm_damping`              | `1e-2`                                  | FrameTask Levenberg-Marquardt damping; raise to reduce near-singular oscillation.                          |
 | `max_joint_velocity`      | `2.0`                                   | Per-joint velocity cap (rad/s) enforced as a QP constraint; lower for smoother motion.                     |
+| `max_joint_acceleration`  | `10.0`                                  | Per-joint acceleration cap (rad/s²) enforced as a QP constraint; bounds velocity change to smooth jerk.    |
 | `inactivity_timeout`      | `0.3`                                   | Seconds of marker inactivity after which the arm holds and stops republishing (kills steady-state jitter). |
 | `marker_deadband`         | `2e-3`                                  | Min marker pose change (6D log norm) for feedback to count; ignores mouse-down-without-moving.             |
 | `qp_solver`               | `quadprog`                              | QP backend used by Pink.                                                                                   |
