@@ -1,12 +1,12 @@
 repositories:
   SO-ARM100/ros2_so_arm100:
     type: git
-    url: https://github.com/JafarAbdi/ros2_so_arm.git
+    url: https://github.com/ros-physical-ai/ros2_so_arm.git
     version: 12fbcb8cf30da7c3d679db384c43765ea311eb18
   SO-ARM100/feetech_ros2_driver:
     type: git
-    url: https://github.com/legalaspro/feetech_ros2_driver.git
-    version: feat/joint-config-and-calibration
+    url: https://github.com/ros-physical-ai/feetech_ros2_driver.git
+    version: 2034e76f7f26c0bd2972ef52642a4e9e9356e7d4
   mujoco_ros2_control:
     type: git
     url: https://github.com/ros-controls/mujoco_ros2_control.git
