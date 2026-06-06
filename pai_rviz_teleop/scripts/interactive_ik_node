@@ -42,10 +42,6 @@ import pinocchio as pin
 import rclpy
 from geometry_msgs.msg import Pose
 from interactive_markers import InteractiveMarkerServer, MenuHandler
-from pink import solve_ik
-from pink.configuration import Configuration
-from pink.limits import VelocityLimit
-from pink.tasks import FrameTask, PostureTask
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from rclpy.node import Node
 from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSProfile, QoSReliabilityPolicy
@@ -58,21 +54,20 @@ from visualization_msgs.msg import (
     Marker,
 )
 
-# The five arm joints solved by the IK, in order. The gripper joint is
-# intentionally excluded (locked) from the IK since it does not move the
-# tool frame.
-ARM_JOINTS = [
+from pai_rviz_teleop.ik_solver import DifferentialIKSolver
+
+# Default arm joints for the SO-ARM101, in order. This is only the node's
+# default for the ``arm_joints`` parameter -- the underlying DifferentialIKSolver
+# is arm-agnostic, so pointing the node at a different robot is just a matter of
+# overriding ``arm_joints`` (and ``gripper_joint``). The gripper joint is
+# intentionally excluded from the IK since it does not move the tool frame.
+DEFAULT_ARM_JOINTS = [
     "shoulder_pan_joint",
     "shoulder_lift_joint",
     "elbow_flex_joint",
     "wrist_flex_joint",
     "wrist_roll_joint",
 ]
-
-# Full joint ordering expected by the forward_position_controller
-# (position_controllers/JointGroupPositionController). The gripper is appended;
-# its value is driven by the menu toggle rather than the IK.
-COMMAND_JOINTS = [*ARM_JOINTS, "gripper_joint"]
 
 
 def transient_local_qos(depth=1):
@@ -91,6 +86,13 @@ class InteractiveIKNode(Node):
     def __init__(self):
         """Initialize parameters, wait for the URDF, and build the IK problem."""
         super().__init__("interactive_ik_node")
+
+        # Robot-specific joint configuration. Defaults target the SO-ARM101 but
+        # can be overridden to drive any arm via the same DifferentialIKSolver.
+        self.declare_parameter("arm_joints", DEFAULT_ARM_JOINTS)
+        # Joint actuated by the gripper menu toggle (not part of the IK). Set to
+        # an empty string for arms without a gripper.
+        self.declare_parameter("gripper_joint", "gripper_joint")
 
         self.declare_parameter("ee_frame", "gripper_frame_link")
         # The marker is anchored in (and its pose interpreted relative to) the
@@ -123,7 +125,7 @@ class InteractiveIKNode(Node):
         self.declare_parameter("marker_deadband", 2e-3)
         # Command topic of the position_controllers/JointGroupPositionController
         # (forward_position_controller). It expects a Float64MultiArray with one
-        # entry per configured joint, in COMMAND_JOINTS order.
+        # entry per configured joint, in self._command_joints order.
         self.declare_parameter("command_topic", "/forward_position_controller/commands")
         self.declare_parameter("qp_solver", "quadprog")
         # Gripper toggle menu: open/closed setpoints (rad) and animation speed.
@@ -135,6 +137,8 @@ class InteractiveIKNode(Node):
         # marker pose, in (0, 1]. 1.0 disables filtering; smaller is smoother.
         self.declare_parameter("target_lowpass_alpha", 0.5)
 
+        self.arm_joints = list(self.get_parameter("arm_joints").value)
+        self.gripper_joint = self.get_parameter("gripper_joint").value or None
         self.ee_frame = self.get_parameter("ee_frame").value
         self.root_frame = self.get_parameter("root_frame").value
         self.control_rate = float(self.get_parameter("control_rate").value)
@@ -175,7 +179,8 @@ class InteractiveIKNode(Node):
 
         # Right-click context menu on the marker.
         self._menu_handler = MenuHandler()
-        self._menu_handler.insert("Toggle gripper (open/close)", callback=self._on_toggle_gripper)
+        if self._has_gripper:
+            self._menu_handler.insert("Toggle gripper (open/close)", callback=self._on_toggle_gripper)
         self._menu_handler.insert("Reset to current joint states", callback=self._on_reset)
 
         # Control loop on its own callback group so it is not starved by
@@ -215,64 +220,43 @@ class InteractiveIKNode(Node):
         return result["urdf"]
 
     def _build_model(self, urdf_xml):
-        """Build the full model, then reduce it to the five arm joints."""
-        full_model = pin.buildModelFromXML(urdf_xml)
-
-        # Clamp the gripper open/closed setpoints to the URDF joint limits so
-        # the toggle never commands past the mechanical range.
-        if full_model.existJointName("gripper_joint"):
-            gid = full_model.getJointId("gripper_joint")
-            qidx = full_model.joints[gid].idx_q
-            lo = float(full_model.lowerPositionLimit[qidx])
-            hi = float(full_model.upperPositionLimit[qidx])
-            self.gripper_open = float(np.clip(self.gripper_open, lo, hi))
-            self.gripper_closed = float(np.clip(self.gripper_closed, lo, hi))
-
-        # Lock every joint that is not one of the arm joints (e.g. the
-        # gripper) so the IK only actuates ARM_JOINTS. The locked joints are
-        # pinned at their neutral configuration.
-        locked_joint_ids = []
-        for jid in range(1, full_model.njoints):  # joint 0 is the universe
-            name = full_model.names[jid]
-            if name not in ARM_JOINTS:
-                locked_joint_ids.append(jid)
-
-        q_ref = pin.neutral(full_model)
-        self.model = pin.buildReducedModel(full_model, locked_joint_ids, q_ref)
-        self.data = self.model.createData()
-
-        if not self.model.existFrame(self.ee_frame):
-            available = [f.name for f in self.model.frames]
-            raise RuntimeError(
-                f"End-effector frame '{self.ee_frame}' not found in model. Available frames: {available}"
-            )
-
-        # The reduced model preserves the arm joints; record their q-index so
-        # we can map /joint_states into the configuration vector.
-        self._model_joint_names = [self.model.names[jid] for jid in range(1, self.model.njoints)]
-        self.get_logger().info(
-            f"Built reduced Pinocchio model with joints {self._model_joint_names} (nq={self.model.nq})."
-        )
-
-        # Differential IK tasks. The frame task is retargeted every tick.
-        self._frame_task = FrameTask(
+        """Build the arm-agnostic IK solver and derive the command joint order."""
+        # All the Pinocchio / Pink machinery lives in the reusable, RViz-agnostic
+        # DifferentialIKSolver. This node is just one frontend (an interactive
+        # marker); the same solver can be driven by any other teleop input.
+        self._solver = DifferentialIKSolver(
+            urdf_xml,
+            self.arm_joints,
             self.ee_frame,
             position_cost=self.position_cost,
             orientation_cost=self.orientation_cost,
+            posture_cost=self.posture_cost,
             lm_damping=self.lm_damping,
+            max_joint_velocity=self.max_joint_velocity,
+            qp_solver=self.qp_solver,
         )
-        self._posture_task = PostureTask(cost=self.posture_cost)
+        # The reduced model preserves the arm joints; this is the order used to
+        # map /joint_states into the configuration vector.
+        self._model_joint_names = self._solver.joint_names
 
-        # Velocity limit enforced by the QP solve. VelocityLimit reads the
-        # model's velocityLimit, so override it with the tunable per-joint cap
-        # before constructing the limit.
-        self.model.velocityLimit[:] = self.max_joint_velocity
-        self._velocity_limit = VelocityLimit(self.model)
+        # Full joint ordering expected by the forward_position_controller
+        # (position_controllers/JointGroupPositionController). The gripper, if
+        # any, is appended; its value is driven by the menu toggle, not the IK.
+        self._command_joints = list(self._model_joint_names)
+        self._has_gripper = self.gripper_joint is not None and self._solver.full_model.existJointName(
+            self.gripper_joint
+        )
+        if self._has_gripper:
+            self._command_joints.append(self.gripper_joint)
+            # Clamp the gripper open/closed setpoints to the URDF joint limits so
+            # the toggle never commands past the mechanical range.
+            lo, hi = self._solver.joint_position_limits(self.gripper_joint)
+            self.gripper_open = float(np.clip(self.gripper_open, lo, hi))
+            self.gripper_closed = float(np.clip(self.gripper_closed, lo, hi))
 
-        # Configuration starts at neutral until the first /joint_states arrives.
-        self._q = pin.neutral(self.model)
-        self._configuration = Configuration(self.model, self.data, self._q)
-        self._posture_task.set_target(self._q)
+        self.get_logger().info(
+            f"Built reduced IK model with joints {self._model_joint_names}; commanding {self._command_joints}."
+        )
 
     # ------------------------------------------------------------------
     # ROS callbacks
@@ -282,8 +266,8 @@ class InteractiveIKNode(Node):
         positions = dict(zip(msg.name, msg.position, strict=False))
         with self._lock:
             self._latest_joint_positions = positions
-            if "gripper_joint" in positions:
-                self._gripper_position = positions["gripper_joint"]
+            if self._has_gripper and self.gripper_joint in positions:
+                self._gripper_position = positions[self.gripper_joint]
             if not self._marker_initialized:
                 self._try_initialize_marker(positions)
 
@@ -292,23 +276,20 @@ class InteractiveIKNode(Node):
 
         Caller must hold ``self._lock``.
         """
-        if not all(j in positions for j in self._model_joint_names):
+        q = self._solver.configuration_from_dict(positions)
+        if q is None:
             return
 
-        q = np.array([positions[j] for j in self._model_joint_names])
-        self._q = q
-        self._configuration.update(q)
-        # NB: the posture task target stays at the neutral pose set in
-        # _build_model -- it is a fixed rest-pose regularizer, not retargeted to
-        # the current configuration.
-
-        tool_pose = self._configuration.get_transform_frame_to_world(self.ee_frame)
+        # Seed the solver from the measured joint states. The posture task stays
+        # at its neutral rest pose -- it is a fixed regularizer, not retargeted
+        # to the current configuration.
+        self._solver.reset(q)
+        tool_pose = self._solver.forward_kinematics()
         self._target_pose = tool_pose.copy()
         self._target_filtered = tool_pose.copy()
-        self._frame_task.set_target(tool_pose)
 
         # Hold the gripper at its measured position until the menu toggles it.
-        self._gripper_cmd = positions.get("gripper_joint", 0.0)
+        self._gripper_cmd = positions.get(self.gripper_joint, 0.0) if self._has_gripper else 0.0
         self._gripper_target = None
 
         self._spawn_marker(tool_pose)
@@ -399,20 +380,20 @@ class InteractiveIKNode(Node):
         """Snap the marker and IK target back to the current joint states."""
         with self._lock:
             positions = self._latest_joint_positions
-            if positions is None or not all(j in positions for j in self._model_joint_names):
+            q = self._solver.configuration_from_dict(positions) if positions else None
+            if q is None:
                 self.get_logger().warn("Reset ignored: joint states not available yet.")
                 return
-            q = np.array([positions[j] for j in self._model_joint_names])
-            self._q = q
-            self._configuration.update(q)
-            tool_pose = self._configuration.get_transform_frame_to_world(self.ee_frame)
+            self._solver.reset(q)
+            tool_pose = self._solver.forward_kinematics()
             self._target_pose = tool_pose.copy()
             self._target_filtered = tool_pose.copy()
             # Mark the marker idle so the arm holds the reset pose instead of
             # resuming the pre-reset jitter.
             self._last_marker_activity = None
             # Stop any in-flight gripper motion and hold the measured position.
-            self._gripper_cmd = positions.get("gripper_joint", self._gripper_cmd)
+            if self._has_gripper:
+                self._gripper_cmd = positions.get(self.gripper_joint, self._gripper_cmd)
             self._gripper_target = None
             pose_msg = self._se3_to_pose(tool_pose)
 
@@ -431,13 +412,13 @@ class InteractiveIKNode(Node):
     def _control_loop(self):
         """Solve differential IK toward the (filtered) marker and stream it.
 
-        The whole tick runs under ``self._lock``. The Pink ``Configuration`` and
-        Pinocchio ``data`` are shared mutable state that menu callbacks (reset)
-        and the marker feedback also touch from other executor threads, so the
-        filter step, solve, integration and ``_q`` write must be atomic with
-        respect to them. Without this, a reset landing mid-solve corrupts the
-        solver data and/or gets clobbered by a stale integrated configuration.
-        The QP solve is sub-millisecond, so holding the lock is cheap.
+        The whole tick runs under ``self._lock``. The DifferentialIKSolver holds
+        shared mutable state (its configuration / Pinocchio data) that menu
+        callbacks (reset) and marker feedback also touch from other executor
+        threads, so the filter step and solve must be atomic with respect to
+        them. Without this, a reset landing mid-solve corrupts the solver data
+        and/or gets clobbered by a stale integrated configuration. The QP solve
+        is sub-millisecond, so holding the lock is cheap.
         """
         dt = 1.0 / self.control_rate
         now = self.get_clock().now()
@@ -459,25 +440,11 @@ class InteractiveIKNode(Node):
                 twist = pin.log6(self._target_filtered.actInv(self._target_pose)).vector
                 self._target_filtered = self._target_filtered * pin.exp6(self.lowpass_alpha * twist)
 
-                q = self._q
-                self._configuration.update(q)
-                self._frame_task.set_target(self._target_filtered)
                 try:
-                    velocity = solve_ik(
-                        self._configuration,
-                        [self._frame_task, self._posture_task],
-                        dt,
-                        solver=self.qp_solver,
-                        limits=[self._velocity_limit],
-                    )
+                    self._solver.solve(self._target_filtered, dt)
                 except Exception as exc:
                     self.get_logger().warn(f"IK solve failed: {exc}", throttle_duration_sec=2.0)
                     return
-
-                q_next = pin.integrate(self.model, q, velocity * dt)
-                # Clamp to joint limits so we never command past the URDF bounds.
-                q_next = np.clip(q_next, self.model.lowerPositionLimit, self.model.upperPositionLimit)
-                self._q = q_next
 
             # Animate the gripper independently of arm motion.
             gripper_before = self._gripper_cmd
@@ -489,7 +456,7 @@ class InteractiveIKNode(Node):
             if not (arm_active or gripper_active):
                 return
 
-            q_cmd = self._q
+            q_cmd = self._solver.q
             gripper = self._gripper_cmd
 
         self._publish_command(q_cmd, gripper)
@@ -515,14 +482,16 @@ class InteractiveIKNode(Node):
         """Publish a Float64MultiArray to the forward_position_controller.
 
         The controller expects one value per configured joint in
-        COMMAND_JOINTS order: the five IK arm joints followed by the gripper,
-        which holds its initial command until the menu toggle animates it.
+        ``self._command_joints`` order: the IK arm joints followed by the
+        gripper (if any), which holds its initial command until the menu toggle
+        animates it.
         """
         q_by_name = dict(zip(self._model_joint_names, q, strict=True))
-        q_by_name["gripper_joint"] = gripper
+        if self._has_gripper:
+            q_by_name[self.gripper_joint] = gripper
 
         cmd = Float64MultiArray()
-        cmd.data = [float(q_by_name[name]) for name in COMMAND_JOINTS]
+        cmd.data = [float(q_by_name[name]) for name in self._command_joints]
         self._command_pub.publish(cmd)
 
     # ------------------------------------------------------------------
