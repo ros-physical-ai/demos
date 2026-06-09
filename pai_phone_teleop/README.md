@@ -7,6 +7,9 @@ WebXR bridge together with Pinocchio forward kinematics and Pink differential
 IK. The arm tracks the phone's 6-DoF pose in real time by streaming joint
 positions to the `forward_position_controller`.
 
+> [!IMPORTANT]
+> Your phone has to support the [WebXR API](https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API). Unfortunately, iPhone doesn't support the WebXR API.
+
 ## How to run
 
 1. Launch any `pai_bringup` bringup (real / mujoco / gz), e.g.:
