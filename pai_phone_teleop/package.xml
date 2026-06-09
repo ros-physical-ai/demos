@@ -4,13 +4,13 @@
   <name>pai_phone_teleop</name>
   <version>0.1.0</version>
   <description>
-    Phone-based 6-DoF pose teleoperation for the SO-ARM101. Wraps the
-    upstream teleop.ros2 WebXR bridge and supplies it with the end-effector's
-    current pose, computed via Pinocchio forward kinematics on /joint_states.
-    Driving the arm's joints from the published target pose is out of scope
-    for this iteration.
+    Phone-based 6-DoF pose teleoperation for the SO-ARM101. Embeds the
+    upstream teleop WebXR bridge together with Pinocchio forward kinematics
+    and Pink differential IK in a single ROS 2 node. The arm tracks the
+    phone's 6-DoF pose in real time by streaming joint commands to the
+    forward_position_controller.
   </description>
-  <maintainer email="sebas.a.castro@gmail.com">Sebastian Castro</maintainer>
+  <maintainer email="franco.cipollone@ekumenlabs.com">Franco Cipollone</maintainer>
   <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
