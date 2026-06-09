@@ -138,6 +138,9 @@ class PhoneTeleopNode(Node):
         self.declare_parameter("gripper_joint", "gripper_joint")
         self.declare_parameter("inactivity_timeout", 0.3)
         self.declare_parameter("target_lowpass_alpha", 0.5)
+        # Speed at which the gripper opens (A) or closes (B) while the
+        # corresponding button is held, in rad/s.
+        self.declare_parameter("gripper_open_speed", 5.0)
 
         self._joint_states_topic = self.get_parameter("joint_states_topic").value
         self._robot_description_topic = self.get_parameter("robot_description_topic").value
@@ -178,6 +181,19 @@ class PhoneTeleopNode(Node):
         if self._has_gripper:
             self._command_joints.append(self._gripper_joint)
 
+        # Gripper joint position limits (from URDF via the full Pinocchio model)
+        # and open/close speed driven by reserved buttons A and B.
+        self._gripper_open_speed = float(self.get_parameter("gripper_open_speed").value)
+        if self._has_gripper:
+            _full = self._solver.full_model
+            _jid = _full.getJointId(self._gripper_joint)
+            _idx = _full.joints[_jid].idx_q
+            self._gripper_min = float(_full.lowerPositionLimit[_idx])
+            self._gripper_max = float(_full.upperPositionLimit[_idx])
+        else:
+            self._gripper_min = 0.0
+            self._gripper_max = 0.0
+
         # Precompute the fixed SE3 from Pinocchio universe ("world" URDF root)
         # to root_frame.  For a fixed-base arm this is constant — base_link is
         # connected to world via a fixed joint so its placement never changes.
@@ -208,10 +224,16 @@ class PhoneTeleopNode(Node):
         self._measured_q: np.ndarray | None = None
         self._gripper_position: float = 0.0
         self._ik_initialized = False
+        self._last_q_cmd: np.ndarray | None = None  # last arm configuration sent
         self._target_se3: pin.SE3 | None = None
         self._target_filtered_se3: pin.SE3 | None = None
         self._last_move_time: rclpy.time.Time | None = None
         self._warned_missing: set[str] = set()
+        # Button A → open gripper slowly; button B → close slowly (held = ramping).
+        # Gripper button (engaged) → lock position at 0 (apply pressure).
+        self._button_a_held: bool = False
+        self._button_b_held: bool = False
+        self._gripper_engaged: bool = False
 
         self._joint_state_sub = self.create_subscription(
             JointState, self._joint_states_topic, self._joint_state_cb, 10
@@ -305,7 +327,18 @@ class PhoneTeleopNode(Node):
         control loop and the ``teleop_target`` PoseStamped + TF are published
         for visualization.  When ``move`` is ``False`` the phone is at rest;
         we skip publishing so the arm holds its last commanded position.
+
+        Button states (``reservedButtonA`` / ``reservedButtonB``) are captured
+        regardless of ``move`` so the gripper can be operated while the arm is
+        stationary.
         """
+        # Capture button/gripper states before the move guard so the gripper
+        # can be operated independently of arm motion.
+        with self._lock:
+            self._button_a_held = bool(params.get("reservedButtonA", False))
+            self._button_b_held = bool(params.get("reservedButtonB", False))
+            self._gripper_engaged = params.get("gripper", "open") == "close"
+
         if not params.get("move", False):
             return
 
@@ -408,33 +441,52 @@ class PhoneTeleopNode(Node):
             T_root_ee = self._T_world_root.inverse() * T_world_ee
             self._teleop.set_pose(_se3_to_mat(T_root_ee))
 
-            # Inactivity gate: stop solving when the phone has been at rest.
+            # Gripper control before the inactivity gate so it works
+            # independently of arm motion.
+            # Engaged (gripper button held): lock at 0 to apply pressure.
+            # Disengaged: A ramps open, B ramps closed.
+            if self._has_gripper:
+                if self._gripper_engaged:
+                    self._gripper_position = self._gripper_min
+                elif self._button_a_held:
+                    self._gripper_position = min(
+                        self._gripper_position + self._gripper_open_speed * dt,
+                        self._gripper_max,
+                    )
+                elif self._button_b_held:
+                    self._gripper_position = max(
+                        self._gripper_position - self._gripper_open_speed * dt,
+                        self._gripper_min,
+                    )
+
+            # Inactivity gate: stop IK when the phone has been at rest.
             arm_active = self._last_move_time is not None and (
                 (now - self._last_move_time).nanoseconds * 1e-9 < self._inactivity_timeout
             )
 
-            if not arm_active or self._target_se3 is None:
-                self._solver.set_zero_velocity()
-                return
-
-            # SE3 low-pass filter: geodesic step from the filtered target
-            # toward the latest raw target.
-            if self._target_filtered_se3 is None:
-                self._target_filtered_se3 = self._target_se3
+            if arm_active and self._target_se3 is not None:
+                # SE3 low-pass filter: geodesic step from the filtered target
+                # toward the latest raw target.
+                if self._target_filtered_se3 is None:
+                    self._target_filtered_se3 = self._target_se3
+                else:
+                    delta = pin.log6(self._target_filtered_se3.actInv(self._target_se3)).vector
+                    self._target_filtered_se3 = self._target_filtered_se3 * pin.exp6(
+                        self._lowpass_alpha * delta
+                    )
+                try:
+                    # Convert the filtered target from root_frame back to world
+                    # (Pinocchio universe) frame before passing it to the IK solver.
+                    T_world_target = self._T_world_root * self._target_filtered_se3
+                    q_cmd = self._solver.solve(T_world_target, dt)
+                    self._last_q_cmd = q_cmd
+                except Exception as exc:
+                    self.get_logger().warn(f"IK solve failed: {exc}")
             else:
-                delta = pin.log6(self._target_filtered_se3.actInv(self._target_se3)).vector
-                self._target_filtered_se3 = self._target_filtered_se3 * pin.exp6(
-                    self._lowpass_alpha * delta
-                )
-
-            try:
-                # Convert the filtered target from root_frame back to world
-                # (Pinocchio universe) frame before passing it to the IK solver.
-                T_world_target = self._T_world_root * self._target_filtered_se3
-                q_cmd = self._solver.solve(T_world_target, dt)
-            except Exception as exc:
-                self.get_logger().warn(f"IK solve failed: {exc}")
-                return
+                self._solver.set_zero_velocity()
+                # Re-use the last commanded arm configuration so a gripper-only
+                # update can still be published while the arm is at rest.
+                q_cmd = self._last_q_cmd
 
             gripper = self._gripper_position if self._has_gripper else None
 

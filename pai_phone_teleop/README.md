@@ -2,51 +2,65 @@
 
 Phone-based 6-DoF pose teleoperation for the SO-ARM101.
 
-This package wraps the upstream [`teleop`](https://github.com/SpesRobotics/teleop)
-`python3 -m teleop.ros2` WebXR bridge and supplies it with the end-effector's
-current pose via the `ee_pose_publisher` node.
-
-## Status
-
-This iteration publishes the EE current pose and runs the phone bridge.
-Driving the arm from the phone-published target is **out of scope** and
-will be added in a future iteration.
+A single ROS 2 node embeds the upstream [`teleop`](https://github.com/SpesRobotics/teleop)
+WebXR bridge together with Pinocchio forward kinematics and Pink differential
+IK. The arm tracks the phone's 6-DoF pose in real time by streaming joint
+positions to the `forward_position_controller`.
 
 ## How to run
 
 1. Launch any `pai_bringup` bringup (real / mujoco / gz), e.g.:
 
    ```bash
-   ros2 launch pai_bringup so_arm_mujoco_bringup.launch.py
+   pixi run so-arm-gz
    ```
 
 2. Launch the phone teleop:
 
    ```bash
-   ros2 launch pai_phone_teleop phone_teleop.launch.py
+   pixi run so-arm-phone-ik
    ```
 
-3. Open the URL logged to stdout (default `http://<host>:4443/`) on a
-   phone with a WebXR-capable browser (e.g. Chrome on Android). Hold the
-   phone in the WebXR "natural orientation" (screen up, camera toward you)
-   and press the **Move** button on screen to begin streaming.
+3. Open the HTTPS URL logged to stdout (default `https://<host>:4443/`) on a
+   phone with a WebXR-capable browser (e.g. Chrome on Android).
+
+
+4. Press `START` button for initiating the teleoperation and keep press the `HOLD TO MOVE` button while moving the phone to teleoperate.
+    >[!NOTE]Recommendation: Keep the phone >vertical and steady and then press `START`.
+
+    >[!Important] When you press the start button the XR localization starts using the orientation registered at initialization. If you press START while holding the phone in a weird orientation it might be tricky to start teleoperating correctly as it is easy to get confused.
+
+## Controls
+
+| Control | Action |
+|---|---|
+| **Move** button (hold) | Streams phone pose; arm tracks via differential IK |
+| **A** button (hold) | Gripper opens slowly |
+| **B** button (hold) | Gripper closes slowly |
+| **Gripper** button (toggle) | Engage: locks gripper at position 0 (apply pressure). Disengage: releases A/B control |
+
+The gripper engage button takes priority over A/B — A and B are ignored while
+the gripper is engaged.
 
 ## Topics
 
 | Topic | Direction | Type | Notes |
 |---|---|---|---|
-| `/current_pose` | Publishes | `geometry_msgs/PoseStamped` | EE pose in `base_link` frame, computed from `/joint_states` FK. Consumed by `teleop.ros2`. |
-| `/target_frame` | Subscribes (deferred) | `geometry_msgs/PoseStamped` | Published by `teleop.ros2`. Will be consumed in a future iteration to drive the arm. |
-| `/tf` | Publishes (`teleop_target`) | `tf2_msgs/TFMessage` | `base_link -> teleop_target`, published by `teleop.ros2` for RViz visualization. |
+| `/joint_states` | Subscribes | `sensor_msgs/JointState` | Arm and gripper positions used to seed the IK solver. |
+| `/robot_description` | Subscribes | `std_msgs/String` | Latched URDF, used to build the Pinocchio model at startup. |
+| `teleop_target` | Publishes | `geometry_msgs/PoseStamped` | Phone-commanded EE target in `root_frame`, for RViz. |
+| `/tf` | Publishes | `tf2_msgs/TFMessage` | `root_frame → teleop_target` transform for RViz visualization. |
+| `/forward_position_controller/commands` | Publishes | `std_msgs/Float64MultiArray` | Arm + gripper joint positions at `control_rate` Hz. |
 
-## Known limitations
+## Key parameters
 
-- `teleop.ros2` hard-codes the published `target_frame` `frame_id` to
-  `"link_base"` (likely a typo in the upstream library). The TF broadcaster
-  uses the correct `base_link`. Downstream consumers should rely on the
-  TF or remap/override the frame_id.
-- The `omit_current_pose` launch argument is declared but not yet wired
-  into the `teleop.ros2` command; we always run without the flag, which
-  is the documented correct default (use `/current_pose` as the seed).
-- Gripper mapping is not supported by upstream `teleop.ros2`. Use
-  `teleop.ros2_ik` for that, or wait for the future iteration.
+| Parameter | Default | Description |
+|---|---|---|
+| `host` | `0.0.0.0` | Bind address for the WebXR server. |
+| `port` | `4443` | Port for the WebXR server. |
+| `ee_frame` | `gripper_frame_link` | End-effector frame for FK and IK. |
+| `root_frame` | `base_link` | Reference frame for teleop deltas and visualization. |
+| `control_rate` | `50.0` | IK solve and command publish rate (Hz). |
+| `inactivity_timeout` | `0.3` | Seconds of phone stillness before IK halts. |
+| `gripper_open_speed` | `5.0` | Gripper ramping speed while A/B is held (rad/s). |
+| `command_topic` | `/forward_position_controller/commands` | Joint command topic. |

@@ -8,7 +8,6 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 
-# Install the inner Python package (ee_pose_publisher module).
 ament_python_install_package(${PROJECT_NAME})
 
 install(
