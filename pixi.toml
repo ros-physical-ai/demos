@@ -155,6 +155,12 @@ huggingface-hub = "*"
 # LeRobot 0.4.x imports scipy.fftpack.idct; SciPy 2.0 removed fftpack re-exports.
 scipy = ">=1.11.0,<2"
 lerobot = { version = "==0.4.4", extras = ["feetech", "async"] }
+# pai_phone_teleop pulls in the upstream SpesRobotics/teleop package, which
+# provides the WebXR phone bridge (python3 -m teleop.ros2). Its hard deps
+# (uvicorn + fastapi<1.0) are listed explicitly here.
+teleop = "==0.1.5"
+fastapi = "<1.0"
+uvicorn = "*"
 # SDF→MJCF converter: used at launch time to convert the canonical SDF world to MuJoCo format.
 # Installed from source (conda-forge 0.1.2 is too old for sdformat15).
 # TODO(francocipollone): Point to upstream once the PR is merged: https://github.com/gazebosim/gz-mujoco/pull/125
