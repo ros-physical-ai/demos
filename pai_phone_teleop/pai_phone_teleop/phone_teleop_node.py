@@ -21,7 +21,7 @@ Architecture
 * ``_joint_state_cb`` (executor thread) — caches the latest measured joint
   positions and gripper angle under ``_lock``.  Does not touch the IK solver.
 * ``_teleop_cb`` (uvicorn/asyncio thread) — called on every WebSocket frame.
-  When the phone is moving, stores the commanded target (a 4×4 matrix in
+  When the phone is moving, stores the commanded target (a 4x4 matrix in
   ``root_frame``) for the control loop and publishes visualization topics.
 * ``_control_loop`` (executor timer, ``MutuallyExclusiveCallbackGroup``) —
   runs at ``control_rate`` Hz.  Seeds ``teleop.set_pose()`` with the current
@@ -92,7 +92,7 @@ def transient_local_qos(depth: int = 1) -> QoSProfile:
 
 
 def _se3_to_mat(se3: pin.SE3) -> np.ndarray:
-    """Convert a Pinocchio SE3 to a 4×4 homogeneous matrix."""
+    """Convert a Pinocchio SE3 to a 4x4 homogeneous matrix."""
     T = np.eye(4)
     T[:3, :3] = se3.rotation
     T[:3, 3] = se3.translation
@@ -167,14 +167,12 @@ class PhoneTeleopNode(Node):
         # Detect gripper and build the ordered command joint list.
         gripper_joint_param = self.get_parameter("gripper_joint").value
         self._gripper_joint: str | None = gripper_joint_param if gripper_joint_param else None
-        self._has_gripper = (
-            self._gripper_joint is not None
-            and self._solver.full_model.existJointName(self._gripper_joint)
+        self._has_gripper = self._gripper_joint is not None and self._solver.full_model.existJointName(
+            self._gripper_joint
         )
         if self._gripper_joint and not self._has_gripper:
             self.get_logger().warn(
-                f"gripper_joint '{self._gripper_joint}' not found in URDF; "
-                "gripper will be omitted from commands."
+                f"gripper_joint '{self._gripper_joint}' not found in URDF; gripper will be omitted from commands."
             )
         # Arm joints first, then gripper (matches forward_position_controller order).
         self._command_joints = list(self._solver.joint_names)
@@ -235,17 +233,13 @@ class PhoneTeleopNode(Node):
         self._button_b_held: bool = False
         self._gripper_engaged: bool = False
 
-        self._joint_state_sub = self.create_subscription(
-            JointState, self._joint_states_topic, self._joint_state_cb, 10
-        )
+        self._joint_state_sub = self.create_subscription(JointState, self._joint_states_topic, self._joint_state_cb, 10)
 
         # Fixed-rate IK solve and command publishing, isolated on its own
         # callback group so it is not starved by subscription callbacks.
         self._control_rate = float(self.get_parameter("control_rate").value)
         self._inactivity_timeout = float(self.get_parameter("inactivity_timeout").value)
-        self._lowpass_alpha = float(
-            np.clip(self.get_parameter("target_lowpass_alpha").value, 1e-3, 1.0)
-        )
+        self._lowpass_alpha = float(np.clip(self.get_parameter("target_lowpass_alpha").value, 1e-3, 1.0))
         self._control_group = MutuallyExclusiveCallbackGroup()
         self._control_timer = self.create_timer(
             1.0 / self._control_rate,
@@ -255,9 +249,7 @@ class PhoneTeleopNode(Node):
 
         # Start the blocking uvicorn server in a daemon thread so it dies
         # automatically when the process exits.
-        self._teleop_thread = threading.Thread(
-            target=self._teleop.run, daemon=True, name="teleop_server"
-        )
+        self._teleop_thread = threading.Thread(target=self._teleop.run, daemon=True, name="teleop_server")
         self._teleop_thread.start()
         self.get_logger().info(
             f"Phone teleop node ready. "
@@ -321,7 +313,7 @@ class PhoneTeleopNode(Node):
         """Store the phone-commanded target and publish visualization topics.
 
         Called by ``teleop.Teleop`` on every WebSocket frame.  ``pose`` is a
-        4×4 homogeneous matrix in ``root_frame`` coordinates.
+        4x4 homogeneous matrix in ``root_frame`` coordinates.
 
         When ``params["move"]`` is ``True`` the target is stored for the IK
         control loop and the ``teleop_target`` PoseStamped + TF are published
@@ -400,8 +392,7 @@ class PhoneTeleopNode(Node):
         fid = self._solver.model.getFrameId(self._root_frame)
         T = tmp_data.oMf[fid].copy()
         self.get_logger().info(
-            f"root_frame '{self._root_frame}': translation={T.translation}, "
-            f"rpy={pin.rpy.matrixToRpy(T.rotation)}."
+            f"root_frame '{self._root_frame}': translation={T.translation}, rpy={pin.rpy.matrixToRpy(T.rotation)}."
         )
         return T
 
@@ -471,9 +462,7 @@ class PhoneTeleopNode(Node):
                     self._target_filtered_se3 = self._target_se3
                 else:
                     delta = pin.log6(self._target_filtered_se3.actInv(self._target_se3)).vector
-                    self._target_filtered_se3 = self._target_filtered_se3 * pin.exp6(
-                        self._lowpass_alpha * delta
-                    )
+                    self._target_filtered_se3 = self._target_filtered_se3 * pin.exp6(self._lowpass_alpha * delta)
                 try:
                     # Convert the filtered target from root_frame back to world
                     # (Pinocchio universe) frame before passing it to the IK solver.
