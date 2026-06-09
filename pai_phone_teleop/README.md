@@ -29,9 +29,11 @@ positions to the `forward_position_controller`.
 
 4. Press `START` button for initiating the teleoperation and keep press the `HOLD TO MOVE` button while moving the phone to teleoperate.
 
-   > [!NOTE]Recommendation: Keep the phone >vertical and steady and then press `START`.
+> [!NOTE]
+> Recommendation: Keep the phone >vertical and steady and then press `START`.
 
-   > [!Important] When you press the start button the XR localization starts using the orientation registered at initialization. If you press START while holding the phone in a weird orientation it might be tricky to start teleoperating correctly as it is easy to get confused.
+> [!IMPORTANT]
+> When you press the start button the XR localization starts using the orientation registered at initialization. If you press START while holding the phone in a weird orientation it might be tricky to start teleoperating correctly as it is easy to get confused.
 
 ## Controls
 
