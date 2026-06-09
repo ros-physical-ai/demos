@@ -14,9 +14,10 @@ The output of the solve is streamed to the `forward_position_controller` (`posit
                                         └────────────────────── /joint_states ◄──────────────────────────────────┘
 ```
 
-1. **Model** — the node subscribes to the latched `/robot_description`, builds a
-   Pinocchio model, and locks every joint except the five arm joints
-   (`shoulder_pan`, `shoulder_lift`, `elbow_flex`, `wrist_flex`, `wrist_roll`).
+1. **Model** — the node subscribes to the latched `/robot_description` and hands
+   it to a `DifferentialIKSolver`, which builds a Pinocchio model and locks every
+   joint except the configured arm joints (by default the SO-ARM101's
+   `shoulder_pan`, `shoulder_lift`, `elbow_flex`, `wrist_flex`, `wrist_roll`).
    The gripper joint is a side branch that does not affect the tool frame, so it
    is excluded from the IK.
 2. **Marker** — once the first `/joint_states` message arrives, a 6-DOF
@@ -24,12 +25,9 @@ The output of the solve is streamed to the `forward_position_controller` (`posit
    where the arm is) in the `world` frame.
 3. **IK loop** — at `control_rate` Hz, the raw marker pose is first passed
    through an SE3 low-pass filter (a geodesic step using Pinocchio's
-   `log6`/`exp6` exponential map) for smoother motion, then a Pink QP is solved:
-   a `FrameTask` pulls the tool frame toward the filtered pose, regularized by a
-   low-weight `PostureTask`. The joint velocity is integrated, clamped to URDF
-   joint limits, and published as a `Float64MultiArray` (the five solved arm
-   joints plus the gripper) in the order the `forward_position_controller`
-   expects.
+   `log6`/`exp6` exponential map) for smoother motion, then handed to the solver.
+   The integrated configuration is published as a `Float64MultiArray`
+   (the solved arm joints plus the gripper) in the order the `forward_position_controller` expects.
 
 ## Marker menu
 
@@ -71,6 +69,8 @@ ros2 topic echo /joint_states
 
 | Parameter                 | Default                                 | Description                                                                                                |
 | ------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `arm_joints`              | SO-ARM101 arm joints                    | Ordered joints the IK actuates; all others are locked. Override to drive a different arm.                  |
+| `gripper_joint`           | `gripper_joint`                         | Joint driven by the gripper menu toggle (not part of the IK). Empty string for arms without a gripper.     |
 | `ee_frame`                | `gripper_frame_link`                    | Tool frame driven toward the marker.                                                                       |
 | `root_frame`              | `world`                                 | Model root frame; the marker is anchored here.                                                             |
 | `control_rate`            | `50.0`                                  | IK / command streaming rate (Hz).                                                                          |
@@ -79,6 +79,7 @@ ros2 topic echo /joint_states
 | `posture_cost`            | `1e-3`                                  | PostureTask regularization weight.                                                                         |
 | `lm_damping`              | `1e-2`                                  | FrameTask Levenberg-Marquardt damping; raise to reduce near-singular oscillation.                          |
 | `max_joint_velocity`      | `2.0`                                   | Per-joint velocity cap (rad/s) enforced as a QP constraint; lower for smoother motion.                     |
+| `max_joint_acceleration`  | `10.0`                                  | Per-joint acceleration cap (rad/s²) enforced as a QP constraint; bounds velocity change to smooth jerk.    |
 | `inactivity_timeout`      | `0.3`                                   | Seconds of marker inactivity after which the arm holds and stops republishing (kills steady-state jitter). |
 | `marker_deadband`         | `2e-3`                                  | Min marker pose change (6D log norm) for feedback to count; ignores mouse-down-without-moving.             |
 | `qp_solver`               | `quadprog`                              | QP backend used by Pink.                                                                                   |
