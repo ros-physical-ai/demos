@@ -39,6 +39,7 @@ so-arm-real = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_real_bringup.lau
 so-arm-gz = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_gz_bringup.launch.py"] }
 so-arm-mujoco = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_mujoco_bringup.launch.py"] }
 so-arm-rviz-ik = { cmd = ["ros2", "launch", "pai_rviz_teleop", "interactive_ik_demo.launch.py"] }
+so-arm-phone-ik = { cmd = ["ros2", "launch", "pai_phone_teleop", "phone_teleop.launch.py"] }
 rerun-viz = { cmd = ["ros2", "launch", "pai_rerun_visualizer", "visualizer.launch.py"] }
 rosetta-record-mujoco = { cmd = [
   "ros2",
@@ -149,12 +150,19 @@ ros-kilted-usb-cam = "*"
 ros-kilted-camera-calibration = ">=6.0.11,<7"
 # Differential inverse kinematics (Pink) + Pinocchio backend for the interactive marker IK demo.
 pink = ">=3.1,<5"
+nodejs = ">=18"
 
 [pypi-dependencies]
 huggingface-hub = "*"
 # LeRobot 0.4.x imports scipy.fftpack.idct; SciPy 2.0 removed fftpack re-exports.
 scipy = ">=1.11.0,<2"
 lerobot = { version = "==0.4.4", extras = ["feetech", "async"] }
+# pai_phone_teleop pulls in the upstream SpesRobotics/teleop package, which
+# provides the WebXR phone bridge (python3 -m teleop.ros2). Its hard deps
+# (uvicorn + fastapi<1.0) are listed explicitly here.
+teleop = "==0.1.5"
+fastapi = "<1.0"
+uvicorn = "*"
 # SDF→MJCF converter: used at launch time to convert the canonical SDF world to MuJoCo format.
 # Installed from source (conda-forge 0.1.2 is too old for sdformat15).
 # TODO(francocipollone): Point to upstream once the PR is merged: https://github.com/gazebosim/gz-mujoco/pull/125
