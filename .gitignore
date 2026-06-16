@@ -25,3 +25,6 @@ external/*
 # Recorded datasets
 datasets/*
 datasets_lerobot/*
+
+# wandb
+wandb

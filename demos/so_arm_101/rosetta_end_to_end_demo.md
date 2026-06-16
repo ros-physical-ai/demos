@@ -81,7 +81,7 @@ Recording captures rosbags of demonstration episodes through the Rosetta episode
 2. **Start the robot** — simulation or real hardware.
 3. **Start the episode recorder** — points to the contract and an output directory for bags.
 4. **For each episode:**
-   a. Reset the robot to a starting pose.
+   a. Reset the scene — send the arm to its home pose. In Gazebo sim, if your task involves the cubes in the `pai_world` scene, you can additionally reset their positions via the [Resetting cube poses](../../pai_data_collection/README.md#resetting-cube-poses) helper (`gz_set_cubes_poses.py`, supports `--random` for variety).
    b. Start recording (`r` key in the keyboard controller, or via the `/episode_recorder/record_episode` action).
    c. Perform the task — via leader teleop, scripted commands, or any other method.
    d. Stop recording (`s` to save, `d` to discard and re-record).
