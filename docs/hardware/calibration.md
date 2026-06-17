@@ -85,8 +85,8 @@ LeRobot writes a JSON file per arm under:
 
 If you want to make those values explicit in this project, copy the relevant fields into a `joint_config_file`, for example:
 
-- [`../pai_bringup/config/hardware/follower.yaml`](../pai_bringup/config/hardware/follower.yaml)
-- [`../pai_bringup/config/hardware/leader.yaml`](../pai_bringup/config/hardware/leader.yaml)
+- [`pai_bringup/config/hardware/follower.yaml`](../../pai_bringup/config/hardware/follower.yaml)
+- [`pai_bringup/config/hardware/leader.yaml`](../../pai_bringup/config/hardware/follower.yaml)
 
 Use a `joint_config_file` only if you want to keep a versioned per-robot configuration in the repo, override existing motor settings, or set additional driver parameters.
 
@@ -109,7 +109,7 @@ Common parameters:
 - `p_coefficient` / `i_coefficient` / `d_coefficient`, `return_delay_time`, `max_torque_limit`, `protection_current`, `overload_torque`: optional tuning and protection settings written to the servo EEPROM
 - `acceleration`: optional motion parameter written by the driver, but not persistently to EEPROM
 
-For the **follower gripper**, this project sets these protection values by default in [`../pai_bringup/config/control/so_arm101.ros2_control.xacro`](../pai_bringup/config/control/so_arm101.ros2_control.xacro) to reduce the risk of overloading or damaging the motor:
+For the **follower gripper**, this project sets these protection values by default in [`pai_bringup/config/control/so_arm101.ros2_control.xacro`](../../pai_bringup/config/control/so_arm101.ros2_control.xacro) to reduce the risk of overloading or damaging the motor:
 
 - `max_torque_limit: 500`
 - `protection_current: 250`
