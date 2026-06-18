@@ -1,66 +1,42 @@
 # ROS Physical AI Demos
 
-## Requirements
+Open-source physical AI demos for the [SO-ARM101](https://github.com/TheRobotStudio/SO-ARM100) robot arm on ROS 2 — simulation (Gazebo, MuJoCo) and real hardware, with a full Record → Train → Deploy learning pipeline powered by [LeRobot](https://github.com/huggingface/lerobot).
 
-- [Ubuntu 24.04](https://ubuntu.com/download/desktop)
-- [Pixi](https://pixi.sh/latest/installation/) (recommended) — manages ROS 2, Gazebo, and all dependencies automatically
-- **NVIDIA GPU** (for ML inference):
-  - RTX 5090 (Blackwell): Driver version 570+ and CUDA 12.8+ recommended
-  - Other GPUs: Compatible driver and CUDA version
-- `libserial-dev` — required by feetech_ros2_driver: `sudo apt install -y libserial-dev`
+## Quick start
 
-> [!NOTE]
-> ROS 2 `Jazzy Jalisco` is also supported but we recommend `Kilted` to benefit from simulation improvements in `Gazebo Ionic` which pairs with `Kilted` together with improvements in `ros2_control`.
-
-## Install
+Requires Linux and [Pixi](https://pixi.sh/latest/installation/) (which bundles ROS 2, Gazebo, and all dependencies). An NVIDIA GPU is only needed for ML inference/training, not for simulation. For full requirements and the manual install path, see the [Installation Guide](docs/installation.md).
 
 ```bash
 git clone https://github.com/ros-physical-ai/demos
 cd demos
 vcs import external < pai.repos --recursive
 pixi install
+pixi run install-ml-deps   # PyTorch + LeRobot (auto-detects GPU)
 pixi run build
 ```
 
-To install ML dependencies (PyTorch, LeRobot — automatically detects your GPU):
+Launch the SO-ARM101 in Gazebo (start the Zenoh router first, in its own terminal):
 
 ```bash
-pixi run install-ml-deps
+pixi run start_zenoh   # terminal 1
+pixi run so-arm-gz     # terminal 2
 ```
 
-See [DEVELOPMENT.md](./docs/DEVELOPMENT.md) for the full Pixi-based development workflow.
+See [Running the Robot](docs/running-the-robot.md) for MuJoCo and real-hardware bringup.
 
-<details>
-<summary><strong>Alternative: manual install without Pixi</strong></summary>
+## Documentation
 
-If you prefer a system-wide ROS 2 installation:
+Full documentation lives in [`docs/`](docs/README.md). Highlights:
 
-```bash
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y libserial-dev python3-vcstool
-mkdir ~/ws_pai/src -p && cd ~/ws_pai/src
-git clone https://github.com/ros-physical-ai/demos
-cd demos
-vcs import external < pai.repos --recursive
-cd ~/ws_pai
-rosdep install --from-paths src --ignore-src --rosdistro kilted -yir
-source /opt/ros/kilted/setup.bash
-colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
-```
-
-When using this approach, source the workspace before running demos:
-
-```bash
-source ~/ws_pai/install/setup.bash
-```
-
-</details>
-
-> [!NOTE]
-> This project uses [rmw_zenoh](https://github.com/ros2/rmw_zenoh) as the default ROS 2 middleware.
-> When using Pixi, this is configured automatically. For manual installs, install it via
-> `sudo apt install ros-kilted-rmw-zenoh-cpp` and `export RMW_IMPLEMENTATION=rmw_zenoh_cpp`.
-> Ensure the Zenoh router is running: `ros2 run rmw_zenoh_cpp rmw_zenohd` (or `pixi run start_zenoh`).
+| Guide                                                             | What it covers                                          |
+| ----------------------------------------------------------------- | ------------------------------------------------------- |
+| [Installation](docs/installation.md)                              | Requirements, Pixi install, manual install, `rmw_zenoh` |
+| [Development Guide](docs/development.md)                          | Pixi workflow, building, FAQ, troubleshooting           |
+| [Running the Robot](docs/running-the-robot.md)                    | Launching in Gazebo, MuJoCo, or on real hardware        |
+| [Hardware Setup](docs/README.md#hardware-setup)                   | Calibration, udev rules, cameras                        |
+| [Teleoperation](docs/teleoperation.md)                            | Leader arm, RViz interactive marker, phone (WebXR)      |
+| [End-to-End Learning Pipeline](docs/demos/end-to-end-pipeline.md) | Record → Train → Deploy with Rosetta and LeRobot        |
+| [Contributing](docs/contributing.md)                              | Linting and pre-commit hooks                            |
 
 ## Packages
 
@@ -70,6 +46,8 @@ source ~/ws_pai/install/setup.bash
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **pai_bringup**         | Main bringup package — launches the SO-ARM101 in Gazebo, MuJoCo, or on real hardware with ros2_control, RViz, camera bridge, and optional LeRobot inference    |
 | **pai_leader_teleop**   | Leader-follower teleoperation — brings up a physical leader SO-ARM101 to control a follower arm via ros2_control                                               |
+| **pai_rviz_teleop**     | Interactive-marker differential IK teleoperation in RViz                                                                                                       |
+| **pai_phone_teleop**    | Phone-based 6-DoF pose teleoperation over WebXR                                                                                                                |
 | **pai_data_collection** | Configuration and scripts for collecting demonstration datasets via the Rosetta ROS 2–LeRobot bridge                                                           |
 | **pai_description**     | Scene-level SDF world definitions — single source of truth for both Gazebo (loaded natively) and MuJoCo (converted to MJCF at launch time via `sdformat_mjcf`) |
 | **pai_assets**          | Shared 3D model assets (meshes, textures) used by the demo scenes                                                                                              |
@@ -86,148 +64,11 @@ source ~/ws_pai/install/setup.bash
 
 We would like to acknowledge the great work of [JafarAbdi](https://github.com/JafarAbdi) in creating ROS 2 drivers for the SO-ARM robots, and transferring his repositories to the `ros-physical-ai` organization.
 
-## Launching the SO-ARM101
-
-### Gazebo
-
-![](./docs/media/so_arm_gz.png)
-
-```bash
-ros2 launch pai_bringup so_arm_gz_bringup.launch.py
-```
-
-**With Pixi:**
-
-> [!IMPORTANT]
-> This project uses `rmw_zenoh` as the ROS 2 middleware. The Zenoh router must
-> be running before launching any demo. Start it in a dedicated terminal and
-> leave it running for the duration of your session:
->
-> ```bash
-> pixi run start_zenoh
-> ```
->
-> Then open a second terminal for the commands below.
->
-> ```bash
-> pixi run so-arm-gz
-> ```
-
-### MuJoCo
-
-![](./docs/media/so_arm_mujoco.png)
-
-```bash
-ros2 launch pai_bringup so_arm_mujoco_bringup.launch.py
-```
-
-**With Pixi:**
-
-> [!IMPORTANT]
-> This project uses `rmw_zenoh` as the ROS 2 middleware. The Zenoh router must
-> be running before launching any demo. Start it in a dedicated terminal and
-> leave it running for the duration of your session:
->
-> ```bash
-> pixi run start_zenoh
-> ```
->
-> Then open a second terminal for the commands below.
->
-> ```bash
-> pixi run so-arm-mujoco
-> ```
-
-### Real hardware
-
-```bash
-ros2 launch pai_bringup so_arm_real_bringup.launch.py usb_port:=/dev/so101_follower
-```
-
-With Pixi:
-
-```bash
-pixi run so-arm-real usb_port:=/dev/so101_follower
-```
-
-#### Configuring the real robot
-
-##### Udev rules
-
-Stable device symlinks (`/dev/cam_wrist`, `/dev/cam_static`) prevent arms and cameras from swapping after a reboot.
-See [pai_bringup/config/hardware/99-so-arm101.rules.example](pai_bringup/config/hardware/99-so-arm101.rules.example) for setup instructions.
-
-##### Servo calibration
-
-Each SO-ARM101 must be calibrated before use so that encoder zero aligns with the expected physical pose. Calibration writes a `homing_offset` to each servo's EEPROM via LeRobot's calibration tool. After calibration, sending **0 rad** to any joint moves it to its calibrated center.
-
-See the full [Calibration Guide](./docs/calibration_guide.md) for step-by-step instructions, optional `joint_config_file` usage, and known limitations (e.g. gripper normalization differences between LeRobot and ROS 2).
-
-##### Cameras
-
-The real-robot bringup launches a **wrist camera** and a **static camera** by default using [usb_cam](https://github.com/ros-drivers/usb_cam).
-Both publish at 640×480 @ 30 fps:
-
-| Topic                      | Frame                | Device            |
-| -------------------------- | -------------------- | ----------------- |
-| `/wrist_camera/image_raw`  | `wrist_camera_link`  | `/dev/cam_wrist`  |
-| `/static_camera/image_raw` | `static_camera_link` | `/dev/cam_static` |
-
-> [!IMPORTANT]
-> [Udev rules](#udev-rules) must be configured before using cameras on real hardware. Without them, `/dev/cam_wrist` and `/dev/cam_static` will not exist and the camera nodes will fail to start.
-
-Each camera has its own driver-parameter file (`usb_cam_wrist.yaml`, `usb_cam_static.yaml`) so you can tune resolution, framerate, or pixel format independently — useful when the two cameras are different models.
-
-> [!NOTE]
-> A default camera-calibration file ([`default_640x480.yaml`](pai_bringup/config/cameras/default_640x480.yaml)) is shipped so that RViz Camera displays work without errors.
-> It is **NOT** required for policy training or inference — the policy consumes raw pixel observations and joint-position actions, so camera intrinsics (focal length, principal point, distortion coefficients) never enter the learning or inference pipeline.
-> We publish `camera_info` with placeholder intrinsics for standard ROS tooling (e.g. RViz, image_proc), not for LeRobot.
-> If you need accurate intrinsics (e.g. for 3D reconstruction), replace the default file with a proper calibration via `ros2 run camera_calibration cameracalibrator` or your tool of preference.
-
-Camera frames are defined in [`pai_bringup/urdf/cameras.xacro`](pai_bringup/urdf/cameras.xacro) and published to TF by `robot_state_publisher`.
-The wrist camera moves with the gripper; the static camera is fixed relative to `base_link`.
-
-To disable cameras:
-
-```bash
-ros2 launch pai_bringup so_arm_real_bringup.launch.py usb_port:=/dev/so101_follower use_cameras:=false
-```
-
-The static camera position and orientation can be overridden at launch time to match your physical mounting:
-
-```bash
-ros2 launch pai_bringup so_arm_real_bringup.launch.py \
-    usb_port:=/dev/so101_follower \
-    cam_static_xyz:="0.0 0.0 0.50" \
-    cam_static_rpy:="3.6652 0.0 -1.5708"
-```
-
-> [!NOTE]
-> In simulation (Gazebo / MuJoCo), the same two cameras are rendered by the simulator and bridged to the same ROS topics.
-> Camera TF frames come from the same `cameras.xacro`.
-
-> [!NOTE]
-> [gscam](https://github.com/ros-drivers/gscam) (GStreamer) offers better timestamp fidelity but is not available from robostack and must be compiled from source.
-
-### Leader arm teleoperation
-
-You can use a leader SO-ARM101 to teleoperate the follower arm (sim or real):
-
-```bash
-ros2 launch pai_leader_teleop leader_bringup.launch.py usb_port:=/dev/so101_leader
-```
-
-With Pixi:
-
-```bash
-pixi run so-arm-leader usb_port:=/dev/so101_leader
-```
-
 ## Demos
 
 ### End-to-End Learning Pipeline with SO-ARM
 
-Record demonstrations, train a policy, and deploy it on the robot — in simulation or on real hardware, using any input method (leader arm teleoperation, scripted commands, or custom controllers).
+Record demonstrations, train a policy, and deploy it on the robot — in simulation or on real hardware, using any input method (leader arm teleoperation, scripted commands, or custom controllers). For the full guide, see [End-to-End Learning Pipeline with Rosetta](docs/demos/end-to-end-pipeline.md).
 
 #### Recording episodes
 
@@ -282,40 +123,8 @@ https://github.com/user-attachments/assets/51beafa7-4d85-4a53-b0db-ec593f663850
 > [!NOTE]
 > These videos show an **ACT** policy trained on the recorded episodes. The goal here is to demonstrate the full **Record → Train → Deploy** pipeline — not to showcase optimal policy performance, which depends on the number of episodes, model selection, and hyperparameter tuning.
 
-For the full pipeline guide see [End-to-End Learning Pipeline with Rosetta](./demos/so_arm_101/rosetta_end_to_end_demo.md).
-
-## Linting & Pre-commit
-
-This repository uses [pre-commit](https://pre-commit.com/) to enforce consistent code quality. The following hooks are configured:
-
-- **General**: trailing whitespace, end-of-file fixer, YAML/XML validation, large file check, merge conflict markers
-- **Python**: [Ruff](https://docs.astral.sh/ruff/) for linting and formatting
-- **Shell**: [ShellCheck](https://www.shellcheck.net/) for static analysis
-- **YAML/Markdown**: [Prettier](https://prettier.io/) for formatting
-- **CMake**: [cmake-lint](https://cmake-format.readthedocs.io/) for CMakeLists.txt files
-
-### Setup
-
-Install the git hooks so they run automatically on every commit:
-
-```bash
-pre-commit install
-```
-
-With Pixi: `pixi run -e default pre-commit install`
-
-### Usage
-
-Hooks will run automatically on staged files when you `git commit`. To run all hooks on all files manually:
-
-```bash
-pre-commit run --all-files
-```
-
-With Pixi: `pixi run lint`
-
 ## External demos
 
-Other demos: fully open-source physical AI projects on ROS.
+Other fully open-source physical AI projects on ROS:
 
 - [Agentic mobile manipulator](https://github.com/RobotecAI/agentic-mobile-manipulator), a comprehensive demo project using a hardware-in-the-loop setup with O3DE and all the software and inference running on-board.

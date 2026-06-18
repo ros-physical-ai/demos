@@ -97,7 +97,7 @@ Additional resources for using Pixi can be found at this [blog](https://jafarabd
 
 ### Scene Configuration
 
-MuJoCo loads poses from `pai_bringup/config/world/poses.yaml` at launch time. Edit `poses.yaml` to change table, tray, or cube positions, then rebuild and relaunch (or relaunch only with symlink-install). See [config/world/README.md](../pai_bringup/config/world/README.md) for details.
+Both Gazebo and MuJoCo load the scene from the SDF world in `pai_description`. Edit [`pai_description/world/so_arm_table.sdf`](../pai_description/world/so_arm_table.sdf) to change the table, tray, or cube positions, then rebuild and relaunch (or relaunch only with symlink-install).
 
 ## FAQ
 

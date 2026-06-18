@@ -27,7 +27,7 @@ All leader nodes run under the `/leader` namespace to avoid topic and controller
 
 Both the leader and follower arms must be calibrated before use. The calibration procedure writes `homing_offset` values to each servo's EEPROM so that joint positions are reported correctly.
 
-See the [SO-ARM101 Calibration Guide](../docs/calibration_guide.md) for the full procedure, including:
+See the [SO-ARM101 Calibration Guide](../docs/hardware/calibration.md) for the full procedure, including:
 
 - **Step 1** — Running `lerobot-calibrate` for the leader arm. This writes `homing_offset` to each servo's EEPROM and is **sufficient for normal use** — no additional config file is needed.
 - **Step 2** _(optional)_ — Providing a `joint_config_file` with per-robot overrides (homing offsets, range limits, PID gains, etc.) only if you want to version calibration in the repo or override specific driver parameters.
