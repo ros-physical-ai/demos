@@ -151,6 +151,8 @@ ros-kilted-camera-calibration = ">=6.0.11,<7"
 # Differential inverse kinematics (Pink) + Pinocchio backend for the interactive marker IK demo.
 pink = ">=3.1,<5"
 nodejs = ">=18"
+ros-kilted-rosbridge-suite = ">=3.0.2,<4"
+cbor2 = ">=6.1.2,<7"
 
 [pypi-dependencies]
 huggingface-hub = "*"
