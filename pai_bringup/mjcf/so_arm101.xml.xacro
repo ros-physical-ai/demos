@@ -417,10 +417,10 @@
           </body>
         </body>
       </body>
-      <!-- Static camera: elevated above base_link, tilted 30° toward +X.
-           euler derived from URDF optical RPY (3.6652 0 -1.5708) via R_mj = R_urdf * Rx(π). -->
+      <!-- Static camera: elevated above base_link, moved forward along X, tilted some degrees toward -X.
+           euler derived from URDF optical RPY (-2.2 0.0 1.5708) via R_mj = R_urdf * Rx(π). -->
       <camera name="static_camera" fovy="55" mode="fixed" resolution="640 480"
-              pos="0.0 0.0 0.50" euler="0 -0.5236 -1.5708"/>
+              pos="0.6 0.0 0.35" euler="0 0.94159 1.5708"/>
     </body>
   </worldbody>
 

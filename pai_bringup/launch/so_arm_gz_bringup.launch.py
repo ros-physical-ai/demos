@@ -247,12 +247,12 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "cam_static_xyz",
-            default_value="0.0 0.0 0.50",
+            default_value="0.6 0.0 0.35",
             description="Position of the static (overhead) camera relative to the world frame as 'x y z' in metres.",
         ),
         DeclareLaunchArgument(
             "cam_static_rpy",
-            default_value="3.6652 0.0 -1.5708",
+            default_value="-2.2 0.0 1.5708",
             description="Orientation of the static (overhead) camera relative to the world frame "
             "as 'roll pitch yaw' in radians.",
         ),

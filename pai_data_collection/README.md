@@ -4,7 +4,7 @@ Data collection tools for Physical AI demos using [rosetta](https://github.com/i
 
 ## Requirements
 
-This project uses [Pixi](https://pixi.sh/) for environment management. Make sure the workspace is set up following the [Development Guide](../docs/DEVELOPMENT.md).
+This project uses [Pixi](https://pixi.sh/) for environment management. Make sure the workspace is set up following the [Development Guide](../docs/development.md).
 
 The required external repos (`rosetta` and `rosetta_interfaces`) are included in `pai.repos` and will be fetched automatically during workspace setup:
 
@@ -14,7 +14,7 @@ vcs import external < pai.repos --recursive
 
 > [!NOTE]
 > The following commands assume you are inside a `pixi shell` session or that you are running via `pixi run`.
-> See the [Development Guide](../docs/DEVELOPMENT.md) for details.
+> See the [Development Guide](../docs/development.md) for details.
 
 ## Recording Rosbag
 
@@ -51,7 +51,21 @@ ros2 run rosetta episode_keyboard_node
 
 Press `t` to set a task prompt, then `r` (or `→`) to start recording.
 
-5. Move the arm:
+5. Reset the cubes (Gazebo only, before each episode):
+
+The cubes do not snap back to their starting poses when an episode ends, so reset them before recording the next one. The script lives in this package and is installed automatically by `pixi run build`:
+
+```bash
+# Reset to the nominal layout (matches the starting layout in so_arm_table.sdf)
+$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/scripts/gz_set_cubes_poses.py
+
+# Or randomize the pose of each cube within a small region around the nominal
+$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/scripts/gz_set_cubes_poses.py --random --seed 1
+```
+
+Run with `--help` to see all options (`--radius`, `--angle-range`, `--pose NAME=...` overrides, `--dry-run`).
+
+6. Move the arm:
 
 You can directly use the forward position controller via topic:
 
@@ -69,11 +83,11 @@ There is simple script to run some of these commands sequentially:
 $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/scripts/arm_demo_positions.sh
 ```
 
-6. Finish episode: Press `s` (or `←`) to stop and save, or `d` to discard.
+7. Finish episode: Press `s` (or `←`) to stop and save, or `d` to discard.
 
 This will save a rosbag that corresponds to that episode.
 
-7. Record more episodes: Repeat from step 4 (press `r` again — no need to restart the keyboard controller).
+8. Record more episodes: Repeat from step 5 (press `r` again — no need to restart the keyboard controller; reset the cubes to start fresh).
 
 #### Workflow Overview
 

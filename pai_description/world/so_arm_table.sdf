@@ -23,7 +23,11 @@
         </gz-gui>
         <engine>ogre2</engine>
         <shadows>
+          <enabled>true</enabled>
           <texture_size light_type="spotlight">2048</texture_size>
+          <near>0.005</near>
+          <far>10</far>
+          <bias>0.001</bias>
         </shadows>
         <camera_clip>
           <near>0.05</near>

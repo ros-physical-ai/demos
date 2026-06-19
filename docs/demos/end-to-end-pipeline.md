@@ -81,7 +81,7 @@ Recording captures rosbags of demonstration episodes through the Rosetta episode
 2. **Start the robot** — simulation or real hardware.
 3. **Start the episode recorder** — points to the contract and an output directory for bags.
 4. **For each episode:**
-   a. Reset the robot to a starting pose.
+   a. Reset the scene — send the arm to its home pose. In Gazebo sim, if your task involves the cubes in the `pai_world` scene, you can additionally reset their positions via the [data-collection workflow](../../pai_data_collection/README.md#workflow) helper (`gz_set_cubes_poses.py`, supports `--random` for variety).
    b. Start recording (`r` key in the keyboard controller, or via the `/episode_recorder/record_episode` action).
    c. Perform the task — via leader teleop, scripted commands, or any other method.
    d. Stop recording (`s` to save, `d` to discard and re-record).
@@ -147,6 +147,19 @@ python -m rosetta.port_bags \
     --root <datasets_directory>
 ```
 
+> [!TIP]
+> Add `--push-to-hub` (with a namespaced `--repo-id`) to upload the converted dataset to the [HuggingFace Hub](https://huggingface.co/datasets) in the same step:
+>
+> ```bash
+> python -m rosetta.port_bags \
+>     --raw-dir <path_to_bags> \
+>     --contract $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
+>     --repo-id <hf_user>/<dataset_name> \
+>     --push-to-hub
+> ```
+>
+> Make sure you are logged in first (`hf auth login`).
+
 #### port_bags Arguments
 
 | Argument        | Required | Description                                                           |
@@ -179,6 +192,22 @@ lerobot-train \
     --config_path=outputs/train/<run_name>/checkpoints/last/pretrained_model/train_config.json \
     --resume=true
 ```
+
+> [!TIP]
+> You can train directly from a dataset hosted on the [HuggingFace Hub](https://huggingface.co/datasets) (drop `--dataset.root`) and push the trained policy back to the Hub with `--policy.push_to_hub=true` and a namespaced `--policy.repo_id`:
+>
+> ```bash
+> lerobot-train \
+>     --dataset.repo_id=<hf_user>/<dataset_name> \
+>     --policy.repo_id=<hf_user>/<run_name> \
+>     --policy.type=<policy_type> \
+>     --output_dir=outputs/train/<run_name> \
+>     --job_name=<run_name> \
+>     --policy.device=cuda \
+>     --policy.push_to_hub=true
+> ```
+>
+> Make sure you are logged in first (`hf auth login`).
 
 #### Supported Policies
 
