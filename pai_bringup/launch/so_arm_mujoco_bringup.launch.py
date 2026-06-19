@@ -173,7 +173,7 @@ def launch_setup(context, *args, **kwargs):
             ),
             "launch_rerun": launch_rerun,
             "mcp": LaunchConfiguration("mcp"),
-            "rosbridge_port": LaunchConfiguration("rosbridge_port"),
+            "mcp_port": LaunchConfiguration("mcp_port"),
         }.items(),
     )
 
@@ -202,10 +202,10 @@ def generate_launch_description():
             "mcp",
             default_value="false",
             description="Enable the ROS MCP interface (rosbridge_server websocket + rosapi)? "
-            "Binds all interfaces (0.0.0.0) on rosbridge_port.",
+            "Binds all interfaces (0.0.0.0) on mcp_port.",
         ),
         DeclareLaunchArgument(
-            "rosbridge_port",
+            "mcp_port",
             default_value="9090",
             description="Port for the rosbridge_server websocket.",
         ),

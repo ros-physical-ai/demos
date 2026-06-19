@@ -62,7 +62,7 @@ def launch_setup(context, *args, **kwargs):
     rviz_config_file = LaunchConfiguration("rviz_config_file").perform(context)
     launch_rerun = LaunchConfiguration("launch_rerun").perform(context).lower() == "true"
     mcp = LaunchConfiguration("mcp")
-    rosbridge_port = LaunchConfiguration("rosbridge_port")
+    mcp_port = LaunchConfiguration("mcp_port")
 
     # Build robot description via xacro
     xacro_cmd = [
@@ -175,7 +175,7 @@ def launch_setup(context, *args, **kwargs):
                 ]
             )
         ),
-        launch_arguments={"port": rosbridge_port}.items(),
+        launch_arguments={"port": mcp_port}.items(),
         condition=IfCondition(mcp),
     )
     nodes.append(rosbridge)
@@ -241,7 +241,7 @@ def generate_launch_description():
             "Binds all interfaces (0.0.0.0) on the configured port.",
         ),
         DeclareLaunchArgument(
-            "rosbridge_port",
+            "mcp_port",
             default_value="9090",
             description="Port for the rosbridge_server websocket.",
         ),
