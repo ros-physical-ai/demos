@@ -28,15 +28,16 @@ See [Running the Robot](docs/running-the-robot.md) for MuJoCo and real-hardware 
 
 Full documentation lives in [`docs/`](docs/README.md). Highlights:
 
-| Guide                                                             | What it covers                                          |
-| ----------------------------------------------------------------- | ------------------------------------------------------- |
-| [Installation](docs/installation.md)                              | Requirements, Pixi install, manual install, `rmw_zenoh` |
-| [Development Guide](docs/development.md)                          | Pixi workflow, building, FAQ, troubleshooting           |
-| [Running the Robot](docs/running-the-robot.md)                    | Launching in Gazebo, MuJoCo, or on real hardware        |
-| [Hardware Setup](docs/README.md#hardware-setup)                   | Calibration, udev rules, cameras                        |
-| [Teleoperation](docs/teleoperation.md)                            | Leader arm, RViz interactive marker, phone (WebXR)      |
-| [End-to-End Learning Pipeline](docs/demos/end-to-end-pipeline.md) | Record → Train → Deploy with Rosetta and LeRobot        |
-| [Contributing](docs/contributing.md)                              | Linting and pre-commit hooks                            |
+| Guide                                                             | What it covers                                                         |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| [Installation](docs/installation.md)                              | Requirements, Pixi install, manual install, `rmw_zenoh`                |
+| [Development Guide](docs/development.md)                          | Pixi workflow, building, FAQ, troubleshooting                          |
+| [Running the Robot](docs/running-the-robot.md)                    | Launching in Gazebo, MuJoCo, or on real hardware                       |
+| [Hardware Setup](docs/README.md#hardware-setup)                   | Calibration, udev rules, cameras                                       |
+| [Teleoperation](docs/teleoperation.md)                            | Leader arm, RViz interactive marker, phone (WebXR)                     |
+| [End-to-End Learning Pipeline](docs/demos/end-to-end-pipeline.md) | Record → Train → Deploy with Rosetta and LeRobot                       |
+| [Try a Pre-trained Policy](docs/demos/pretrained-demo.md)         | Skip the slow loop — run a pre-trained ACT policy in Gazebo in minutes |
+| [Contributing](docs/contributing.md)                              | Linting and pre-commit hooks                                           |
 
 ## Packages
 
@@ -65,6 +66,10 @@ Full documentation lives in [`docs/`](docs/README.md). Highlights:
 We would like to acknowledge the great work of [JafarAbdi](https://github.com/JafarAbdi) in creating ROS 2 drivers for the SO-ARM robots, and transferring his repositories to the `ros-physical-ai` organization.
 
 ## Demos
+
+### Try a Pre-trained Policy in Simulation
+
+New to the repo? Skip the slow Record → Train → Deploy loop and see a working policy in Gazebo in minutes. We provide **60 pre-recorded rosbags**, a **converted LeRobot dataset**, and a **trained ACT policy** — all hosted on the HuggingFace Hub. Just point `rosetta_client_launch.py` at the checkpoint and run inference. See [Try a Pre-trained Policy](docs/demos/pretrained-demo.md) for the full walkthrough.
 
 ### End-to-End Learning Pipeline with SO-ARM
 
