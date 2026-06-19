@@ -75,3 +75,8 @@ pixi run so-arm-leader usb_port:=/dev/so101_leader
 ```
 
 See the [Teleoperation Overview](teleoperation.md) for all available teleoperation methods.
+
+## MCP interface
+
+You can connect the robot to an AI agent to control, introspect, or debug it via MCP, in simulation
+or on real hardware. See [MCP Interface](mcp.md).
