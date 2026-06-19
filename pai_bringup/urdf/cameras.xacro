@@ -18,8 +18,8 @@
       prefix:=''
       cam_wrist_xyz:='0.0 0.065 -0.03'
       cam_wrist_rpy:=' 2.618 0.0 0.0'
-      cam_static_xyz:='0.0 0.0 0.50'
-      cam_static_rpy:='3.6652 0.0 -1.5708'
+      cam_static_xyz:='0.6 0.0 0.35'
+      cam_static_rpy:='-2.2 0.0 1.5708'
       include_inertia:='false'
     ">
 

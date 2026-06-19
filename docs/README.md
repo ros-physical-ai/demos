@@ -28,9 +28,10 @@ For running on a physical SO-ARM101.
 
 ## Learning pipeline (demos)
 
-| Guide                                                        | What it covers                                   |
-| ------------------------------------------------------------ | ------------------------------------------------ |
-| [End-to-End Learning Pipeline](demos/end-to-end-pipeline.md) | Record → Train → Deploy with Rosetta and LeRobot |
+| Guide                                                        | What it covers                                                         |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| [End-to-End Learning Pipeline](demos/end-to-end-pipeline.md) | Record → Train → Deploy with Rosetta and LeRobot                       |
+| [Try a Pre-trained Policy](demos/pretrained-demo.md)         | Skip the slow loop — run a pre-trained ACT policy in Gazebo in minutes |
 
 ## Contributing
 

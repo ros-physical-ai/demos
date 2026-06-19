@@ -113,9 +113,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--radius",
         type=float,
-        default=0.05,
+        default=0.025,
         metavar="R",
-        help="Radius (m) for x,y perturbation when --random is set (default: 0.05).",
+        help="Radius (m) for x,y perturbation when --random is set (default: 0.025).",
     )
     parser.add_argument(
         "--angle-range",
