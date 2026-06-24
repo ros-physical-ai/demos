@@ -8,7 +8,6 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 
-# Reusable, frontend-agnostic Python modules (solver, SE3 filter, ROS utils).
 ament_python_install_package(${PROJECT_NAME})
 
 install(

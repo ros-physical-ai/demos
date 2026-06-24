@@ -42,7 +42,7 @@ Right- or left-click the marker sphere for a context menu:
 ## Running
 
 The Zenoh router must be running first (see the repository README). Then launch
-your hardware/sim bringup and this demo (which also starts the IK servo):
+your hardware/sim bringup and the SO-ARM101 demo (which also starts the IK servo):
 
 ```bash
 pixi run start_zenoh        # terminal 1
@@ -50,11 +50,24 @@ pixi run so-arm-mujoco      # terminal 2 (MuJoCo + controllers; or another bring
 pixi run so-arm-rviz-ik     # terminal 3 (IK servo + marker adapter)
 ```
 
-or directly:
+`pixi run so-arm-rviz-ik` launches `pai_bringup`'s `so_arm_rviz_ik.launch.py`,
+which wraps the generic launch below with the SO-ARM101 config.
+
+### Generic launch and configuration
+
+This package ships a **generic, config-driven** launch and a template config
+([config/interactive_ik.yaml](config/interactive_ik.yaml)) with placeholder
+joint names. Run it directly with a robot-specific config:
 
 ```bash
-ros2 launch pai_rviz_teleop interactive_ik_demo.launch.py
+ros2 launch pai_rviz_teleop interactive_ik.launch.py \
+  config_file:=/path/to/your_robot_interactive_ik.yaml
 ```
+
+The SO-ARM101 config lives in `pai_bringup`
+(`config/teleop/so_arm101_interactive_ik.yaml`). A single config file configures
+both the `ik_servo` and the marker adapter (the `/**` wildcard applies to both),
+so the shared frames and topics stay consistent.
 
 In your RViz, add an `InteractiveMarkers` display on namespace `/interactive_ik`
 with fixed frame `world`, then drag the marker. To confirm the arm is tracking
@@ -66,7 +79,9 @@ ros2 topic echo /joint_states
 
 ## Parameters
 
-These are the adapter's parameters. IK parameters live on the servo — see the
+The adapter's parameters are set through the launch's `config_file` (see
+[config/interactive_ik.yaml](config/interactive_ik.yaml)). IK/servo parameters
+live in the same file and are documented in the
 [`pai_teleop_ik` README](../pai_teleop_ik/README.md).
 
 | Parameter                 | Default                    | Description                                                          |

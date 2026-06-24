@@ -1,0 +1,53 @@
+# Generic phone (WebXR) IK teleop configuration.
+#
+# This is a TEMPLATE with placeholder robot values (arm_joints, ee_frame, ...).
+# Replace it for a specific robot by passing `config_file:=/path/to/your.yaml`
+# to the launch file, or copy it and edit the values below.
+#
+# A single file configures both nodes started by the launch:
+#   * ik_servo      (pai_teleop_ik)     -- the differential IK servo
+#   * phone_teleop  (pai_phone_teleop)  -- the WebXR phone adapter
+# The `/**` wildcard applies every value to both nodes; each node only consumes
+# the parameters it declares, and the shared topic/frame/rate values are kept
+# consistent between them by construction.
+/**:
+  ros__parameters:
+    # ---- IK servo (robot-specific: edit for your arm) ----
+    arm_joints:
+      - joint_1
+      - joint_2
+      - joint_3
+      - joint_4
+      - joint_5
+    gripper_joint: gripper_joint
+    ee_frame: tool_frame
+    # Phone deltas feel natural relative to the arm base, so the default
+    # reference frame is the base rather than the world frame.
+    root_frame: base_link
+
+    # ---- IK servo (tuning; robot-agnostic) ----
+    control_rate: 50.0
+    position_cost: 0.5
+    orientation_cost: 0.1
+    posture_cost: 0.001
+    lm_damping: 0.01
+    max_joint_velocity: 2.0
+    max_joint_acceleration: 10.0
+    qp_solver: quadprog
+    inactivity_timeout: 0.3
+    target_lowpass_alpha: 0.5
+    command_topic: /forward_position_controller/commands
+
+    # ---- Shared topics (servo <-> adapter) ----
+    target_pose_topic: ik_servo/target_pose
+    gripper_command_topic: ik_servo/gripper_command
+    ee_pose_topic: ik_servo/ee_pose
+
+    # ---- Phone adapter ----
+    host: 0.0.0.0
+    port: 4443
+    natural_orientation: [0.0, 0.0, 0.0]
+    natural_position: [0.0, 0.0, 0.0]
+    gripper_min: 0.0
+    gripper_max: 1.7
+    gripper_open_speed: 5.0

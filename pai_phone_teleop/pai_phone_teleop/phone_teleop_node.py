@@ -26,7 +26,7 @@ Architecture
   pose (in ``root_frame``) as a 4x4 matrix used to seed the teleop bridge.
 * ``_teleop_cb`` (uvicorn/asyncio thread) -- on every WebSocket frame: captures
   button states and, while the phone is moving, publishes the commanded pose to
-  ``target_pose`` (plus ``teleop_target`` + TF for RViz).
+  ``target_pose`` (plus a ``root_frame -> phone_teleop_target`` TF for RViz).
 * ``_control_loop`` (executor timer) -- seeds ``teleop.set_pose()`` with the
   latest ``ee_pose`` so phone deltas are relative to where the arm is, and ramps
   + publishes the gripper setpoint on ``gripper_command``.
@@ -43,8 +43,11 @@ Subscribes:
 Publishes:
   ``target_pose``          geometry_msgs/PoseStamped  (phone target in root_frame)
   ``gripper_command``      std_msgs/Float64           (gripper setpoint, rad)
-  ``teleop_target``        geometry_msgs/PoseStamped  (phone target, for RViz)
-  ``/tf``                  TransformBroadcaster (root_frame -> teleop_target)
+  ``/tf``                  TransformBroadcaster (root_frame -> phone_teleop_target)
+
+The ``target_pose`` topic doubles as the RViz visualization source (it is a
+``PoseStamped`` in ``root_frame``); the ``root_frame -> phone_teleop_target`` TF
+offers the same target as a frame for the TF display.
 """
 
 from __future__ import annotations
@@ -91,7 +94,6 @@ class PhoneTeleopNode(Node):
         self.declare_parameter("target_pose_topic", "ik_servo/target_pose")
         self.declare_parameter("gripper_command_topic", "ik_servo/gripper_command")
         self.declare_parameter("ee_pose_topic", "ik_servo/ee_pose")
-        self.declare_parameter("teleop_target_topic", "teleop_target")
         # Gripper: open/closed range (rad) and ramp speed for the A/B buttons.
         # This adapter does not read the URDF, so the range is a parameter.
         self.declare_parameter("gripper_min", 0.0)
@@ -120,7 +122,6 @@ class PhoneTeleopNode(Node):
         # ROS I/O.
         self._target_pub = self.create_publisher(PoseStamped, self.get_parameter("target_pose_topic").value, 10)
         self._gripper_pub = self.create_publisher(Float64, self.get_parameter("gripper_command_topic").value, 10)
-        self._viz_pub = self.create_publisher(PoseStamped, self.get_parameter("teleop_target_topic").value, 1)
         self._tf_broadcaster = TransformBroadcaster(self)
         self.create_subscription(PoseStamped, self.get_parameter("ee_pose_topic").value, self._ee_pose_cb, 10)
 
@@ -178,7 +179,7 @@ class PhoneTeleopNode(Node):
         stamp = self.get_clock().now().to_msg()
         quat = t3d.quaternions.mat2quat(pose[:3, :3])  # [w, x, y, z]
 
-        # --- target_pose for the servo + teleop_target for RViz ---
+        # --- target_pose for the servo (also the RViz visualization source) ---
         msg = PoseStamped()
         msg.header.stamp = stamp
         msg.header.frame_id = self._root_frame
@@ -190,13 +191,12 @@ class PhoneTeleopNode(Node):
         msg.pose.orientation.y = float(quat[2])
         msg.pose.orientation.z = float(quat[3])
         self._target_pub.publish(msg)
-        self._viz_pub.publish(msg)
 
-        # --- TF: root_frame -> teleop_target (for RViz visualization) ---
+        # --- TF: root_frame -> phone_teleop_target (for RViz visualization) ---
         tf_msg = TransformStamped()
         tf_msg.header.stamp = stamp
         tf_msg.header.frame_id = self._root_frame
-        tf_msg.child_frame_id = "teleop_target"
+        tf_msg.child_frame_id = "phone_teleop_target"
         tf_msg.transform.translation.x = float(pose[0, 3])
         tf_msg.transform.translation.y = float(pose[1, 3])
         tf_msg.transform.translation.z = float(pose[2, 3])

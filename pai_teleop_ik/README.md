@@ -51,28 +51,25 @@ the same frame they receive.
 
 ## Running standalone
 
-The servo can run on its own and be driven by any target publisher. `arm_joints`
-is required (the servo has no default arm):
+The servo can run on its own, configured from a YAML params file, and driven by
+any target publisher. `arm_joints` is required (the servo has no default arm):
 
 ```bash
-ros2 launch pai_teleop_ik ik_servo.launch.py \
-  arm_joints:=shoulder_pan_joint,shoulder_lift_joint,elbow_flex_joint,wrist_flex_joint,wrist_roll_joint
+ros2 launch pai_teleop_ik ik_servo.launch.py params_file:=/path/to/servo.yaml
 # then, from another terminal:
 ros2 topic pub --once ik_servo/target_pose geometry_msgs/PoseStamped \
   '{header: {frame_id: world}, pose: {position: {x: 0.2, y: 0.0, z: 0.2}, orientation: {w: 1.0}}}'
 ```
 
+The params file is a standard ROS 2 YAML; the teleop frontends ship ready-made
+ones (e.g. [`pai_rviz_teleop/config/interactive_ik.yaml`](../pai_rviz_teleop/config/interactive_ik.yaml)).
+
 ## Retargeting another arm
 
-Override the joint/frame parameters; the IK is arm-agnostic:
-
-```bash
-ros2 launch pai_teleop_ik ik_servo.launch.py arm_joints:=j1,j2,j3 ee_frame:=my_tool_link root_frame:=base_link
-```
-
-Set `arm_joints` (required), `gripper_joint`, `ee_frame`, `root_frame`, and
-`command_topic` to match your robot. Every joint not in `arm_joints` is locked at
-neutral, so the solver only actuates the joints you list.
+Point the params file at your robot; the IK is arm-agnostic. Set `arm_joints`
+(required), `gripper_joint`, `ee_frame`, `root_frame`, and `command_topic` to
+match it. Every joint not in `arm_joints` is locked at neutral, so the solver
+only actuates the joints you list.
 
 ## Parameters
 
