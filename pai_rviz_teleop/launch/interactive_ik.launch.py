@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (C) 2026 Franco Cipollone
+# Copyright (C) 2026 Sebastian Castro
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,14 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generic phone (WebXR) IK teleop launch.
+"""Generic interactive-marker IK teleop launch.
 
-Starts the ``pai_teleop_ik`` IK servo together with the phone teleop adapter
-(the teleop.Teleop WebXR bridge), both configured from a single YAML
-``config_file``. The default config is a generic template with placeholder joint
-names; pass ``config_file:=`` (e.g. a robot-specific file from another package)
-to drive a real arm. The user is expected to have launched a ``pai_bringup``
-bringup (real, mujoco, or gz) in a separate terminal.
+Starts the ``pai_teleop_ik`` IK servo together with the interactive marker
+adapter, both configured from a single YAML ``config_file``. The default config
+is a generic template with placeholder joint names; pass ``config_file:=`` (e.g.
+a robot-specific file from another package) to drive a real arm. The simulation
+and RViz are expected to be launched separately.
 """
 
 import os
@@ -35,14 +34,14 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    """Generate the phone teleop launch description."""
-    default_config = os.path.join(get_package_share_directory("pai_phone_teleop"), "config", "phone_teleop.yaml")
+    """Generate the interactive IK teleop launch description."""
+    default_config = os.path.join(get_package_share_directory("pai_rviz_teleop"), "config", "interactive_ik.yaml")
 
     declared_arguments = [
         DeclareLaunchArgument(
             "config_file",
             default_value=default_config,
-            description="YAML file configuring both the ik_servo and the phone adapter.",
+            description="YAML file configuring both the ik_servo and the marker adapter.",
         ),
         DeclareLaunchArgument(
             "use_sim_time",
@@ -63,10 +62,9 @@ def generate_launch_description():
         }.items(),
     )
 
-    phone_teleop_node = Node(
-        package="pai_phone_teleop",
-        executable="phone_teleop_node",
-        name="phone_teleop",
+    interactive_ik_node = Node(
+        package="pai_rviz_teleop",
+        executable="interactive_ik_node",
         output="both",
         parameters=[
             LaunchConfiguration("config_file"),
@@ -74,4 +72,4 @@ def generate_launch_description():
         ],
     )
 
-    return LaunchDescription([*declared_arguments, servo_launch, phone_teleop_node])
+    return LaunchDescription([*declared_arguments, servo_launch, interactive_ik_node])

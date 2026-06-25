@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>pai_phone_teleop</name>
+  <name>pai_teleop_ik</name>
   <version>0.1.0</version>
   <description>
-    Phone-based 6-DoF pose teleoperation adapter for the pai_teleop_ik IK servo.
-    Embeds the upstream teleop WebXR bridge and publishes the phone's 6-DoF pose
-    as a Cartesian target; the servo runs the Pink differential IK and streams
-    joint commands. The adapter owns no IK or kinematics.
+    Topic-driven Cartesian differential inverse kinematics servo. Builds a
+    Pinocchio model from the robot description and drives any arm toward a
+    target pose published on a topic, using the Pink differential IK solver,
+    streaming joint commands to a JointGroupPositionController. Arm-agnostic:
+    the actuated joints, tool frame, and topics are all parameters.
   </description>
   <maintainer email="franco.cipollone@ekumenlabs.com">Franco Cipollone</maintainer>
   <license>Apache License 2.0</license>
@@ -18,11 +19,13 @@
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
-  <exec_depend>pai_teleop_ik</exec_depend>
   <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
-  <exec_depend>tf2_ros</exec_depend>
-  <exec_depend>teleop</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>python3-pytest</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
