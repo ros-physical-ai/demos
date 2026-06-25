@@ -94,17 +94,20 @@ class PhoneTeleopNode(Node):
         self.declare_parameter("target_pose_topic", "ik_servo/target_pose")
         self.declare_parameter("gripper_command_topic", "ik_servo/gripper_command")
         self.declare_parameter("ee_pose_topic", "ik_servo/ee_pose")
-        # Gripper: open/closed range (rad) and ramp speed for the A/B buttons.
+        # Gripper: whether this arm has a gripper, the open/closed positions (rad),
+        # and the ramp speed for the A/B buttons.
         # This adapter does not read the URDF, so the range is a parameter.
-        self.declare_parameter("gripper_min", 0.0)
-        self.declare_parameter("gripper_max", 1.7)
-        self.declare_parameter("gripper_open_speed", 5.0)
+        self.declare_parameter("has_gripper", True)
+        self.declare_parameter("gripper_open_position", 1.7)
+        self.declare_parameter("gripper_closed_position", 0.0)
+        self.declare_parameter("gripper_speed", 5.0)
 
         self._root_frame = self.get_parameter("root_frame").value
         self._control_rate = float(self.get_parameter("control_rate").value)
-        self._gripper_min = float(self.get_parameter("gripper_min").value)
-        self._gripper_max = float(self.get_parameter("gripper_max").value)
-        self._gripper_open_speed = float(self.get_parameter("gripper_open_speed").value)
+        self._has_gripper = bool(self.get_parameter("has_gripper").value)
+        self._gripper_open = float(self.get_parameter("gripper_open_position").value)
+        self._gripper_closed = float(self.get_parameter("gripper_closed_position").value)
+        self._gripper_speed = float(self.get_parameter("gripper_speed").value)
 
         # teleop.Teleop expects the natural_orientation in radians.
         natural_orientation_deg = list(self.get_parameter("natural_orientation").value)
@@ -128,9 +131,9 @@ class PhoneTeleopNode(Node):
         # Shared mutable state accessed by ee_pose CB, teleop CB, and control loop.
         self._lock = threading.Lock()
         self._ee_mat: np.ndarray | None = None  # latest servo ee_pose as 4x4
-        self._gripper_position: float = self._gripper_min
+        self._gripper_position: float = self._gripper_closed
         # Button A -> open gripper slowly; B -> close slowly (held = ramping).
-        # Gripper button (engaged) -> lock at gripper_min (apply pressure).
+        # Gripper button (engaged) -> lock at the closed position (apply pressure).
         self._button_a_held = False
         self._button_b_held = False
         self._gripper_engaged = False
@@ -218,17 +221,23 @@ class PhoneTeleopNode(Node):
             if self._ee_mat is not None:
                 self._teleop.set_pose(self._ee_mat)
 
-            # Gripper policy: engaged -> lock at min (apply pressure); else A ramps
-            # open and B ramps closed.
-            if self._gripper_engaged:
-                self._gripper_position = self._gripper_min
-            elif self._button_a_held:
-                self._gripper_position = min(self._gripper_position + self._gripper_open_speed * dt, self._gripper_max)
-            elif self._button_b_held:
-                self._gripper_position = max(self._gripper_position - self._gripper_open_speed * dt, self._gripper_min)
-            gripper_value = self._gripper_position
+            # Gripper policy: engaged -> lock at the closed position (apply
+            # pressure); else A ramps open and B ramps closed.
+            if not self._has_gripper:
+                gripper_value = None
+            else:
+                if self._gripper_engaged:
+                    self._gripper_position = self._gripper_closed
+                elif self._button_a_held:
+                    self._gripper_position = min(self._gripper_position + self._gripper_speed * dt, self._gripper_open)
+                elif self._button_b_held:
+                    self._gripper_position = max(
+                        self._gripper_position - self._gripper_speed * dt, self._gripper_closed
+                    )
+                gripper_value = self._gripper_position
 
-        self._gripper_pub.publish(Float64(data=gripper_value))
+        if gripper_value is not None:
+            self._gripper_pub.publish(Float64(data=gripper_value))
 
 
 def main(args: list[str] | None = None) -> None:

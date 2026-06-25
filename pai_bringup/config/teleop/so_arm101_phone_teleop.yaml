@@ -22,7 +22,8 @@
     gripper_command_topic: ik_servo/gripper_command
     ee_pose_topic: ik_servo/ee_pose
 
-    # ---- Phone adapter: gripper range (rad) ----
-    gripper_min: 0.0
-    gripper_max: 1.7
-    gripper_open_speed: 5.0
+    # ---- Phone adapter: gripper ----
+    has_gripper: true
+    gripper_open_position: 1.7
+    gripper_closed_position: 0.0
+    gripper_speed: 5.0

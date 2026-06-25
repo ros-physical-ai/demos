@@ -48,6 +48,7 @@
     port: 4443
     natural_orientation: [0.0, 0.0, 0.0]
     natural_position: [0.0, 0.0, 0.0]
-    gripper_min: 0.0
-    gripper_max: 1.7
-    gripper_open_speed: 5.0
+    has_gripper: true
+    gripper_open_position: 1.7
+    gripper_closed_position: 0.0
+    gripper_speed: 5.0

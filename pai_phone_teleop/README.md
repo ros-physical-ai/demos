@@ -67,12 +67,12 @@ and joint streaming all live in `pai_teleop_ik` — see its
 
 ## Controls
 
-| Control                     | Action                                                                           |
-| --------------------------- | -------------------------------------------------------------------------------- |
-| **Move** button (hold)      | Streams phone pose; arm tracks it via the servo's differential IK                |
-| **A** button (hold)         | Gripper opens slowly                                                             |
-| **B** button (hold)         | Gripper closes slowly                                                            |
-| **Gripper** button (toggle) | Engage: locks gripper at `gripper_min` (apply pressure). Disengage: releases A/B |
+| Control                     | Action                                                                                       |
+| --------------------------- | -------------------------------------------------------------------------------------------- |
+| **Move** button (hold)      | Streams phone pose; arm tracks it via the servo's differential IK                            |
+| **A** button (hold)         | Gripper opens slowly                                                                         |
+| **B** button (hold)         | Gripper closes slowly                                                                        |
+| **Gripper** button (toggle) | Engage: locks gripper at `gripper_closed_position` (apply pressure). Disengage: releases A/B |
 
 The gripper engage button takes priority over A/B — A and B are ignored while
 the gripper is engaged.
