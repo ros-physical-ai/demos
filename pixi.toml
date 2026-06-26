@@ -6,8 +6,15 @@ platforms = ["linux-64", "linux-aarch64"]
 version = "0.1.0"
 
 [environments]
-dev = ["dev"]
-ci = ["ci"]
+dev = ["dev", "onnx-cpp-deps"]
+ci = ["ci", "onnx-cpp-deps"]
+
+[feature.onnx-cpp-deps]
+platforms = ["linux-64", "linux-aarch64"]
+
+[feature.onnx-cpp-deps.dependencies]
+# CPU-only ONNX Runtime headers + libonnxruntime.so; no GPU deps.
+onnxruntime-cpp = ">=1.26.0,<2"
 
 [feature.dev.tasks]
 build = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
@@ -19,6 +26,12 @@ CMAKE_INSTALL_MODE = "COPY"
 
 # Lint
 lint = { cmd = "pre-commit run --all-files" }
+
+# Test (only the C++ ONNX inference package for now)
+test = { cmd = "colcon test --packages-select pai_onnx_inference --event-handlers console_direct+" }
+
+# Convert a LeRobot PyTorch policy to ONNX (chunked, baked stats).
+onnx-convert = { cmd = "python scripts/torch_to_onnx.py", env = { UV_HTTP_TIMEOUT = "600" } }
 
 # Longer uv download timeout (PyTorch wheels are huge).
 install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
@@ -163,6 +176,11 @@ lerobot = { version = "==0.4.4", extras = ["feetech", "async"] }
 teleop = "==0.1.5"
 fastapi = "<1.0"
 uvicorn = "*"
+# ONNX export (scripts/torch_to_onnx.py). torch.onnx in PyTorch 2.6+ uses the
+# dynamo-based exporter, which requires onnxscript at import time. onnx is
+# needed to serialize the resulting model.
+onnx = "*"
+onnxscript = "*"
 # SDF→MJCF converter: used at launch time to convert the canonical SDF world to MuJoCo format.
 # Installed from source (conda-forge 0.1.2 is too old for sdformat15).
 # TODO(francocipollone): Point to upstream once the PR is merged: https://github.com/gazebosim/gz-mujoco/pull/125

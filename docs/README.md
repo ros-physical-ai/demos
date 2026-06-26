@@ -26,6 +26,12 @@ For running on a physical SO-ARM101.
 | ------------------------------------------ | ------------------------------------------------------------------------ |
 | [Teleoperation Overview](teleoperation.md) | Leader-arm, RViz interactive-marker IK, and phone (WebXR) teleop methods |
 
+## Inference
+
+| Guide                                                 | What it covers                                                       |
+| ----------------------------------------------------- | -------------------------------------------------------------------- |
+| [ONNX inference (C++)](demos/onnx-inference.md)       | C++ ONNX node, conversion, troubleshooting, drop-in for the Python PolicyBridge |
+
 ## Learning pipeline (demos)
 
 | Guide                                                        | What it covers                                                         |
