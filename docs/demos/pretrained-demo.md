@@ -132,7 +132,7 @@ Key flags:
 | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
 | `pretrained_name_or_path:=francocipollone/rospai_act_sim_arm101_place_cubes_on_tray` | HuggingFace repo ID — Rosetta downloads and loads the checkpoint via LeRobot on first launch |
 | `policy_type:=act`                                                                   | Must match the architecture of the checkpoint                                                |
-| `policy_device:=cuda` or `xpu` or `cpu`                                              | `cuda` for NVIDIA GPUs, `xpu` for Intel GPUs (iGPU/Arc), `cpu` for CPU-only inference       |
+| `policy_device:=cuda` or `xpu` or `cpu`                                              | `cuda` for NVIDIA GPUs, `xpu` for Intel GPUs (iGPU/Arc), `cpu` for CPU-only inference        |
 | `use_sim_time:=true`                                                                 | Required because Gazebo publishes its clock on `/clock` (instead of using wall-clock time)   |
 
 The first launch will download the model weights into your local HuggingFace cache (`~/.cache/huggingface/`). Subsequent launches are instant.

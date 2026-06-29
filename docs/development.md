@@ -18,9 +18,10 @@ sudo apt update && sudo apt install -y libserial-dev
 ```
 
 _GPU drivers (optional)_: For GPU acceleration, install the appropriate drivers for your hardware:
-  - **NVIDIA**: NVIDIA drivers and CUDA toolkit for CUDA-based acceleration
-  - **Intel**: Intel GPU drivers for XPU-based acceleration on iGPU or discrete Intel Arc GPUs
-  - If no GPU drivers are present, the system will fall back to CPU-based inference (slower)
+
+- **NVIDIA**: NVIDIA drivers and CUDA toolkit for CUDA-based acceleration
+- **Intel**: Intel GPU drivers for XPU-based acceleration on iGPU or discrete Intel Arc GPUs
+- If no GPU drivers are present, the system will fall back to CPU-based inference (slower)
 
 ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pixi install`.
 
