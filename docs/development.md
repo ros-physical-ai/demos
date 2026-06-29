@@ -17,7 +17,10 @@ _libserial-dev_: Required for feetech_ros2_driver. Install via:
 sudo apt update && sudo apt install -y libserial-dev
 ```
 
-_NVIDIA drivers and CUDA toolkit_: Required for GPU acceleration (system components)
+_GPU drivers (optional)_: For GPU acceleration, install the appropriate drivers for your hardware:
+  - **NVIDIA**: NVIDIA drivers and CUDA toolkit for CUDA-based acceleration
+  - **Intel**: Intel GPU drivers for XPU-based acceleration on iGPU or discrete Intel Arc GPUs
+  - If no GPU drivers are present, the system will fall back to CPU-based inference (slower)
 
 ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pixi install`.
 
@@ -37,7 +40,7 @@ pixi run install-ml-deps
 
 The `install-ml-deps` task automatically:
 
-- Detects your GPU (RTX 5090 or standard)
+- Detects your GPU (NVIDIA CUDA, Intel XPU iGPU/Arc, or CPU fallback)
 - Installs the appropriate PyTorch version
 
 ### 2. Build
