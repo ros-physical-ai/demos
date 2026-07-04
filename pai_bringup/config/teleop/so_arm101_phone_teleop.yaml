@@ -1,0 +1,29 @@
+# SO-ARM101 phone (WebXR) IK teleop configuration.
+#
+# Robot-specific values for the pai_phone_teleop phone_teleop launch. Consumed
+# by both the ik_servo and the phone adapter (the `/**` wildcard applies to
+# both). Tuning parameters not listed here fall back to the node defaults.
+/**:
+  ros__parameters:
+    # ---- IK servo: SO-ARM101 arm ----
+    arm_joints:
+      - shoulder_pan_joint
+      - shoulder_lift_joint
+      - elbow_flex_joint
+      - wrist_flex_joint
+      - wrist_roll_joint
+    gripper_joint: gripper_joint
+    ee_frame: gripper_frame_link
+    # Phone deltas are expressed relative to the arm base so motion feels natural.
+    root_frame: base_link
+
+    # ---- Shared topics (servo <-> adapter) ----
+    target_pose_topic: ik_servo/target_pose
+    gripper_command_topic: ik_servo/gripper_command
+    ee_pose_topic: ik_servo/ee_pose
+
+    # ---- Phone adapter: gripper ----
+    has_gripper: true
+    gripper_open_position: 1.7
+    gripper_closed_position: 0.0
+    gripper_speed: 5.0

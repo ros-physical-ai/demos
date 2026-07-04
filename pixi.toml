@@ -38,8 +38,8 @@ so-arm-leader = { cmd = ["ros2", "launch", "pai_leader_teleop", "leader_bringup.
 so-arm-real = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_real_bringup.launch.py"] }
 so-arm-gz = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_gz_bringup.launch.py"] }
 so-arm-mujoco = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_mujoco_bringup.launch.py"] }
-so-arm-rviz-ik = { cmd = ["ros2", "launch", "pai_rviz_teleop", "interactive_ik_demo.launch.py"] }
-so-arm-phone-ik = { cmd = ["ros2", "launch", "pai_phone_teleop", "phone_teleop.launch.py"] }
+so-arm-rviz-ik = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_rviz_ik.launch.py"] }
+so-arm-phone-ik = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_phone_ik.launch.py"] }
 rerun-viz = { cmd = ["ros2", "launch", "pai_rerun_visualizer", "visualizer.launch.py"] }
 rosetta-record-mujoco = { cmd = [
   "ros2",
