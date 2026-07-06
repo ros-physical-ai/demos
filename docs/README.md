@@ -26,6 +26,12 @@ For running on a physical SO-ARM101.
 | ------------------------------------------ | ------------------------------------------------------------------------ |
 | [Teleoperation Overview](teleoperation.md) | Leader-arm, RViz interactive-marker IK, and phone (WebXR) teleop methods |
 
+## MCP interface
+
+| Guide                   | What it covers                                                                                                       |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| [MCP Interface](mcp.md) | Use an AI agent to control, introspect, or debug the robot via [ROS-MCP](https://github.com/robotmcp/ros-mcp-server) |
+
 ## Learning pipeline (demos)
 
 | Guide                                                        | What it covers                                                         |

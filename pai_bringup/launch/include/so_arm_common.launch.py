@@ -33,8 +33,12 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction, RegisterEventHandler
+from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
-from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.launch_description_sources import (
+    FrontendLaunchDescriptionSource,
+    PythonLaunchDescriptionSource,
+)
 from launch.substitutions import (
     Command,
     FindExecutable,
@@ -43,6 +47,7 @@ from launch.substitutions import (
 )
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
+from launch_ros.substitutions import FindPackageShare
 
 
 def launch_setup(context, *args, **kwargs):
@@ -56,6 +61,8 @@ def launch_setup(context, *args, **kwargs):
     launch_rviz = LaunchConfiguration("launch_rviz").perform(context).lower() == "true"
     rviz_config_file = LaunchConfiguration("rviz_config_file").perform(context)
     launch_rerun = LaunchConfiguration("launch_rerun").perform(context).lower() == "true"
+    mcp = LaunchConfiguration("mcp")
+    mcp_port = LaunchConfiguration("mcp_port")
 
     # Build robot description via xacro
     xacro_cmd = [
@@ -156,6 +163,23 @@ def launch_setup(context, *args, **kwargs):
         )
         nodes.append(delay_rerun_after_joint_state_broadcaster)
 
+    # rosbridge websocket (+ rosapi), e.g. as the interaction port for the ROS MCP
+    # server. Off by default; when enabled it binds all interfaces (0.0.0.0).
+    rosbridge = IncludeLaunchDescription(
+        FrontendLaunchDescriptionSource(
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("rosbridge_server"),
+                    "launch",
+                    "rosbridge_websocket_launch.xml",
+                ]
+            )
+        ),
+        launch_arguments={"port": mcp_port}.items(),
+        condition=IfCondition(mcp),
+    )
+    nodes.append(rosbridge)
+
     return nodes
 
 
@@ -209,6 +233,17 @@ def generate_launch_description():
             "launch_rerun",
             default_value="true",
             description="Launch the pai_rerun_visualizer node.",
+        ),
+        DeclareLaunchArgument(
+            "mcp",
+            default_value="false",
+            description="Enable the ROS MCP interface (rosbridge_server websocket + rosapi)? "
+            "Binds all interfaces (0.0.0.0) on the configured port.",
+        ),
+        DeclareLaunchArgument(
+            "mcp_port",
+            default_value="9090",
+            description="Port for the rosbridge_server websocket.",
         ),
     ]
 

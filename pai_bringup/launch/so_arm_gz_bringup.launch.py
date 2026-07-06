@@ -102,6 +102,8 @@ def launch_setup(context, *args, **kwargs):
             "launch_rviz": launch_rviz,
             "rviz_config_file": rviz_config_file,
             "launch_rerun": launch_rerun,
+            "mcp": LaunchConfiguration("mcp"),
+            "mcp_port": LaunchConfiguration("mcp_port"),
         }.items(),
     )
 
@@ -199,6 +201,17 @@ def generate_launch_description():
             description="URDF/XACRO description file (absolute path) with the robot.",
         ),
         DeclareLaunchArgument("launch_rviz", default_value="true", description="Launch RViz?"),
+        DeclareLaunchArgument(
+            "mcp",
+            default_value="false",
+            description="Enable the ROS MCP interface (rosbridge_server websocket + rosapi)? "
+            "Binds all interfaces (0.0.0.0) on mcp_port.",
+        ),
+        DeclareLaunchArgument(
+            "mcp_port",
+            default_value="9090",
+            description="Port for the rosbridge_server websocket.",
+        ),
         DeclareLaunchArgument(
             "launch_rerun", default_value="false", description="Launch the pai_rerun_visualizer node?"
         ),
