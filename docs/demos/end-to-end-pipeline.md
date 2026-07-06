@@ -44,6 +44,20 @@ The repo is designed to be flexible — you can mix and match backends, input me
 
 All backends publish the **same ROS 2 topics** (`/joint_states`, `/forward_position_controller/commands`, camera image topics), so the Rosetta contract works identically regardless of whether you run in Gazebo, MuJoCo, or on real hardware. You can prototype a task in simulation and later collect real-world demonstrations (or vice versa) without changing the pipeline.
 
+### AIC cable-insertion scenario (via `pai_aic`)
+
+The [`pai_aic`](../../pai_aic/README.md) package extends demos' pipeline
+to the AI for Industry Challenge cable-insertion scenario (UR5 + task board
++ impedance controller). The contract at
+`pai_data_collection/config/rosetta/aic.yaml` subscribes to AIC's camera
+and state topics, and the `LerobotPolicy` Policy class deploys trained
+checkpoints back into the AIC sim via `aic_model`. Recording uses
+`rosetta/episode_recorder_node`, training uses `lerobot-train` — unchanged.
+
+See [`pai_aic/README.md`](../../pai_aic/README.md) and the full
+[AIC scenario guide](aic-scenario.md) for the workflow and the two
+parallel deploy paths.
+
 > [!TIP]
 > **Leader arm teleoperation** is the recommended input method for real-world data collection. A second physical SO-ARM101 acts as a torque-free leader — you move it by hand, and the follower arm mirrors the motion in real time. Because the leader teleop node publishes to `/forward_position_controller/commands` (the same topic the contract records), the episode recorder captures human demonstrations transparently.
 

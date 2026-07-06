@@ -1,15 +1,20 @@
 [workspace]
 authors = ["Julia Jia <juliajster@gmail.com>"]
-channels = ["conda-forge", "https://prefix.dev/robostack-kilted"]
+channels = ["conda-forge", "robostack-kilted"]
 name = "demos"
 platforms = ["linux-64", "linux-aarch64"]
 version = "0.1.0"
+requires-pixi = ">=0.71.0"
+conda-pypi-map = { "robostack-kilted" = "robostack_mapping.json" }
 
 [environments]
 dev = ["dev"]
 ci = ["ci"]
 
 [feature.dev.tasks]
+# gz-rendering9 needs -DSKIP_ogre=true -DBUILD_TESTING=OFF; those are scoped to
+# that single package in ./colcon.meta (auto-discovered by colcon) rather than
+# applied globally here. See colcon.meta for the rationale.
 build = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
 
 [feature.ci.activation.env]
@@ -24,6 +29,9 @@ lint = { cmd = "pre-commit run --all-files" }
 install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
 
 # Build
+# gz-rendering9-specific cmake args (-DSKIP_ogre=true -DBUILD_TESTING=OFF) are
+# scoped to that package in ./colcon.meta (auto-discovered by colcon), not applied
+# globally. See colcon.meta for the rationale.
 build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"]}
 clean = { cmd = "rm -rf build install log" }
 
@@ -41,6 +49,15 @@ so-arm-mujoco = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_mujoco_bringup
 so-arm-rviz-ik = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_rviz_ik.launch.py"] }
 so-arm-phone-ik = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_phone_ik.launch.py"] }
 rerun-viz = { cmd = ["ros2", "launch", "pai_rerun_visualizer", "visualizer.launch.py"] }
+
+# AIC cable-insertion pipeline (pai_aic)
+aic-gz = { cmd = ["ros2", "launch", "aic_bringup", "aic_gz_bringup.launch.py", "start_aic_engine:=false"], description = "Bring up AIC sim (UR5 + impedance controller + adapter, no engine, empty scene). For a populated scene without the engine, run `aic-spawn-scene` in another terminal; or use `aic-engine` to spawn+orchestrate from its trial YAML." }
+aic-spawn-scene = { cmd = "python $(ros2 pkg prefix pai_aic)/share/pai_aic/scripts/aic_spawn_scene.py", description = "Spawn a populated AIC scene (task board + per-rail cards/ports + cable) from a YAML definition, without aic_engine. Pair with `aic-gz` in another terminal (the robot must be up so the cable can be posed relative to the gripper). Defaults to pai_aic's scene_example.yaml; pass flags after `--`, e.g. `pixi run aic-spawn-scene -- --ground-truth`, `-- --clear` to rebuild, or `-- --scene-file $(ros2 pkg prefix aic_engine)/share/aic_engine/config/sample_config.yaml --trial trial_2`." }
+aic-engine = { cmd = ["ros2", "run", "aic_engine", "aic_engine", "--ros-args", "-p", "config_file_path:=$(ros2 pkg prefix aic_engine)/share/aic_engine/config/sample_config.yaml", "-p", "model_node_name:=aic_model", "-p", "use_sim_time:=true"], description = "Run the AIC engine in its native trial loop with the upstream sample config (3 trials: nic_card_0/SC, nic_card_1/SC, sc_port_1 targets). Owns the task board + per-rail cards/ports + cable spawning per the YAML config. `skip_model_ready:=true` skips the participant-model lifecycle check — you don't need an `aic_model` node running for recording. For evaluation, drop that flag and run `pixi run aic-deploy-aic-model` in another terminal. Pair with `aic-gz` (or your own bringup) in another terminal. Override `config_file_path` after `--` to use your own YAML: `pixi run aic-engine -- -p config_file_path:=/path/to/your.yaml`." }
+aic-record = { cmd = ["ros2", "launch", "pai_aic", "aic_record.launch.py", "bag_base_dir:=~/datasets/aic/bags"], description = "Record AIC cable-insertion demos via demos' rosetta pipeline" }
+aic-train = { cmd = ["lerobot-train", "--dataset.repo_id=aic_cable_insertion", "--dataset.root=~/datasets/aic_cable_insertion", "--policy.type=act", "--output_dir=outputs/train/aic_act", "--policy.device=cuda"], description = "Train an ACT policy on AIC cable-insertion demos" }
+aic-deploy-aic-model = { cmd = ["ros2", "run", "aic_model", "aic_model", "--ros-args", "-p", "use_sim_time:=true", "-p", "policy:=pai_aic.policies.LerobotPolicy", "-p", "checkpoint_path:=outputs/train/insert/checkpoints/last/pretrained_model", "-p", "policy_type:=act"], description = "Deploy via aic_model + LerobotPolicy (AIC-native, aic_engine-compatible)" }
+aic-deploy-rosetta = { cmd = ["ros2", "launch", "pai_aic", "aic_deploy_rosetta.launch.py", "pretrained_name_or_path:=outputs/train/aic_act/checkpoints/last/pretrained_model"], description = "Deploy via demos' rosetta_client_node (async inference)" }
 rosetta-record-mujoco = { cmd = [
   "ros2",
   "launch",
@@ -76,6 +93,24 @@ ffmpeg = "*"
 # Required by feetech_ros2_driver
 cpp-expected = ">=1.1.0,<2"
 range-v3 = ">=0.12.0,<0.13"
+# Required by mujoco_ros2_control_plugins (find_package(glfw3) — native GLFW dev
+# library providing glfw3Config.cmake, not the pip `glfw` Python bindings).
+glfw = "*"
+# Required by gz-common6 geospatial component (Dem.cc includes gdal_priv.h).
+libgdal = "*"
+# Required by gz-fuel-tools (gz_find_package(JSONCPP)). Without an in-env jsoncpp,
+# CMake falls back to the system Ubuntu jsoncpp whose cmake targets miscompute the
+# prefix (multiarch path) → bogus include dir /usr/lib/include/jsoncpp.
+jsoncpp = "*"
+# Required by gz-transport (gz_find_package(ZeroMQ) + gz_find_package(CPPZMQ)).
+# Without an in-env zeromq, CMake falls back to the system Ubuntu one whose cmake
+# targets miscompute the prefix → bogus include dir /usr/lib/include. cppzmq is
+# the header-only C++ binding gz-transport also requires.
+zeromq = "*"
+cppzmq = "*"
+# Required by ros_gz_sim (gz_find_package(gflags) / #include <gflags/gflags.h> in
+# create.cpp). Not otherwise pulled by the from-source gz stack.
+gflags = "*"
 
 # Common base deps
 python = "3.12.*"
@@ -91,7 +126,7 @@ packaging = ">=24.2,<26"
 
 # ROS dependencies
 ros-kilted-ros-core = "*"
-ros-kilted-ament-cmake = "*"
+ros-kilted-ament-cmake = ">=2.7.4,<3"
 # From pai_bringup
 ros-kilted-controller-manager = "*"
 ros-kilted-cv-bridge = "*"
@@ -99,20 +134,11 @@ ros-kilted-launch = "*"
 ros-kilted-launch-ros = "*"
 ros-kilted-rclpy = "*"
 ros-kilted-robot-state-publisher = "*"
-ros-kilted-ros-gz-bridge = "*"
-ros-kilted-ros-gz-sim = "*"
 ros-kilted-ros2controlcli = "*"
 # From pai_data_collection
 ros-kilted-rosbag2 = ">=0.32.0,<0.33"
 ros-kilted-rosbag2-py = "*"
 ros-kilted-rosbag2-storage-mcap = ">=0.32.0,<0.33"
-# Gazebo Sim (provides gz CLI and simulation engine)
-# Using version 9 to match ROS Kilted compatibility
-gz-sim9 = "*"
-# Gazebo GUI (required for gz sim -g)
-gz-gui9 = "*"
-# Gazebo Rendering (required for ogre2 render engine plugin)
-gz-rendering9 = "*"
 ros-kilted-rviz2 = "*"
 ros-kilted-sensor-msgs = "*"
 ros-kilted-std-msgs = "*"
@@ -122,11 +148,11 @@ ros-kilted-joint-state-broadcaster = "*"
 ros-kilted-joint-trajectory-controller = "*"
 ros-kilted-parallel-gripper-controller = "*"
 ros-kilted-position-controllers = "*"
+ros-kilted-force-torque-sensor-broadcaster = "*"
 ros-kilted-hardware-interface = "*"
 ros-kilted-transmission-interface = "*"
 ros-kilted-ament-index-python = "*"
 ros-kilted-nav2-common = "*"
-ros-kilted-gz-ros2-control = "*"
 # From so_arm100_moveit_config
 ros-kilted-moveit-ros-move-group = "*"
 ros-kilted-moveit-kinematics = "*"
@@ -139,8 +165,12 @@ ros-kilted-moveit-ros-control-interface = "*"
 ros-kilted-moveit-ros-visualization = "*"
 ros-kilted-moveit-ros-warehouse = "*"
 ros-kilted-moveit-setup-assistant = "*"
+ros-kilted-rosbridge-suite = ">=3.0.2,<4"
 ros-kilted-rviz-common = "*"
 ros-kilted-rviz-default-plugins = "*"
+# Required by aic_controller (kinematics plugin chain).
+ros-kilted-kinematics-interface = "*"
+ros-kilted-kinematics-interface-kdl = "*"
 # From feetech_ros2_driver
 ros-kilted-rclcpp = "*"
 ros-kilted-pluginlib = "*"
@@ -152,8 +182,37 @@ ros-kilted-camera-calibration = ">=6.0.11,<7"
 # Differential inverse kinematics (Pink) + Pinocchio backend for the interactive marker IK demo.
 pink = ">=3.1,<5"
 nodejs = ">=18"
-ros-kilted-rosbridge-suite = ">=3.0.2,<4"
+sophus = ">=1!1.24.6,<1!2"
+gxx = "15.*"
 cbor2 = ">=6.1.2,<7"
+# Pinned <80: colcon-core's Python task calls `setup.py develop --editable
+# --build-directory --no-deps` (colcon_core/task/python/build.py, see
+# `else` branch with `not args.symlink_install or 'develop' not in available_commands`).
+# Pre-80 setuptools's `develop` inherits from `easy_install` whose user_options
+# expose `--editable`/`-e` and `--build-directory`/`-b`. Setuptools 80.x rewrote
+# `develop` as a thin wrapper around `pip install -e` and dropped both options
+# from `develop.user_options`, breaking every `--symlink-install` build of an
+# `aic_task`-style package. There is no upstream colcon-core fix yet (0.20.1
+# still uses the same invocation).
+setuptools = ">=71.0.0,<80"
+protobuf = ">=6.31.0,<6.32.0"
+evdev = ">=1.9.2,<2"
+ros-kilted-rqt-common-plugins = ">=1.2.0,<2"
+# Required by feetech_ros2_driver
+libserial = ">=1.0.0,<1.1"
+ros-kilted-ament-cmake-vendor-package = ">=2.7.4,<3"
+ros-kilted-test-msgs = ">=2.3.0,<3"
+ros-kilted-example-interfaces = ">=0.13.1,<0.14"
+ros-kilted-ackermann-msgs = ">=2.0.2,<3"
+ros-kilted-actuator-msgs = ">=0.0.1,<0.0.2"
+ros-kilted-gps-msgs = ">=2.1.1,<3"
+ros-kilted-vision-msgs = ">=4.2.0,<5"
+ros-kilted-ros2-control-cmake = ">=0.3.0,<0.4"
+ros-kilted-gz-ogre-next-vendor = ">=0.1.1,<0.2"
+ros-kilted-gz-dartsim-vendor = ">=0.1.2,<0.2"
+ros-kilted-topic-tools = ">=1.4.2,<2"
+# cpp-expected = ">=1.1.0,<2"
+# range-v3 = ">=0.12.0,<0.13"
 
 [pypi-dependencies]
 huggingface-hub = "*"
@@ -170,6 +229,10 @@ uvicorn = "*"
 # Installed from source (conda-forge 0.1.2 is too old for sdformat15).
 # TODO(francocipollone): Point to upstream once the PR is merged: https://github.com/gazebosim/gz-mujoco/pull/125
 sdformat-mjcf = { git = "https://github.com/francocipollone/gz-mujoco.git", branch = "francocipollone/avoid_eulerseq_compiler", subdirectory = "sdformat_mjcf" }
+lerobot_robot_ros = { git = "https://github.com/koonpeng/lerobot-ros", rev = "87708d0ae14a724bca78f8ae9d55448332509a57", subdirectory = "lerobot_robot_ros" }
+lerobot_teleoperator_devices = { git = "https://github.com/koonpeng/lerobot-ros", rev = "87708d0ae14a724bca78f8ae9d55448332509a57", subdirectory = "lerobot_teleoperator_devices" }
+pynput = ">=1.7.6,<2"
+pyspacemouse = ">=2.0.0, <3"
 
 [activation]
 scripts = ["scripts/activate.sh"]
@@ -181,10 +244,20 @@ LD_LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
 # CMake needs this to find ROS 2 packages installed by robostack
 CMAKE_PREFIX_PATH = "${CONDA_PREFIX}"
 # pkg-config needs this to find system-installed packages like libserial-dev
-# Supports both x86_64 and aarch64 architectures
-PKG_CONFIG_PATH = "/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig:${PKG_CONFIG_PATH}"
+# Supports both x86_64 and aarch64 architectures.
+# The pixi env's own .pc files come FIRST so e.g. pixi's uuid.pc (prefix=pixi)
+# wins over Debian's uuid.pc (prefix=/usr) — otherwise aic_gazebo's transitive
+# UUID_INCLUDE_DIRS ends up at /usr/lib/include/uuid (Debian path that doesn't
+# exist in this env) and CMake rejects gz-sim9::gz-sim9.
+PKG_CONFIG_PATH = "${CONDA_PREFIX}/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig:${PKG_CONFIG_PATH}"
 # Gazebo rendering engine plugin path
 GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-9/engine-plugins"
+# Gazebo library config (.yaml) search path. Conda packages install sim9.yaml,
+# gui9.yaml, etc. under ${CONDA_PREFIX}/share/gz — without prepending this,
+# `gz` finds nothing and dies with "I cannot find any available 'gz' command".
+GZ_CONFIG_PATH = "${CONDA_PREFIX}/share/gz:${GZ_CONFIG_PATH}"
+# Build the gz stack from the aic.repos sources so each gz_*_vendor package skips its own (OGRE1-broken) internal build.
+GZ_BUILD_FROM_SOURCE = "1"
 ROS_DISTRO = "kilted"
 # Force ROS 2 to use Zenoh middleware
 RMW_IMPLEMENTATION = "rmw_zenoh_cpp"

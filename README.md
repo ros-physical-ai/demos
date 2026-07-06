@@ -52,6 +52,7 @@ Full documentation lives in [`docs/`](docs/README.md). Highlights:
 | **pai_phone_teleop**    | Phone-based 6-DoF pose teleoperation over WebXR                                                                                                                |
 | **pai_data_collection** | Configuration and scripts for collecting demonstration datasets via the Rosetta ROS 2–LeRobot bridge                                                           |
 | **pai_description**     | Scene-level SDF world definitions — single source of truth for both Gazebo (loaded natively) and MuJoCo (converted to MJCF at launch time via `sdformat_mjcf`) |
+| **pai_aic**             | Bridge to the AI for Industry Challenge cable-insertion scenario — reuses demos' Record → Train → Deploy pipeline with a custom Rosetta contract and a `LerobotPolicy` class for AIC-native deploy |
 | **pai_assets**          | Shared 3D model assets (meshes, textures) used by the demo scenes                                                                                              |
 
 ### External (imported via `pai.repos`)

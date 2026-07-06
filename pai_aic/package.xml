@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>pai_aic</name>
+  <version>0.1.0</version>
+  <description>
+    Bridge package that reuses demos' Record/Train/Deploy pipeline against the
+    AI for Industry Challenge cable-insertion scenario.
+  </description>
+  <maintainer email="franco@example.com">Franco Cipollone</maintainer>
+  <license>Apache-2.0</license>
+
+  <exec_depend>aic_model</exec_depend>
+  <exec_depend>aic_interfaces</exec_depend>
+  <exec_depend>aic_control_interfaces</exec_depend>
+  <exec_depend>aic_model_interfaces</exec_depend>
+  <exec_depend>aic_task_interfaces</exec_depend>
+  <exec_depend>rosetta</exec_depend>
+  <exec_depend>pai_data_collection</exec_depend>
+
+  <!-- Standalone scene spawning / recording bringup (no aic_engine) -->
+  <exec_depend>aic_bringup</exec_depend>
+  <exec_depend>aic_description</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>simulation_interfaces</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

@@ -10,7 +10,7 @@ repositories:
   mujoco_ros2_control:
     type: git
     url: https://github.com/ros-controls/mujoco_ros2_control.git
-    version: cd4340cc3878142def1f88845518f2b29647c7c2
+    version: 1ab854ec20b0991245fdd3dde428dcd3d2faa559
   rosetta:
     type: git
     url: https://github.com/iblnkn/rosetta.git
@@ -23,3 +23,7 @@ repositories:
     type: git
     url: https://github.com/iblnkn/lerobot-robot-rosetta.git
     version: e4ed91ee5cd58c0163dabf0af699d3e3c1f193dc
+  aic:
+    type: git
+    url: https://github.com/intrinsic-dev/aic.git
+    version: main   # pin to a SHA before first CI run

@@ -1,0 +1,10 @@
+{
+    "names": {
+        "gz-rendering9": {
+            "cmake-args": [
+                "-DSKIP_ogre=true",
+                "-DBUILD_TESTING=OFF"
+            ]
+        }
+    }
+}
