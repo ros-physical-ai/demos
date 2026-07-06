@@ -18,6 +18,7 @@ Having [`uv`](https://docs.astral.sh/uv/) installed is a prerequisite for the MC
 ```bash
 claude mcp add ros-mcp -- uvx ros-mcp --transport=stdio
 ```
+
 </details>
 
 ## Step 2: Enable the MCP interface
@@ -34,6 +35,7 @@ This opens the connection the ROS-MCP server uses to reach the robot on port `90
 on your network.
 
 ## Step 3: Interact with the robot
+
 Now that your AI client has the MCP server configured and the demo is running with the `mcp:=true` flag, you're ready to connect.
 
 ### 3.1. Connect
@@ -43,8 +45,8 @@ Open your AI client and tell it to connect to the robot:
 ```
 Connect to the robot on localhost
 ```
-The MCP server will report that the IP is reachable and the rosbridge port is open — this means you're connected.
 
+The MCP server will report that the IP is reachable and the rosbridge port is open — this means you're connected.
 
 > Replace `localhost` with your robot's IP address on the local network (e.g., `192.168.1.42`) if you are connecting from a different machine on the local network. Make sure the rosbridge port (default 9090) is not blocked by a firewall on the robot's machine.
 
