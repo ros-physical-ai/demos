@@ -80,7 +80,8 @@ range-v3 = ">=0.12.0,<0.13"
 # Common base deps
 python = "3.12.*"
 pip = "*"
-numpy = ">=1.26.4,<3"
+# LeRobot 0.5.1 requires numpy>=2.0.0,<2.3.0 .
+numpy = ">=2.0.0,<2.3"
 pinocchio = "*"
 # Explicitly installing pillow through Conda (rather that letting pip pull it an as transitive dependency)
 # to avoid related issue to: libtiff.so.6: undefined symbol: jpeg12_write_raw_data, version LIBJPEG_8.0.
@@ -156,9 +157,9 @@ cbor2 = ">=6.1.2,<7"
 
 [pypi-dependencies]
 huggingface-hub = "*"
-# LeRobot 0.4.x imports scipy.fftpack.idct; SciPy 2.0 removed fftpack re-exports.
+# LeRobot 0.5.x imports scipy.fftpack.idct (pi0_fast policy); SciPy 2.0 removed fftpack re-exports.
 scipy = ">=1.11.0,<2"
-lerobot = { version = "==0.4.4", extras = ["feetech", "async"] }
+lerobot = { version = "==0.5.1", extras = ["feetech", "async"] }
 # pai_phone_teleop pulls in the upstream SpesRobotics/teleop package, which
 # provides the WebXR phone bridge (python3 -m teleop.ros2). Its hard deps
 # (uvicorn + fastapi<1.0) are listed explicitly here.
