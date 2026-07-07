@@ -108,6 +108,7 @@ class PhoneTeleopNode(Node):
         self._gripper_open = float(self.get_parameter("gripper_open_position").value)
         self._gripper_closed = float(self.get_parameter("gripper_closed_position").value)
         self._gripper_speed = float(self.get_parameter("gripper_speed").value)
+        self._gripper_dir = 1.0 if self._gripper_open >= self._gripper_closed else -1.0
 
         # teleop.Teleop expects the natural_orientation in radians.
         natural_orientation_deg = list(self.get_parameter("natural_orientation").value)
@@ -229,10 +230,18 @@ class PhoneTeleopNode(Node):
                 if self._gripper_engaged:
                     self._gripper_position = self._gripper_closed
                 elif self._button_a_held:
-                    self._gripper_position = min(self._gripper_position + self._gripper_speed * dt, self._gripper_open)
-                elif self._button_b_held:
+                    lo = min(self._gripper_open, self._gripper_closed)
+                    hi = max(self._gripper_open, self._gripper_closed)
                     self._gripper_position = max(
-                        self._gripper_position - self._gripper_speed * dt, self._gripper_closed
+                        lo,
+                        min(hi, self._gripper_position + self._gripper_dir * self._gripper_speed * dt),
+                    )
+                elif self._button_b_held:
+                    lo = min(self._gripper_open, self._gripper_closed)
+                    hi = max(self._gripper_open, self._gripper_closed)
+                    self._gripper_position = max(
+                        lo,
+                        min(hi, self._gripper_position - self._gripper_dir * self._gripper_speed * dt),
                     )
                 gripper_value = self._gripper_position
 
