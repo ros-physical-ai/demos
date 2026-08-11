@@ -9,11 +9,19 @@ Requires Linux and [Pixi](https://pixi.sh/latest/installation/) (which bundles R
 ```bash
 git clone https://github.com/ros-physical-ai/demos
 cd demos
-vcs import external < pai.repos --recursive
 pixi install
+pixi run setup             # import the SO-ARM101 demo sources (pai.repos)
 pixi run install-ml-deps   # PyTorch + LeRobot (auto-detects GPU)
-pixi run build
+pixi run build             # build the base demo (conda-provided Gazebo)
 ```
+
+> [!NOTE]
+> This repo ships two independent demos. The default `pixi` environment is the
+> **SO-ARM101** demo above and uses conda-provided Gazebo, so it never compiles
+> the heavy from-source Gazebo stack. The separate **AIC cable-insertion** demo
+> (UR5 + from-source Gazebo) lives in its own `aic` environment — set it up with
+> `pixi run setup-aic` / `pixi run aic-build`. See
+> [`pai_aic`](pai_aic/README.md) and the [AIC scenario guide](docs/demos/aic-scenario.md).
 
 Launch the SO-ARM101 in Gazebo (start the Zenoh router first, in its own terminal):
 

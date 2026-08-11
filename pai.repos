@@ -23,7 +23,3 @@ repositories:
     type: git
     url: https://github.com/iblnkn/lerobot-robot-rosetta.git
     version: e4ed91ee5cd58c0163dabf0af699d3e3c1f193dc
-  aic:
-    type: git
-    url: https://github.com/intrinsic-dev/aic.git
-    version: main   # pin to a SHA before first CI run

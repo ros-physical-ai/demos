@@ -24,18 +24,23 @@ latency, and behavior.
 
 ## Setup
 
-The AIC scenario needs the base workspace **plus** the AIC-only dependencies:
+The AIC scenario runs in its own `aic` Pixi environment (from-source Gazebo)
+with its own `install_aic/` build tree, kept separate from the base SO-ARM101
+demo so neither has to build the other's dependencies:
 
 ```bash
-vcs import external < pai.repos --recursive   # brings in aic packages (external/aic/)
-vcs import external < aic.repos --recursive    # brings in UR5 + gz-from-source + ros-controls (external/aic_repos/)
-pixi run build
+pixi install
+pixi run setup-aic   # import pai.repos + aic.repos (aic packages + UR5 + gz-from-source + ros-controls)
+pixi run aic-build   # build into install_aic/ (long: compiles the gz stack from source)
 ```
 
-`pai.repos` provides the `aic_*` packages (`aic_bringup`, `aic_engine`,
-`aic_model`, `aic_adapter`, `aic_controller`, …); `aic.repos` provides their
-build dependencies. Skipping the `aic.repos` import leaves `aic_bringup`
-unbuildable.
+`aic.repos` provides both the `aic_*` packages (`aic_bringup`, `aic_engine`,
+`aic_model`, `aic_adapter`, `aic_controller`, …) and their build dependencies
+(UR5 + from-source Gazebo + ros-controls). The base demo's `pixi run setup`
+imports only `pai.repos`, so it never pulls in — or builds — any of this.
+
+All `aic-*` tasks below run in the `aic` environment automatically; for other
+commands use `pixi run -e aic …` or `pixi shell -e aic`.
 
 ## Recording workflow
 

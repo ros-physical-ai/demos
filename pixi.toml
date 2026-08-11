@@ -8,17 +8,62 @@ requires-pixi = ">=0.71.0"
 conda-pypi-map = { "robostack-kilted" = "robostack_mapping.json" }
 
 [environments]
-dev = ["dev"]
-ci = ["ci"]
+# Base SO-ARM101 demo (conda-provided Gazebo). This is the default, so a plain
+# `pixi install` / `pixi run build` never compiles the from-source Gazebo stack
+# or any AIC package.
+default = ["base"]
+dev = ["base", "dev"]
+ci = ["base", "ci"]
+# AIC cable-insertion demo: from-source Gazebo stack + UR5 + aic_* packages.
+# Selected automatically by the `aic-*` tasks, or explicitly via `pixi run -e aic ...`.
+aic = ["aic"]
 
 [feature.dev.tasks]
 # gz-rendering9 needs -DSKIP_ogre=true -DBUILD_TESTING=OFF; those are scoped to
 # that single package in ./colcon.meta (auto-discovered by colcon) rather than
 # applied globally here. See colcon.meta for the rationale.
-build = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
+# --base-paths restricts discovery to the base packages so the AIC/gz-from-source
+# sources (external_aic/, pai_aic) are never built here. Keep in sync with the
+# release `build` task below.
+build = { cmd = ["colcon", "build", "--symlink-install", "--base-paths", "external", "pai_assets", "pai_bringup", "pai_data_collection", "pai_description", "pai_leader_teleop", "pai_phone_teleop", "pai_rerun_visualizer", "pai_rviz_teleop", "pai_teleop_ik", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
+
+[feature.base.tasks]
+# The base SO-ARM101 build. Lives in the `base` feature (default/dev/ci envs) — not
+# the `aic` env, which uses `aic-build` — so `pixi run build` is unambiguous.
+# gz-rendering9-specific cmake args (-DSKIP_ogre=true -DBUILD_TESTING=OFF) are
+# scoped to that package in ./colcon.meta (auto-discovered by colcon), not applied
+# globally. See colcon.meta for the rationale.
+# --base-paths restricts discovery to the base packages (external/ + the base
+# pai_* dirs) so the AIC / gz-from-source sources (external_aic/, pai_aic) are
+# never compiled by the base demo, even when they are checked out.
+build = { cmd = ["colcon", "build", "--base-paths", "external", "pai_assets", "pai_bringup", "pai_data_collection", "pai_description", "pai_leader_teleop", "pai_phone_teleop", "pai_rerun_visualizer", "pai_rviz_teleop", "pai_teleop_ik", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"], description = "Build the base SO-ARM101 demo (default env, conda-provided Gazebo). Does NOT compile the from-source Gazebo / AIC stack — use `aic-build` for that." }
 
 [feature.ci.activation.env]
 CMAKE_INSTALL_MODE = "COPY"
+
+[feature.base.activation.env]
+# Base demo builds into and sources the default install tree.
+PAI_INSTALL_DIR = "install"
+
+[feature.aic.activation.env]
+# Build the gz stack from the aic.repos sources so each gz_*_vendor package skips
+# its own (OGRE1-broken) internal build. The base (conda Gazebo) env must NOT set
+# this.
+GZ_BUILD_FROM_SOURCE = "1"
+# The AIC env builds into its own tree (build_aic/install_aic) so it coexists with
+# the base build instead of clobbering it. activate.sh sources this tree.
+PAI_INSTALL_DIR = "install_aic"
+
+[feature.aic.tasks]
+aic-build = { cmd = ["colcon", "build", "--build-base", "build_aic", "--install-base", "install_aic", "--base-paths", "external", "external_aic", "pai_aic", "pai_assets", "pai_bringup", "pai_data_collection", "pai_description", "pai_leader_teleop", "pai_phone_teleop", "pai_rerun_visualizer", "pai_rviz_teleop", "pai_teleop_ik", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"], description = "Build the AIC demo (from-source Gazebo + UR5 + aic_* packages) into build_aic/install_aic. Long build. Run `pixi run setup-aic` first." }
+# AIC cable-insertion pipeline (pai_aic). These run in the `aic` env automatically.
+aic-gz = { cmd = ["ros2", "launch", "aic_bringup", "aic_gz_bringup.launch.py", "start_aic_engine:=false"], description = "Bring up AIC sim (UR5 + impedance controller + adapter, no engine, empty scene). For a populated scene without the engine, run `aic-spawn-scene` in another terminal; or use `aic-engine` to spawn+orchestrate from its trial YAML." }
+aic-spawn-scene = { cmd = "python $(ros2 pkg prefix pai_aic)/share/pai_aic/scripts/aic_spawn_scene.py", description = "Spawn a populated AIC scene (task board + per-rail cards/ports + cable) from a YAML definition, without aic_engine. Pair with `aic-gz` in another terminal (the robot must be up so the cable can be posed relative to the gripper). Defaults to pai_aic's scene_example.yaml; pass flags after `--`, e.g. `pixi run aic-spawn-scene -- --ground-truth`, `-- --clear` to rebuild, or `-- --scene-file $(ros2 pkg prefix aic_engine)/share/aic_engine/config/sample_config.yaml --trial trial_2`." }
+aic-engine = { cmd = ["ros2", "run", "aic_engine", "aic_engine", "--ros-args", "-p", "config_file_path:=$(ros2 pkg prefix aic_engine)/share/aic_engine/config/sample_config.yaml", "-p", "model_node_name:=aic_model", "-p", "use_sim_time:=true"], description = "Run the AIC engine in its native trial loop with the upstream sample config (3 trials: nic_card_0/SC, nic_card_1/SC, sc_port_1 targets). Owns the task board + per-rail cards/ports + cable spawning per the YAML config. `skip_model_ready:=true` skips the participant-model lifecycle check — you don't need an `aic_model` node running for recording. For evaluation, drop that flag and run `pixi run aic-deploy-aic-model` in another terminal. Pair with `aic-gz` (or your own bringup) in another terminal. Override `config_file_path` after `--` to use your own YAML: `pixi run aic-engine -- -p config_file_path:=/path/to/your.yaml`." }
+aic-record = { cmd = ["ros2", "launch", "pai_aic", "aic_record.launch.py", "bag_base_dir:=~/datasets/aic/bags"], description = "Record AIC cable-insertion demos via demos' rosetta pipeline" }
+aic-train = { cmd = ["lerobot-train", "--dataset.repo_id=aic_cable_insertion", "--dataset.root=~/datasets/aic_cable_insertion", "--policy.type=act", "--output_dir=outputs/train/aic_act", "--policy.device=cuda"], description = "Train an ACT policy on AIC cable-insertion demos" }
+aic-deploy-aic-model = { cmd = ["ros2", "run", "aic_model", "aic_model", "--ros-args", "-p", "use_sim_time:=true", "-p", "policy:=pai_aic.policies.LerobotPolicy", "-p", "checkpoint_path:=outputs/train/insert/checkpoints/last/pretrained_model", "-p", "policy_type:=act"], description = "Deploy via aic_model + LerobotPolicy (AIC-native, aic_engine-compatible)" }
+aic-deploy-rosetta = { cmd = ["ros2", "launch", "pai_aic", "aic_deploy_rosetta.launch.py", "pretrained_name_or_path:=outputs/train/aic_act/checkpoints/last/pretrained_model"], description = "Deploy via demos' rosetta_client_node (async inference)" }
 
 [tasks]
 
@@ -28,12 +73,19 @@ lint = { cmd = "pre-commit run --all-files" }
 # Longer uv download timeout (PyTorch wheels are huge).
 install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
 
+# Setup — import the source repos for the demo you want. The base SO-ARM101 demo
+# only needs `pai.repos`; the AIC demo additionally needs `aic.repos` (UR5 +
+# from-source Gazebo stack), imported under external_aic/. Keeping the imports
+# separate — plus the `--base-paths` scoping on `build` — is what lets the base
+# demo build without compiling the heavy AIC / Gazebo-from-source packages.
+setup = { cmd = "vcs import external < pai.repos --recursive", description = "Import the base SO-ARM101 demo sources (pai.repos). Then `pixi run build`." }
+setup-aic = { cmd = "vcs import external < pai.repos --recursive && vcs import external_aic < aic.repos --recursive", description = "Import the AIC demo sources: pai.repos into external/, aic.repos (UR5 + from-source Gazebo + aic packages) into external_aic/. Then `pixi run aic-build`." }
+setup-all = { cmd = "vcs import external < pai.repos --recursive && vcs import external_aic < aic.repos --recursive", description = "Import every demo's sources (alias of setup-aic)." }
+
 # Build
-# gz-rendering9-specific cmake args (-DSKIP_ogre=true -DBUILD_TESTING=OFF) are
-# scoped to that package in ./colcon.meta (auto-discovered by colcon), not applied
-# globally. See colcon.meta for the rationale.
-build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"]}
 clean = { cmd = "rm -rf build install log" }
+clean-aic = { cmd = "rm -rf build_aic install_aic log_aic" }
+clean-all = { cmd = "rm -rf build install log build_aic install_aic log_aic" }
 
 # Run Demos
 start_zenoh = { cmd = [
@@ -49,15 +101,6 @@ so-arm-mujoco = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_mujoco_bringup
 so-arm-rviz-ik = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_rviz_ik.launch.py"] }
 so-arm-phone-ik = { cmd = ["ros2", "launch", "pai_bringup", "so_arm_phone_ik.launch.py"] }
 rerun-viz = { cmd = ["ros2", "launch", "pai_rerun_visualizer", "visualizer.launch.py"] }
-
-# AIC cable-insertion pipeline (pai_aic)
-aic-gz = { cmd = ["ros2", "launch", "aic_bringup", "aic_gz_bringup.launch.py", "start_aic_engine:=false"], description = "Bring up AIC sim (UR5 + impedance controller + adapter, no engine, empty scene). For a populated scene without the engine, run `aic-spawn-scene` in another terminal; or use `aic-engine` to spawn+orchestrate from its trial YAML." }
-aic-spawn-scene = { cmd = "python $(ros2 pkg prefix pai_aic)/share/pai_aic/scripts/aic_spawn_scene.py", description = "Spawn a populated AIC scene (task board + per-rail cards/ports + cable) from a YAML definition, without aic_engine. Pair with `aic-gz` in another terminal (the robot must be up so the cable can be posed relative to the gripper). Defaults to pai_aic's scene_example.yaml; pass flags after `--`, e.g. `pixi run aic-spawn-scene -- --ground-truth`, `-- --clear` to rebuild, or `-- --scene-file $(ros2 pkg prefix aic_engine)/share/aic_engine/config/sample_config.yaml --trial trial_2`." }
-aic-engine = { cmd = ["ros2", "run", "aic_engine", "aic_engine", "--ros-args", "-p", "config_file_path:=$(ros2 pkg prefix aic_engine)/share/aic_engine/config/sample_config.yaml", "-p", "model_node_name:=aic_model", "-p", "use_sim_time:=true"], description = "Run the AIC engine in its native trial loop with the upstream sample config (3 trials: nic_card_0/SC, nic_card_1/SC, sc_port_1 targets). Owns the task board + per-rail cards/ports + cable spawning per the YAML config. `skip_model_ready:=true` skips the participant-model lifecycle check — you don't need an `aic_model` node running for recording. For evaluation, drop that flag and run `pixi run aic-deploy-aic-model` in another terminal. Pair with `aic-gz` (or your own bringup) in another terminal. Override `config_file_path` after `--` to use your own YAML: `pixi run aic-engine -- -p config_file_path:=/path/to/your.yaml`." }
-aic-record = { cmd = ["ros2", "launch", "pai_aic", "aic_record.launch.py", "bag_base_dir:=~/datasets/aic/bags"], description = "Record AIC cable-insertion demos via demos' rosetta pipeline" }
-aic-train = { cmd = ["lerobot-train", "--dataset.repo_id=aic_cable_insertion", "--dataset.root=~/datasets/aic_cable_insertion", "--policy.type=act", "--output_dir=outputs/train/aic_act", "--policy.device=cuda"], description = "Train an ACT policy on AIC cable-insertion demos" }
-aic-deploy-aic-model = { cmd = ["ros2", "run", "aic_model", "aic_model", "--ros-args", "-p", "use_sim_time:=true", "-p", "policy:=pai_aic.policies.LerobotPolicy", "-p", "checkpoint_path:=outputs/train/insert/checkpoints/last/pretrained_model", "-p", "policy_type:=act"], description = "Deploy via aic_model + LerobotPolicy (AIC-native, aic_engine-compatible)" }
-aic-deploy-rosetta = { cmd = ["ros2", "launch", "pai_aic", "aic_deploy_rosetta.launch.py", "pretrained_name_or_path:=outputs/train/aic_act/checkpoints/last/pretrained_model"], description = "Deploy via demos' rosetta_client_node (async inference)" }
 rosetta-record-mujoco = { cmd = [
   "ros2",
   "launch",
@@ -96,21 +139,6 @@ range-v3 = ">=0.12.0,<0.13"
 # Required by mujoco_ros2_control_plugins (find_package(glfw3) — native GLFW dev
 # library providing glfw3Config.cmake, not the pip `glfw` Python bindings).
 glfw = "*"
-# Required by gz-common6 geospatial component (Dem.cc includes gdal_priv.h).
-libgdal = "*"
-# Required by gz-fuel-tools (gz_find_package(JSONCPP)). Without an in-env jsoncpp,
-# CMake falls back to the system Ubuntu jsoncpp whose cmake targets miscompute the
-# prefix (multiarch path) → bogus include dir /usr/lib/include/jsoncpp.
-jsoncpp = "*"
-# Required by gz-transport (gz_find_package(ZeroMQ) + gz_find_package(CPPZMQ)).
-# Without an in-env zeromq, CMake falls back to the system Ubuntu one whose cmake
-# targets miscompute the prefix → bogus include dir /usr/lib/include. cppzmq is
-# the header-only C++ binding gz-transport also requires.
-zeromq = "*"
-cppzmq = "*"
-# Required by ros_gz_sim (gz_find_package(gflags) / #include <gflags/gflags.h> in
-# create.cpp). Not otherwise pulled by the from-source gz stack.
-gflags = "*"
 
 # Common base deps
 python = "3.12.*"
@@ -168,9 +196,6 @@ ros-kilted-moveit-setup-assistant = "*"
 ros-kilted-rosbridge-suite = ">=3.0.2,<4"
 ros-kilted-rviz-common = "*"
 ros-kilted-rviz-default-plugins = "*"
-# Required by aic_controller (kinematics plugin chain).
-ros-kilted-kinematics-interface = "*"
-ros-kilted-kinematics-interface-kdl = "*"
 # From feetech_ros2_driver
 ros-kilted-rclcpp = "*"
 ros-kilted-pluginlib = "*"
@@ -200,19 +225,56 @@ evdev = ">=1.9.2,<2"
 ros-kilted-rqt-common-plugins = ">=1.2.0,<2"
 # Required by feetech_ros2_driver
 libserial = ">=1.0.0,<1.1"
+# cpp-expected = ">=1.1.0,<2"
+# range-v3 = ">=0.12.0,<0.13"
+
+# ── Base SO-ARM101 demo: conda-provided Gazebo ──────────────────────────────────
+# Prebuilt conda packages, so the base demo never compiles Gazebo. The `aic` env
+# deliberately omits these and builds the gz stack from source instead (see
+# aic.repos + GZ_BUILD_FROM_SOURCE).
+[feature.base.dependencies]
+# Gazebo Sim (gz CLI + simulation engine); v9 matches ROS Kilted.
+gz-sim9 = "*"
+# Gazebo GUI (required for `gz sim -g`).
+gz-gui9 = "*"
+# Gazebo Rendering (ogre2 render engine plugin).
+gz-rendering9 = "*"
+ros-kilted-ros-gz-sim = "*"
+ros-kilted-ros-gz-bridge = "*"
+ros-kilted-gz-ros2-control = "*"
+
+# ── AIC demo: from-source Gazebo stack + UR5 + aic_* packages ───────────────────
+# Only present in the `aic` env: extra build deps of the gz stack built from
+# aic.repos, plus the ros2_control / kinematics packages the aic_controller and
+# UR5 pull in.
+[feature.aic.dependencies]
+# gz-common6 geospatial component (Dem.cc includes gdal_priv.h).
+libgdal = "*"
+# gz-fuel-tools (gz_find_package(JSONCPP)); an in-env jsoncpp avoids the Ubuntu
+# one whose cmake targets miscompute the prefix → /usr/lib/include/jsoncpp.
+jsoncpp = "*"
+# gz-transport (gz_find_package(ZeroMQ) + gz_find_package(CPPZMQ)); cppzmq is the
+# header-only C++ binding gz-transport also requires.
+zeromq = "*"
+cppzmq = "*"
+# ros_gz_sim (gz_find_package(gflags) / #include <gflags/gflags.h>).
+gflags = "*"
+# gz vendor packages built from source.
+ros-kilted-gz-ogre-next-vendor = ">=0.1.1,<0.2"
+ros-kilted-gz-dartsim-vendor = ">=0.1.2,<0.2"
 ros-kilted-ament-cmake-vendor-package = ">=2.7.4,<3"
-ros-kilted-test-msgs = ">=2.3.0,<3"
-ros-kilted-example-interfaces = ">=0.13.1,<0.14"
+# Build deps of the from-source ros2_control / ros2_controllers (aic.repos).
+ros-kilted-ros2-control-cmake = ">=0.3.0,<0.4"
 ros-kilted-ackermann-msgs = ">=2.0.2,<3"
 ros-kilted-actuator-msgs = ">=0.0.1,<0.0.2"
 ros-kilted-gps-msgs = ">=2.1.1,<3"
 ros-kilted-vision-msgs = ">=4.2.0,<5"
-ros-kilted-ros2-control-cmake = ">=0.3.0,<0.4"
-ros-kilted-gz-ogre-next-vendor = ">=0.1.1,<0.2"
-ros-kilted-gz-dartsim-vendor = ">=0.1.2,<0.2"
+ros-kilted-test-msgs = ">=2.3.0,<3"
+ros-kilted-example-interfaces = ">=0.13.1,<0.14"
 ros-kilted-topic-tools = ">=1.4.2,<2"
-# cpp-expected = ">=1.1.0,<2"
-# range-v3 = ">=0.12.0,<0.13"
+# Required by aic_controller (kinematics plugin chain).
+ros-kilted-kinematics-interface = "*"
+ros-kilted-kinematics-interface-kdl = "*"
 
 [pypi-dependencies]
 huggingface-hub = "*"
@@ -256,8 +318,6 @@ GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-9/engine-plugins"
 # gui9.yaml, etc. under ${CONDA_PREFIX}/share/gz — without prepending this,
 # `gz` finds nothing and dies with "I cannot find any available 'gz' command".
 GZ_CONFIG_PATH = "${CONDA_PREFIX}/share/gz:${GZ_CONFIG_PATH}"
-# Build the gz stack from the aic.repos sources so each gz_*_vendor package skips its own (OGRE1-broken) internal build.
-GZ_BUILD_FROM_SOURCE = "1"
 ROS_DISTRO = "kilted"
 # Force ROS 2 to use Zenoh middleware
 RMW_IMPLEMENTATION = "rmw_zenoh_cpp"

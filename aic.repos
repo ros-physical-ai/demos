@@ -1,4 +1,11 @@
 repositories:
+  # The AIC monorepo (aic_bringup, aic_engine, aic_model, aic_adapter,
+  # aic_controller, …). Imported here — not in pai.repos — so the base
+  # SO-ARM101 demo never pulls it in.
+  aic:
+    type: git
+    url: https://github.com/intrinsic-dev/aic.git
+    version: main   # pin to a SHA before first CI run
   aic_repos/UniversalRobots/Universal_Robots_Client_Library:
     type: git
     url: https://github.com/UniversalRobots/Universal_Robots_Client_Library.git

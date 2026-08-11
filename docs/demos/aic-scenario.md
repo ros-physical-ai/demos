@@ -10,7 +10,7 @@ package: a small `ament_python` package that adds a custom Rosetta contract,
 three converter functions (state ↔ Observation.msg, action ↔ MotionUpdate), a
 generic `LerobotPolicy` Policy class, and two thin launch wrappers. **No
 upstream code in `external/rosetta`, `external/lerobot-robot-rosetta`, or
-`external/aic` is modified.**
+`external_aic/aic` is modified.**
 
 ```
   ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
@@ -37,29 +37,32 @@ upstream code in `external/rosetta`, `external/lerobot-robot-rosetta`, or
 
 ## Prerequisites
 
-Follow the main [README](../../README.md) to set up the workspace:
+Follow the main [README](../../README.md) to set up the workspace, then add the
+AIC demo's sources and build them into the `aic` environment:
 
 ```bash
 git clone https://github.com/ros-physical-ai/demos && cd demos
-vcs import external < pai.repos --recursive
-vcs import external < aic.repos --recursive   # AIC-only deps (UR5, gz-from-source, ros-controls)
 pixi install
-pixi run install-ml-deps   # PyTorch + LeRobot (auto-detects GPU)
-pixi run build
+pixi run setup-aic          # import pai.repos + aic.repos (UR5, gz-from-source, ros-controls, aic packages)
+pixi run install-ml-deps    # PyTorch + LeRobot (auto-detects GPU)
+pixi run aic-build          # build the AIC demo (from-source Gazebo) into install_aic/
 ```
 
 > [!NOTE]
-> All commands below assume you are inside a `pixi shell` session or running via
-> `pixi run`.
+> All commands below assume you are inside a `pixi shell -e aic` session or
+> running via `pixi run` (the `aic-*` tasks select the `aic` environment
+> automatically).
 
 > [!IMPORTANT]
-> The AIC scenario needs a **second** `vcs import` from `aic.repos` on top of
-> the base `pai.repos`. `pai.repos` brings in the `aic` packages themselves
-> (`aic_bringup`, `aic_engine`, `aic_model`, `aic_adapter`, `aic_controller`,
-> …) under `external/aic/`; `aic.repos` brings in their build dependencies
+> The AIC demo lives in its own `aic` Pixi environment (from-source Gazebo)
+> and its own `install_aic/` build tree, kept separate from the base
+> SO-ARM101 demo so the two never interfere. `pixi run setup-aic` imports
+> **both** `pai.repos` and `aic.repos`: `aic.repos` brings in the `aic`
+> packages themselves (`aic_bringup`, `aic_engine`, `aic_model`, `aic_adapter`,
+> `aic_controller`, …) under `external_aic/aic/`, **and** their build dependencies
 > (the Universal Robots UR5 description/driver, the from-source Gazebo stack,
 > and from-source `ros2_control` / `ros2_controllers`) under
-> `external/aic_repos/`. Skipping the `aic.repos` import leaves `aic_bringup`
+> `external_aic/aic_repos/`. Skipping the `aic.repos` import leaves `aic_bringup`
 > unbuildable.
 
 Additional requirements for this scenario:
@@ -69,8 +72,8 @@ Additional requirements for this scenario:
 | **NVIDIA GPU** | Recommended for training and inference. Use `--policy.device=cpu` if absent (inference will be much slower). |
 | **Internet access** | `lerobot-train` downloads pretrained stats from the HuggingFace Hub on first run. |
 | **Gazebo sim** | The AIC bringup launches Gazebo Harmonic with the UR5 + task board. |
-| **AIC packages** | Brought in via `pai.repos` under `external/aic/`. ROS-deps present in `pixi.toml`. |
-| **AIC build deps** | Brought in via `aic.repos` under `external/aic_repos/` (UR5 description/driver, from-source Gazebo, from-source `ros2_control`/`ros2_controllers`). |
+| **AIC packages** | Brought in via `aic.repos` under `external_aic/aic/`. ROS-deps in the `aic` Pixi feature. |
+| **AIC build deps** | Brought in via `aic.repos` under `external_aic/aic_repos/` (UR5 description/driver, from-source Gazebo, from-source `ros2_control`/`ros2_controllers`). |
 
 > [!IMPORTANT]
 > This project uses `rmw_zenoh` as the ROS 2 middleware. The Zenoh router must
@@ -473,7 +476,7 @@ What you should see:
    ```
 
 **Path A is `aic_engine`-compatible.** To run a full engine validation pass, see
-[`aic_engine/README.md`](../../external/aic/aic_engine/README.md) for a trial
+[`aic_engine/README.md`](../../external_aic/aic/aic_engine/README.md) for a trial
 config. Launch the engine with `start_aic_engine:=true` and the same
 `LerobotPolicy` should satisfy the engine's lifecycle requirements
 (`InsertCable` action server, `/cancel_task` service, rejection-of-goals-when-not-active).
@@ -556,8 +559,8 @@ pixi run aic-deploy-aic-model
 > (`aic-deploy-rosetta`) does not expose the `InsertCable` action server, so
 > the engine rejects its goals. To evaluate Path B, keep `start_aic_engine:=false`.
 
-See [`aic_engine/README.md`](../../external/aic/aic_engine/README.md) and the
-sample configs in `external/aic/aic_engine/config/` for how to author
+See [`aic_engine/README.md`](../../external_aic/aic/aic_engine/README.md) and the
+sample configs in `external_aic/aic/aic_engine/config/` for how to author
 multi-trial evaluation batches with randomized board poses. When the engine is
 running, **do not** use the manual reset commands from
 [Resetting the scene between episodes](#resetting-the-scene-between-episodes) —
