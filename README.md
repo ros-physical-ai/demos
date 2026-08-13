@@ -1,8 +1,30 @@
 # ROS Physical AI Demos
 
-Open-source physical AI demos for the [SO-ARM101](https://github.com/TheRobotStudio/SO-ARM100) robot arm on ROS 2 — simulation (Gazebo, MuJoCo) and real hardware, with a full Record → Train → Deploy learning pipeline powered by [LeRobot](https://github.com/huggingface/lerobot).
+A growing **collection of open-source physical AI demos on ROS 2**, each pairing a
+robot and simulator with a full Record → Train → Deploy learning pipeline powered
+by [LeRobot](https://github.com/huggingface/lerobot). Every demo shares the same
+tooling and the same [Pixi](https://pixi.sh/latest/installation/) workspace, but
+is otherwise self-contained.
 
-## Quick start
+## Demos
+
+Pick a demo below and follow its guide. Each demo lives in its **own Pixi
+environment** with its own setup and build commands, so you only ever build the
+one you want — running the SO-ARM101 demo never compiles the AIC demo's
+dependencies, and vice versa.
+
+| Demo | Robot | Simulator | Set up & build | Guide |
+| ---- | ----- | --------- | -------------- | ----- |
+| **SO-ARM101 pick & place** | [SO-ARM101](https://github.com/TheRobotStudio/SO-ARM100) | Gazebo · MuJoCo · real hardware | `pixi run setup` → `pixi run build` | Featured below · [End-to-End Pipeline](docs/demos/end-to-end-pipeline.md) |
+| **AIC cable-insertion** | UR5 | Gazebo (built from source) | `pixi run setup-aic` → `pixi run aic-build` | [AIC Scenario](docs/demos/aic-scenario.md) |
+
+> [!NOTE]
+> New demos are added as additional Pixi environments + a row in this table.
+> The default environment is the **SO-ARM101** demo (conda-provided Gazebo), so a
+> plain `pixi install` / `pixi run build` never compiles the heavier from-source
+> stacks used by other demos.
+
+## Featured: SO-ARM101 in simulation
 
 Requires Linux and [Pixi](https://pixi.sh/latest/installation/) (which bundles ROS 2, Gazebo, and all dependencies). An NVIDIA GPU is only needed for ML inference/training, not for simulation. For full requirements and the manual install path, see the [Installation Guide](docs/installation.md).
 
@@ -15,14 +37,6 @@ pixi run install-ml-deps   # PyTorch + LeRobot (auto-detects GPU)
 pixi run build             # build the base demo (conda-provided Gazebo)
 ```
 
-> [!NOTE]
-> This repo ships two independent demos. The default `pixi` environment is the
-> **SO-ARM101** demo above and uses conda-provided Gazebo, so it never compiles
-> the heavy from-source Gazebo stack. The separate **AIC cable-insertion** demo
-> (UR5 + from-source Gazebo) lives in its own `aic` environment — set it up with
-> `pixi run setup-aic` / `pixi run aic-build`. See
-> [`pai_aic`](pai_aic/README.md) and the [AIC scenario guide](docs/demos/aic-scenario.md).
-
 Launch the SO-ARM101 in Gazebo (start the Zenoh router first, in its own terminal):
 
 ```bash
@@ -31,6 +45,7 @@ pixi run so-arm-gz     # terminal 2
 ```
 
 See [Running the Robot](docs/running-the-robot.md) for MuJoCo and real-hardware bringup.
+For the **AIC cable-insertion** demo, follow the [AIC Scenario guide](docs/demos/aic-scenario.md) instead.
 
 ## Documentation
 
@@ -46,11 +61,16 @@ Full documentation lives in [`docs/`](docs/README.md). Highlights:
 | [MCP Interface](docs/mcp.md)                                      | Use an AI agent to control, introspect, or debug the robot via [ROS-MCP](https://github.com/robotmcp/ros-mcp-server) |
 | [End-to-End Learning Pipeline](docs/demos/end-to-end-pipeline.md) | Record → Train → Deploy with Rosetta and LeRobot                                                                     |
 | [Try a Pre-trained Policy](docs/demos/pretrained-demo.md)         | Skip the slow loop — run a pre-trained ACT policy in Gazebo in minutes                                               |
+| [AIC Cable-Insertion Scenario](docs/demos/aic-scenario.md)        | The AIC demo end to end — UR5 + from-source Gazebo, setup, record, train, deploy                                     |
 | [Contributing](docs/contributing.md)                              | Linting and pre-commit hooks                                                                                         |
 
 ## Packages
 
-### This repository
+Packages are grouped by the demo that owns them. Base packages are shared
+infrastructure used by the SO-ARM101 demo (and the common pipeline); the AIC
+demo adds `pai_aic` on top.
+
+### This repository — base (SO-ARM101 + shared)
 
 | Package                 | Description                                                                                                                                                    |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -60,22 +80,36 @@ Full documentation lives in [`docs/`](docs/README.md). Highlights:
 | **pai_phone_teleop**    | Phone-based 6-DoF pose teleoperation over WebXR                                                                                                                |
 | **pai_data_collection** | Configuration and scripts for collecting demonstration datasets via the Rosetta ROS 2–LeRobot bridge                                                           |
 | **pai_description**     | Scene-level SDF world definitions — single source of truth for both Gazebo (loaded natively) and MuJoCo (converted to MJCF at launch time via `sdformat_mjcf`) |
-| **pai_aic**             | Bridge to the AI for Industry Challenge cable-insertion scenario — reuses demos' Record → Train → Deploy pipeline with a custom Rosetta contract and a `LerobotPolicy` class for AIC-native deploy |
 | **pai_assets**          | Shared 3D model assets (meshes, textures) used by the demo scenes                                                                                              |
 
-### External (imported via `pai.repos`)
+### This repository — AIC cable-insertion
 
-| Source                                                                                                            | Description                                                                           |
-| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| [ros2_so_arm](https://github.com/ros-physical-ai/ros2_so_arm)                                                     | URDF descriptions, MoveIt config, Gazebo support, and utilities for the SO-ARM robots |
-| [feetech_ros2_driver](https://github.com/ros-physical-ai/feetech_ros2_driver)                                     | ros2_control hardware interface for Feetech servo motors                              |
-| [mujoco_ros2_control](https://github.com/ros-controls/mujoco_ros2_control)                                        | ros2_control integration with the MuJoCo physics simulator                            |
-| [rosetta](https://github.com/iblnkn/rosetta) / [rosetta_interfaces](https://github.com/iblnkn/rosetta_interfaces) | ROS 2–LeRobot bridge for recording demonstration datasets                             |
-| [lerobot-robot-rosetta](https://github.com/iblnkn/lerobot-robot-rosetta)                                          | LeRobot Robot plugin for Rosetta — bridges ROS 2 topics to LeRobot's Robot interface  |
+| Package     | Description                                                                                                                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **pai_aic** | Bridge to the AI for Industry Challenge cable-insertion scenario — reuses demos' Record → Train → Deploy pipeline with a custom Rosetta contract and a `LerobotPolicy` class for AIC-native deploy |
+
+### External (imported via `vcs`)
+
+Sources are imported into `external/` (base) and `external_aic/` (AIC) from two
+manifests: `pai.repos` (base, pulled by `pixi run setup`) and `aic.repos` (AIC,
+pulled by `pixi run setup-aic`).
+
+| Source                                                                                                            | Demo | Description                                                                           |
+| ----------------------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------- |
+| [ros2_so_arm](https://github.com/ros-physical-ai/ros2_so_arm)                                                     | base | URDF descriptions, MoveIt config, Gazebo support, and utilities for the SO-ARM robots |
+| [feetech_ros2_driver](https://github.com/ros-physical-ai/feetech_ros2_driver)                                     | base | ros2_control hardware interface for Feetech servo motors                              |
+| [mujoco_ros2_control](https://github.com/ros-controls/mujoco_ros2_control)                                        | base | ros2_control integration with the MuJoCo physics simulator                            |
+| [rosetta](https://github.com/iblnkn/rosetta) / [rosetta_interfaces](https://github.com/iblnkn/rosetta_interfaces) | base | ROS 2–LeRobot bridge for recording demonstration datasets                             |
+| [lerobot-robot-rosetta](https://github.com/iblnkn/lerobot-robot-rosetta)                                          | base | LeRobot Robot plugin for Rosetta — bridges ROS 2 topics to LeRobot's Robot interface  |
+| [aic](https://github.com/intrinsic-dev/aic) + UR5 / from-source Gazebo / ros2_control                             | AIC  | AIC packages (`aic_bringup`, `aic_engine`, `aic_model`, …) and their build deps — see the [AIC Scenario guide](docs/demos/aic-scenario.md) |
 
 We would like to acknowledge the great work of [JafarAbdi](https://github.com/JafarAbdi) in creating ROS 2 drivers for the SO-ARM robots, and transferring his repositories to the `ros-physical-ai` organization.
 
-## Demos
+## SO-ARM101 walkthroughs
+
+The walkthroughs below illustrate the shared **Record → Train → Deploy** pipeline
+on the SO-ARM101 demo. For the AIC cable-insertion demo, see its dedicated
+[AIC Scenario guide](docs/demos/aic-scenario.md).
 
 ### Try a Pre-trained Policy in Simulation
 

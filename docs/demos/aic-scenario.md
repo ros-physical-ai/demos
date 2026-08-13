@@ -15,25 +15,28 @@ upstream code in `external/rosetta`, `external/lerobot-robot-rosetta`, or
 ```
   ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
   │ AIC BRINGUP   │    │ RECORD   │    │ CONVERT  │    │  TRAIN   │    │ DEPLOY   │
-  │ UR5 + aic_   │───▶│ via      │───▶│ port_bags│───▶│ lerobot- │───▶│ Path A:  │
-  │ controller   │    │ demos'   │    │ (custom  │    │ train    │    │ aic_model│
-  │ + aic_adapter│    │ episode_ │    │ decoder) │    │          │    │ + Lerobot│
-  │ (URDF +      │    │ recorder │    │          │    │          │    │ Policy   │
+  │ UR5 + aic_   │───▶│ via      │───▶│ port_bags│───▶│ lerobot- │───▶│ Main:    │
+  │ controller   │    │ demos'   │    │ (custom  │    │ train    │    │ rosetta_ │
+  │ + aic_adapter│    │ episode_ │    │ decoder) │    │          │    │ client   │
+  │ (URDF +      │    │ recorder │    │          │    │          │    │ (async)  │
   │ 3 cameras)   │    │          │    │          │    │          │    │          │
-  └──────────────┘    └──────────┘    └──────────┘    │          │    │ Path B:  │
-                                                       │          │    │ rosetta_ │
-                                                       │          │    │ client   │
+  └──────────────┘    └──────────┘    └──────────┘    │          │    │ Alt:     │
+                                                       │          │    │ aic_model│
+                                                       │          │    │ +Lerobot │
                                                        └──────────┘    └──────────┘
 ```
 
 > [!TIP]
-> The same LeRobot-trained checkpoint deploys via **two parallel paths**
-> sharing one contract and one converter set. Use the comparison to pick a
-> runtime:
-> - **Path A** (`aic-deploy-aic-model`) — synchronous inference inside
->   `aic_model`. Native to AIC's lifecycle; `aic_engine` accepts it.
-> - **Path B** (`aic-deploy-rosetta`) — async inference via demos'
->   `rosetta_client_node` with chunked overlap.
+> The same LeRobot-trained checkpoint deploys via **two paths** sharing one
+> contract and one converter set. This guide **prioritizes the Rosetta path**
+> (demos-native) and treats the `aic_model` path as an alternative:
+> - **Recommended — Rosetta** (`aic-deploy-rosetta`) — async inference via
+>   demos' `rosetta_client_node` with chunked overlap. The default throughout
+>   this guide.
+> - **Alternative — `aic_model`** (`aic-deploy-aic-model`) — synchronous
+>   inference inside `aic_model`, native to AIC's lifecycle and required for
+>   `aic_engine` evaluation. If you want the full AIC-native flow, you can also
+>   go straight to [AIC upstream](https://github.com/intrinsic-dev/aic).
 
 ## Prerequisites
 
@@ -92,11 +95,11 @@ Additional requirements for this scenario:
 |---|---|
 | `pai_data_collection/config/rosetta/aic.yaml` | The contract — 3 cameras + 26-dim state + 6-dim action |
 | `pai_aic/pai_aic/converters.py` | Custom decoders/encoder (`decode_aic_observation`, `encode_aic_motion_update`, `decode_aic_motion_update`) |
-| `pai_aic/pai_aic/policies/LerobotPolicy.py` | The `aic_model` Policy class for Path A |
+| `pai_aic/pai_aic/policies/LerobotPolicy.py` | The `aic_model` Policy class for the alternative `aic_model` deploy path |
 | `pai_aic/scripts/aic_spawn_scene.py` | Standalone scene spawner (task board + cable) for recording without `aic_engine` |
 | `pai_aic/config/scene_example.yaml` | Example scene definition consumed by `aic_spawn_scene.py` (mirrors `trial_1`) |
 | `pai_aic/launch/aic_record.launch.py` | Wraps `rosetta/episode_recorder_launch.py` |
-| `pai_aic/launch/aic_deploy_rosetta.launch.py` | Wraps `rosetta/rosetta_client_launch.py` (Path B) |
+| `pai_aic/launch/aic_deploy_rosetta.launch.py` | Wraps `rosetta/rosetta_client_launch.py` (recommended Rosetta deploy) |
 | `pixi.toml` | 7 new tasks: `aic-gz`, `aic-spawn-scene`, `aic-engine`, `aic-record`, `aic-train`, `aic-deploy-aic-model`, `aic-deploy-rosetta` |
 
 ---
@@ -118,7 +121,7 @@ The contract at `pai_data_collection/config/rosetta/aic.yaml` declares:
 Key contract features:
 
 - **FPS**: 20 Hz (matches `aic_adapter` publish rate — matches AIC's reference)
-- **State layout**: 26-dim, raw SI units (meters, radians). See [State/action layout](#stateaction-layout) below.
+- **State layout**: 26-dim, raw SI units (meters, radians).
 - **Action layout**: 6-dim cartesian twist (linear xyz + angular xyz).
 - **Image resize**: 480×480 for neural network input.
 - **Unit conversion**: none on state or action (AIC works in raw SI; the AIC reference policy was trained in radians).
@@ -434,54 +437,11 @@ The checkpoint ends up at `outputs/train/aic_act/checkpoints/last/pretrained_mod
 
 ### 6. Deploying a Policy
 
-You have two parallel deploy paths sharing the **same** checkpoint and **same**
-contract. Try both and see which feels better for your use case.
+Two deploy paths share the **same** checkpoint and **same** contract. This guide
+**leads with the Rosetta path** (demos-native) and keeps `aic_model` as an
+alternative for AIC-native / `aic_engine` use.
 
-#### Path A — `aic_model` + `LerobotPolicy` (AIC-native)
-
-```bash
-# Terminal 1 — Zenoh
-pixi run start_zenoh
-
-# Terminal 2 — AIC sim (no engine)
-pixi run aic-gz
-
-# Terminal 3 — Policy via aic_model + LerobotPolicy
-pixi run aic-deploy-aic-model
-```
-
-The pixi task runs:
-
-```bash
-ros2 run aic_model aic_model --ros-args \
-    -p use_sim_time:=true \
-    -p policy:=pai_aic.policies.LerobotPolicy \
-    -p checkpoint_path:=outputs/train/aic_act/checkpoints/last/pretrained_model \
-    -p policy_type:=act
-```
-
-What you should see:
-
-1. `aic_model` logs `Loaded policy module pai_aic.policies.LerobotPolicy`.
-2. `LerobotPolicy` logs `LerobotPolicy ready: type=act checkpoint=... device=... loop_rate_hz=20.0`.
-3. The lifecycle enters `active`. Check:
-   ```bash
-   ros2 lifecycle get /aic_model
-   # → active [3]
-   ```
-4. Action rate on `/aic_controller/pose_commands`:
-   ```bash
-   ros2 topic hz /aic_controller/pose_commands
-   # → ~20 Hz (synchronous inference + execution)
-   ```
-
-**Path A is `aic_engine`-compatible.** To run a full engine validation pass, see
-[`aic_engine/README.md`](../../external_aic/aic/aic_engine/README.md) for a trial
-config. Launch the engine with `start_aic_engine:=true` and the same
-`LerobotPolicy` should satisfy the engine's lifecycle requirements
-(`InsertCable` action server, `/cancel_task` service, rejection-of-goals-when-not-active).
-
-#### Path B — `rosetta_client_node` (demos-native, async inference)
+#### Recommended — `rosetta_client_node` (demos-native, async inference)
 
 ```bash
 # Terminal 1 — Zenoh
@@ -524,18 +484,74 @@ What you should see:
 >     use_sim_time:=true
 > ```
 
+#### Alternative — `aic_model` + `LerobotPolicy` (AIC-native, for `aic_engine`)
+
+Use this path when you want the AIC-native lifecycle or plan to evaluate with
+`aic_engine` (see [Evaluating with `aic_engine`](#evaluating-with-aic_engine)).
+For the full AIC-native flow you can also go directly to
+[AIC upstream](https://github.com/intrinsic-dev/aic).
+
+```bash
+# Terminal 1 — Zenoh
+pixi run start_zenoh
+
+# Terminal 2 — AIC sim (no engine)
+pixi run aic-gz
+
+# Terminal 3 — Policy via aic_model + LerobotPolicy
+pixi run aic-deploy-aic-model
+```
+
+The pixi task runs:
+
+```bash
+ros2 run aic_model aic_model --ros-args \
+    -p use_sim_time:=true \
+    -p policy:=pai_aic.policies.LerobotPolicy \
+    -p checkpoint_path:=outputs/train/aic_act/checkpoints/last/pretrained_model \
+    -p policy_type:=act
+```
+
+What you should see:
+
+1. `aic_model` logs `Loaded policy module pai_aic.policies.LerobotPolicy`.
+2. `LerobotPolicy` logs `LerobotPolicy ready: type=act checkpoint=... device=... loop_rate_hz=20.0`.
+3. The lifecycle enters `active`. Check:
+   ```bash
+   ros2 lifecycle get /aic_model
+   # → active [3]
+   ```
+4. Action rate on `/aic_controller/pose_commands`:
+   ```bash
+   ros2 topic hz /aic_controller/pose_commands
+   # → ~20 Hz (synchronous inference + execution)
+   ```
+
+**This path is `aic_engine`-compatible.** To run a full engine validation pass, see
+[`aic_engine/README.md`](../../external_aic/aic/aic_engine/README.md) for a trial
+config. Launch the engine with `start_aic_engine:=true` and the same
+`LerobotPolicy` should satisfy the engine's lifecycle requirements
+(`InsertCable` action server, `/cancel_task` service, rejection-of-goals-when-not-active).
+
 #### Comparing the two paths
 
-| | Path A | Path B |
+| | Recommended (Rosetta) | Alternative (`aic_model`) |
 |---|---|---|
-| Lifecycle node | `aic_model` | `rosetta_client` |
-| Inference | sync loop in-process | async chunked via `RobotClient` |
-| Inference ↔ execution overlap | none | yes (queue of action chunks) |
-| Control rate | ~20 Hz | ~50 Hz nominal |
-| aic_engine validation | ✅ native (`InsertCable` action exposed) | ❌ no `InsertCable` action |
-| Requires GPU subprocess | no | yes (policy server) |
+| Lifecycle node | `rosetta_client` | `aic_model` |
+| Inference | async chunked via `RobotClient` | sync loop in-process |
+| Inference ↔ execution overlap | yes (queue of action chunks) | none |
+| Control rate | ~50 Hz nominal | ~20 Hz |
+| aic_engine validation | ❌ no `InsertCable` action | ✅ native (`InsertCable` action exposed) |
+| Requires GPU subprocess | yes (policy server) | no |
 
-### Evaluating with `aic_engine`
+### Evaluating with `aic_engine` (alternative)
+
+> [!NOTE]
+> `aic_engine` is an **alternative, AIC-native evaluation flow** — not the
+> primary path of this guide, which centers on Rosetta. It only works with the
+> `aic_model` deploy path (`aic-deploy-aic-model`). If you want to lean fully
+> into the AIC engine, you can also use it directly from
+> [AIC upstream](https://github.com/intrinsic-dev/aic).
 
 When you launch the AIC sim with the engine enabled, the engine **owns**
 spawning and cleanup of task boards (and optionally cables) per trial. You
@@ -550,14 +566,15 @@ ros2 launch aic_bringup aic_gz_bringup.launch.py \
     start_aic_engine:=true \
     config_file_path:=$(ros2 pkg prefix aic_engine)/share/aic_engine/config/sample_config.yaml
 
-# Terminal 3 — aic_model + LerobotPolicy (Path A only — engine requires InsertCable action server)
+# Terminal 3 — aic_model + LerobotPolicy (the aic_model path — engine requires the InsertCable action server)
 pixi run aic-deploy-aic-model
 ```
 
 > [!NOTE]
-> Only Path A (`aic-deploy-aic-model`) is compatible with `aic_engine`. Path B
-> (`aic-deploy-rosetta`) does not expose the `InsertCable` action server, so
-> the engine rejects its goals. To evaluate Path B, keep `start_aic_engine:=false`.
+> Only the `aic_model` path (`aic-deploy-aic-model`) is compatible with
+> `aic_engine`. The Rosetta path (`aic-deploy-rosetta`) does not expose the
+> `InsertCable` action server, so the engine rejects its goals — keep
+> `start_aic_engine:=false` when using Rosetta.
 
 See [`aic_engine/README.md`](../../external_aic/aic/aic_engine/README.md) and the
 sample configs in `external_aic/aic/aic_engine/config/` for how to author
@@ -565,135 +582,6 @@ multi-trial evaluation batches with randomized board poses. When the engine is
 running, **do not** use the manual reset commands from
 [Resetting the scene between episodes](#resetting-the-scene-between-episodes) —
 the engine handles spawn/destroy itself.
-
----
-
-## State/action layout
-
-Locked in [`pai_aic/pai_aic/converters.py`](../../pai_aic/pai_aic/converters.py).
-Documented here as the single source of truth — anyone retraining against this
-contract must produce features matching this layout.
-
-### State vector (26-dim)
-
-| Dim | Range | Source field |
-|---|---|---|
-| 0–2 | `tcp_pose` x, y, z | `Observation.controller_state.tcp_pose.position` |
-| 3–6 | `tcp_pose` qx, qy, qz, qw | `Observation.controller_state.tcp_pose.orientation` |
-| 7–9 | `tcp_linear_velocity` x, y, z | `Observation.controller_state.tcp_velocity.linear` |
-| 10–12 | `tcp_angular_velocity` x, y, z | `Observation.controller_state.tcp_velocity.angular` |
-| 13–18 | `tcp_error` x, y, z, rx, ry, rz | `Observation.controller_state.tcp_error` |
-| 19–25 | `joint_positions` (6 arm + 1 gripper, URDF order) | `Observation.joint_states.position[]` by joint name |
-
-Joint name order (locked in `_AIC_JOINT_NAMES`):
-`shoulder_pan_joint, shoulder_lift_joint, elbow_joint, wrist_1_joint,
-wrist_2_joint, wrist_3_joint, gripper_joint`.
-
-The decoder looks up joints by name from `Observation.joint_states.name[]` and
-fails with a clear error if any expected joint is missing — so reordering
-between ros2_control publishes won't corrupt the data.
-
-### Action vector (6-dim)
-
-| Dim | Meaning | Field written to |
-|---|---|---|
-| 0–2 | linear twist (m/s) | `MotionUpdate.velocity.linear.{x,y,z}` |
-| 3–5 | angular twist (rad/s) | `MotionUpdate.velocity.angular.{x,y,z}` |
-
-The encoder sets `trajectory_generation_mode.mode = MODE_VELOCITY` so the
-impedance controller interprets the command as a velocity target using its
-default stiffness/damping. Frame is `base_link`.
-
-> [!NOTE]
-> **No gripper dim in this integration.** A 7-dim action (with gripper as the
-> 7th dim) is accepted by `encode_aic_motion_update` for forward-compatibility
-> but the 7th dim is silently dropped. Adding gripper control requires either
-> recording the gripper on a separate topic and joining at `port_bags` time, or
-> publishing a separate `/aic_gripper/command` from `LerobotPolicy`. Out of
-> scope here.
-
----
-
-## Troubleshooting
-
-### Recorder fails with `ValueError: No decoder registered for aic_model_interfaces/msg/Observation`
-
-The custom decoder path is not resolving. Verify:
-
-1. `pixi run build` has built `pai_aic` after the converters were added.
-2. `ros2 pkg prefix pai_aic` resolves to `install/pai_aic` (not `build/...`).
-3. `python -c "from pai_aic.converters import decode_aic_observation"` does not raise.
-
-If the converter import fails, you may be running under a Python that isn't on
-the pixi env path. Use `pixi run` so the right interpreter is selected.
-
-### Recorder fails with `Contract file not found`
-
-`pai_data_collection` was not rebuilt after the contract was added. Run from
-a pixi environment with colcon on PATH:
-
-```bash
-bash -c 'export PATH="/home/franco/dev/rospai/ws_pai/src/demos/.pixi/envs/default/bin:$PATH"; source .pixi/envs/default/setup.bash; source install/setup.bash; colcon build --packages-select pai_data_collection pai_aic'
-```
-
-(Or `pixi run build` if your pixi resolver is happy with the lockfile; the
-raw colcon invocation always works.)
-
-Then verify:
-
-```bash
-ls install/pai_data_collection/share/pai_data_collection/config/rosetta/aic.yaml
-```
-
-### Recordings have no state (state stream is empty/zero)
-
-`/observations` is not being published. Causes:
-
-- `aic_adapter` is not running. Check `ros2 node list | grep aic_adapter`.
-- The contract's `topic: /observations` does not match the real topic. Verify
-  with `ros2 topic info /observations | grep Type`.
-
-### Recorded bags have wrong state shape
-
-The 7-joint assumption is wrong for your URDF. Adjust `_AIC_JOINT_NAMES` in
-`pai_aic/pai_aic/converters.py` to match `ros2 topic echo /joint_states | grep name`.
-The decoder logs available joints on error.
-
-### `LerobotPolicy` exits immediately after `RuntimeError: checkpoint_path parameter is required`
-
-The pixi task was not used (or the parameter wasn't passed). Use:
-
-```bash
-pixi run aic-deploy-aic-model
-```
-
-or pass the parameter explicitly to `ros2 run aic_model aic_model --ros-args`.
-
-### GPU not detected; training falls back to CPU
-
-`pixi run install-ml-deps` requires NVIDIA driver + CUDA toolkit. If you don't
-have a GPU, set `--policy.device=cpu` for training and inference (much
-slower).
-
-### Recording the same episode twice — cable / board pose doesn't reset
-
-The AIC sim (like demos' SO-ARM101 sim) does not auto-reset scene state
-between recordings when running with `start_aic_engine:=false`. Use the
-`aic_spawn_scene` helper from
-[`pixi run aic-spawn-scene` (the recording path)](#pixi-run-aic-spawn-scene-the-recording-path) —
-with `--clear` it tears down the task board + cables and re-spawns the
-full populated scene in one command. `aic_engine`'s automatic per-trial
-spawning/cleanup is for **evaluation of a trained policy**, not teleop
-recording — see [Evaluating with `aic_engine`](#evaluating-with-aic_engine).
-
-### `gz service … /world/<world>/remove … ` returns "service not found"
-
-The world name in `gz service` is whatever Gazebo was launched with (default
-for AIC is `default`; verify with `gz topic -l | grep world` or inspect the
-`sdf` world file). The full path is `/world/<world>/remove` — replace `<world>`
-with the actual world name printed by `aic_gz_bringup.launch.py` in its first
-few log lines (look for "Creating empty world" or the world name in the
-loaded SDF).
 
 ---
 
