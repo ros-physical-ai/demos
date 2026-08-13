@@ -6,8 +6,20 @@
 eval "$(register-python-argcomplete ros2)" > /dev/null
 
 # The base demo builds into install/; the AIC env builds into install_aic/ so the
-# two can coexist. PAI_INSTALL_DIR (set per pixi feature) selects which to source.
-_pai_install="${PIXI_PROJECT_ROOT}/${PAI_INSTALL_DIR:-install}"
+# two can coexist. Pick the tree from the active pixi environment: the `aic` env
+# uses install_aic/, everything else uses install/. We key off PIXI_ENVIRONMENT_NAME
+# (set by pixi core *before* this script runs) rather than a [feature.*.activation.env]
+# var, because those feature env vars are applied AFTER activation scripts run and so
+# aren't visible here. PAI_INSTALL_DIR still works as an explicit override if set.
+if [ -n "${PAI_INSTALL_DIR}" ]; then
+  _pai_install_dir="${PAI_INSTALL_DIR}"
+elif [ "${PIXI_ENVIRONMENT_NAME}" = "aic" ]; then
+  _pai_install_dir="install_aic"
+else
+  _pai_install_dir="install"
+fi
+_pai_install="${PIXI_PROJECT_ROOT}/${_pai_install_dir}"
+unset _pai_install_dir
 
 if [ -f "${_pai_install}/setup.bash" ]; then
   # shellcheck disable=SC1091

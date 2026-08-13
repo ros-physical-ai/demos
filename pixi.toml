@@ -41,18 +41,13 @@ build = { cmd = ["colcon", "build", "--base-paths", "external", "pai_assets", "p
 [feature.ci.activation.env]
 CMAKE_INSTALL_MODE = "COPY"
 
-[feature.base.activation.env]
-# Base demo builds into and sources the default install tree.
-PAI_INSTALL_DIR = "install"
-
 [feature.aic.activation.env]
 # Build the gz stack from the aic.repos sources so each gz_*_vendor package skips
 # its own (OGRE1-broken) internal build. The base (conda Gazebo) env must NOT set
-# this.
+# this. Which workspace tree gets sourced (install/ vs install_aic/) is decided by
+# scripts/activate.sh from PIXI_ENVIRONMENT_NAME — feature activation.env vars are
+# applied *after* activation scripts run, so they can't drive that choice.
 GZ_BUILD_FROM_SOURCE = "1"
-# The AIC env builds into its own tree (build_aic/install_aic) so it coexists with
-# the base build instead of clobbering it. activate.sh sources this tree.
-PAI_INSTALL_DIR = "install_aic"
 
 [feature.aic.tasks]
 aic-build = { cmd = ["colcon", "build", "--build-base", "build_aic", "--install-base", "install_aic", "--base-paths", "external", "external_aic", "pai_aic", "pai_assets", "pai_bringup", "pai_data_collection", "pai_description", "pai_leader_teleop", "pai_phone_teleop", "pai_rerun_visualizer", "pai_rviz_teleop", "pai_teleop_ik", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"], description = "Build the AIC demo (from-source Gazebo + UR5 + aic_* packages) into build_aic/install_aic. Long build. Run `pixi run setup-aic` first." }
