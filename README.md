@@ -4,7 +4,7 @@ Open-source physical AI demos for the [SO-ARM101](https://github.com/TheRobotStu
 
 ## Quick start
 
-Requires Linux and [Pixi](https://pixi.sh/latest/installation/) (which bundles ROS 2, Gazebo, and all dependencies). An NVIDIA GPU is only needed for ML inference/training, not for simulation. For full requirements and the manual install path, see the [Installation Guide](docs/installation.md).
+Requires Linux or macOS (Apple Silicon) and [Pixi](https://pixi.sh/latest/installation/) (which bundles ROS 2, Gazebo, and all dependencies). An NVIDIA GPU is only needed for ML inference/training, not for simulation. For full requirements, macOS caveats, and the manual (Linux-only) install path, see the [Installation Guide](docs/installation.md).
 
 ```bash
 git clone https://github.com/ros-physical-ai/demos
