@@ -11,12 +11,6 @@ See [README.md](../README.md) for installation instructions:
 
 _Dependent repos_: Installed via `vcs import external < pai.repos --recursive`
 
-_libserial-dev_: Required for feetech_ros2_driver. Install via:
-
-```bash
-sudo apt update && sudo apt install -y libserial-dev
-```
-
 _NVIDIA drivers and CUDA toolkit_: Required for GPU acceleration (system components)
 
 ROS 2 Lyrical dependencies are automatically installed via Pixi when you run `pixi install`.

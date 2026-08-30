@@ -12,13 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
+
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
     ExecuteProcess,
     IncludeLaunchDescription,
     OpaqueFunction,
+    RegisterEventHandler,
 )
+from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import (
     Command,
@@ -28,8 +32,18 @@ from launch.substitutions import (
 )
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
-from pai_bringup.launch_utils import ReplaceString
 from ros_gz_sim.actions import GzServer
+
+from pai_bringup.launch_utils import ReplaceString
+
+
+def _world_name(world_sdf_path):
+    """Return the <world name="..."> declared in an SDF world file."""
+    with open(world_sdf_path) as world_file:
+        match = re.search(r"<world\s+name=[\"']([^\"']+)[\"']", world_file.read())
+    if not match:
+        raise RuntimeError(f"No <world name=...> found in {world_sdf_path}")
+    return match.group(1)
 
 
 def launch_setup(context, *args, **kwargs):
@@ -96,6 +110,7 @@ def launch_setup(context, *args, **kwargs):
         launch_arguments={
             "description_file": description_file,
             "description_xacro_args": description_xacro_args,
+            "controllers_file": controllers_file_str,
             "use_sim_time": "true",
             "initial_joint_controller": initial_joint_controller,
             "activate_joint_controller": activate_joint_controller,
@@ -120,6 +135,28 @@ def launch_setup(context, *args, **kwargs):
             "-allow_renaming",
             "true",
         ],
+    )
+
+    # The Gazebo server starts paused, and ros2_control 6.x performs controller
+    # activation inside the update loop, so spawners time out while nothing is
+    # stepping. Start the simulation as soon as the robot has been spawned.
+    world_name = _world_name(LaunchConfiguration("world_file").perform(context))
+    unpause_sim = ExecuteProcess(
+        cmd=[
+            "gz",
+            "service",
+            "-s",
+            f"/world/{world_name}/control",
+            "--reqtype",
+            "gz.msgs.WorldControl",
+            "--reptype",
+            "gz.msgs.Boolean",
+            "--timeout",
+            "5000",
+            "--req",
+            "pause: false",
+        ],
+        output="screen",
     )
 
     gzserver = GzServer(
@@ -148,6 +185,9 @@ def launch_setup(context, *args, **kwargs):
         gz_spawn_entity,
         gzserver,
         gz_sim_bridge,
+        RegisterEventHandler(
+            OnProcessExit(target_action=gz_spawn_entity, on_exit=[unpause_sim]),
+        ),
     ]
 
     if gazebo_gui.lower() == "true":

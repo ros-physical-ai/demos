@@ -6,7 +6,7 @@ This guide covers installing the workspace and its dependencies.
 
 - A Linux distribution (any recent x86_64 distro). The Pixi-managed environment bundles ROS 2, Gazebo, and all dependencies, so a specific Ubuntu release is **not** required.
 - [Pixi](https://pixi.sh/latest/installation/) (recommended) — manages ROS 2, Gazebo, and all dependencies automatically.
-- `libserial-dev` — required by `feetech_ros2_driver` (only needed for real hardware): `sudo apt install -y libserial-dev`.
+- LibSerial — required by `feetech_ros2_driver` (only needed for real hardware). Pixi installs it for you; for the manual install path below use `sudo apt install -y libserial-dev`.
 
 ### GPU
 

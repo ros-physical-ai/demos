@@ -13,7 +13,7 @@ ci = ["ci"]
 # Named differently from the default `build` task on purpose: two environments
 # defining the same task name with different commands makes `pixi run build`
 # ambiguous and pixi refuses to pick one.
-build-debug = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
+build-debug = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug", "-DBUILD_TESTING=OFF"] }
 
 [feature.ci.activation.env]
 CMAKE_INSTALL_MODE = "COPY"
@@ -27,7 +27,10 @@ lint = { cmd = "pre-commit run --all-files" }
 install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
 
 # Build
-build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"]}
+# BUILD_TESTING=OFF: mujoco_ros2_control's gtest targets link the rosidl
+# generator_py libraries without pulling in libpython, which fails against the
+# conda Python. Nothing here runs those tests, so skip building them.
+build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_TESTING=OFF"]}
 clean = { cmd = "rm -rf build install log" }
 
 # Run Demos
@@ -72,6 +75,13 @@ colcon-common-extensions = ">=0.3.0,<0.4"
 colcon-mixin = ">=0.2.3,<0.3"
 cmake = ">=3.30.5,<4"
 ninja = ">=1.13.1,<2"
+# Build with the conda toolchain, not the system one. The environment already
+# carries conda's binutils, which shadows the system `ld` on PATH; pairing that
+# linker with /usr/bin/c++ resolves libpthread/libdl from the conda sysroot and
+# fails with GLIBC_PRIVATE undefined references. It also matches how the
+# robostack ROS packages themselves were built.
+c-compiler = "*"
+cxx-compiler = "*"
 pkg-config = "*"
 vcstool = "*"
 rosdep = "*"
@@ -79,6 +89,10 @@ ffmpeg = "*"
 # Required by feetech_ros2_driver
 cpp-expected = ">=1.1.0,<2"
 range-v3 = ">=0.12.0,<0.13"
+# LibSerial from conda-forge rather than the system libserial-dev: linking the
+# system copy against the conda toolchain's sysroot fails with GLIBC_PRIVATE
+# undefined references (system glibc 2.39 vs sysroot 2.28).
+libserial = "*"
 
 # Common base deps
 # robostack-lyrical only publishes py314 builds.
@@ -215,11 +229,15 @@ LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LIBRARY_PATH}"
 LD_LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
 # CMake needs this to find ROS 2 packages installed by robostack
 CMAKE_PREFIX_PATH = "${CONDA_PREFIX}"
-# pkg-config needs this to find system-installed packages like libserial-dev
-# Supports both x86_64 and aarch64 architectures
-PKG_CONFIG_PATH = "/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig:${PKG_CONFIG_PATH}"
+# Keep pkg-config inside the Pixi environment: mixing system .pc files with the
+# conda toolchain produces sysroot/glibc link errors (see the libserial note).
+PKG_CONFIG_PATH = "${CONDA_PREFIX}/lib/pkgconfig:${CONDA_PREFIX}/share/pkgconfig:${PKG_CONFIG_PATH}"
 # Gazebo rendering engine plugin path
 GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-10/engine-plugins"
+# Build with the environment's own compilers (see the c-compiler/cxx-compiler
+# note in [dependencies]); CMake would otherwise default to /usr/bin/c++.
+CC = "${CONDA_PREFIX}/bin/gcc"
+CXX = "${CONDA_PREFIX}/bin/g++"
 ROS_DISTRO = "lyrical"
 # Force ROS 2 to use Zenoh middleware
 RMW_IMPLEMENTATION = "rmw_zenoh_cpp"

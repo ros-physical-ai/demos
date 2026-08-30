@@ -26,6 +26,7 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterFile
 from launch_ros.substitutions import FindPackageShare
+
 from pai_bringup.launch_utils import ReplaceString
 
 
@@ -47,11 +48,11 @@ def launch_setup(context, *args, **kwargs):
     cam_static_rpy = LaunchConfiguration("cam_static_rpy").perform(context)
 
     # Process controller parameters for ros2_control_node
-    controllers_file_replaced = ReplaceString(
+    controllers_file_str = ReplaceString(
         source_file=controllers_file,
         replacements={"<robot_namespace>": ""},
-    )
-    controller_parameters = ParameterFile(controllers_file_replaced, allow_substs=True)
+    ).perform(context)
+    controller_parameters = ParameterFile(controllers_file_str, allow_substs=True)
 
     ros2_control_node = Node(
         package="controller_manager",
@@ -83,6 +84,7 @@ def launch_setup(context, *args, **kwargs):
                 f" cam_static_xyz:='{cam_static_xyz}'"
                 f" cam_static_rpy:='{cam_static_rpy}'"
             ),
+            "controllers_file": controllers_file_str,
             "use_sim_time": "false",
             "initial_joint_controller": initial_joint_controller,
             "launch_rviz": launch_rviz,

@@ -34,6 +34,7 @@ class ReplaceString(Substitution):
     """
 
     def __init__(self, source_file, replacements):
+        """Store the source file and the literal replacements to apply to it."""
         super().__init__()
         self.__source_file = source_file
         self.__replacements = replacements

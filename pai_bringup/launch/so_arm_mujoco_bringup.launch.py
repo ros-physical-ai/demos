@@ -26,6 +26,7 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterFile
 from launch_ros.substitutions import FindPackageShare
+
 from pai_bringup.launch_utils import ReplaceString
 
 
@@ -114,11 +115,11 @@ def launch_setup(context, *args, **kwargs):
     ros2_controllers_file = PathJoinSubstitution(
         [FindPackageShare("pai_bringup"), "config", "control", "ros2_controllers.yaml"]
     )
-    controllers_file_replaced = ReplaceString(
+    controllers_file_str = ReplaceString(
         source_file=ros2_controllers_file,
         replacements={"<robot_namespace>": ""},
-    )
-    controller_parameters = ParameterFile(controllers_file_replaced, allow_substs=True)
+    ).perform(context)
+    controller_parameters = ParameterFile(controllers_file_str, allow_substs=True)
 
     control_node = Node(
         package="mujoco_ros2_control",
@@ -146,6 +147,7 @@ def launch_setup(context, *args, **kwargs):
                 [FindPackageShare("pai_bringup"), "urdf", "so_arm101_mujoco.urdf.xacro"]
             ),
             "description_xacro_args": description_xacro_args,
+            "controllers_file": controllers_file_str,
             "use_sim_time": "true",
             "launch_rviz": launch_rviz,
             "rviz_config_file": PathJoinSubstitution(

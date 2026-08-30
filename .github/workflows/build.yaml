@@ -30,9 +30,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y libserial-dev
-
       - name: Import external repos
         run: |
           pip install vcstool
