@@ -207,6 +207,14 @@ cbor2 = ">=6.1.2,<7"
 [pypi-options.dependency-overrides]
 numpy = ">=2.3,<3"
 protobuf = ">=6.31.1,<7"
+# LeRobot pins draccus==0.10.0, which cannot build its argument parser on
+# Python 3.14: argparse now rejects a non-callable `type=`, and draccus passes
+# PEP-604 unions (`str | None`) straight through. That breaks lerobot-train,
+# lerobot-replay *and* Policy.from_pretrained, i.e. all of the ML pipeline.
+# Both 0.10.0 and the latest 0.11.6 are affected (upstream issue dlwh/draccus#69),
+# so pin the branch from the open fix PR until it is merged and released.
+# TODO: point back at a released draccus once dlwh/draccus#70 lands.
+draccus = { git = "https://github.com/devangpratap/draccus.git", branch = "fix/py314-union-type-argparse" }
 
 [pypi-dependencies]
 huggingface-hub = "*"
