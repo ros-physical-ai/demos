@@ -70,7 +70,7 @@ Follow the main [README](../../README.md) to set up the workspace (Pixi install 
 > running for the duration of your session:
 >
 > ```bash
-> pixi run start-zenoh-router
+> pixi run zenoh-router
 > ```
 >
 > See [Running the Robot](../running-the-robot.md) for details.
@@ -87,7 +87,7 @@ The fastest path to seeing the policy in action is to skip the rosbags and datas
 ```mermaid
 flowchart LR
     A["1. Start Zenoh
-    pixi run start-zenoh-router"] --> B["2. Start Gazebo
+    pixi run zenoh-router"] --> B["2. Start Gazebo
     pixi run so-arm-gz"]
     B --> C["3. Launch Rosetta Client
     pretrained_name_or_path:=francocipollone/rospai_act_sim_arm101_place_cubes_on_tray"]

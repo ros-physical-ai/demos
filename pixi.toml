@@ -28,7 +28,7 @@ build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"
 clean = { cmd = "rm -rf build install log" }
 
 # Run Demos
-start-zenoh-router = { cmd = [
+zenoh-router = { cmd = [
   "ros2",
   "run",
   "rmw_zenoh_cpp",
