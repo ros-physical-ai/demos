@@ -121,6 +121,10 @@ def launch_setup(context, *args, **kwargs):
     ).perform(context)
     controller_parameters = ParameterFile(controllers_file_str, allow_substs=True)
 
+    description_file = PathJoinSubstitution(
+        [FindPackageShare("pai_bringup"), "urdf", "so_arm101_mujoco.urdf.xacro"]
+    )
+
     control_node = Node(
         package="mujoco_ros2_control",
         executable="ros2_control_node",
@@ -129,6 +133,11 @@ def launch_setup(context, *args, **kwargs):
             {"use_sim_time": True},
             controller_parameters,
         ],
+        # The controller manager only ever takes the URDF from its own
+        # ~/robot_description topic; point it at the one robot_state_publisher
+        # latches (the robot_description *parameter* is ignored in
+        # ros2_control 6.x).
+        remappings=[("~/robot_description", "/robot_description")],
     )
 
     common = IncludeLaunchDescription(
@@ -143,9 +152,7 @@ def launch_setup(context, *args, **kwargs):
             )
         ),
         launch_arguments={
-            "description_file": PathJoinSubstitution(
-                [FindPackageShare("pai_bringup"), "urdf", "so_arm101_mujoco.urdf.xacro"]
-            ),
+            "description_file": description_file,
             "description_xacro_args": description_xacro_args,
             "controllers_file": controllers_file_str,
             "use_sim_time": "true",

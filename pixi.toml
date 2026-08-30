@@ -13,7 +13,7 @@ ci = ["ci"]
 # Named differently from the default `build` task on purpose: two environments
 # defining the same task name with different commands makes `pixi run build`
 # ambiguous and pixi refuses to pick one.
-build-debug = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug", "-DBUILD_TESTING=OFF"] }
+build-debug = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug", "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,--no-as-needed,-lpython3.14", "-DCMAKE_EXE_LINKER_FLAGS=-Wl,--no-as-needed,-lpython3.14"] }
 
 [feature.ci.activation.env]
 CMAKE_INSTALL_MODE = "COPY"
@@ -27,10 +27,14 @@ lint = { cmd = "pre-commit run --all-files" }
 install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
 
 # Build
-# BUILD_TESTING=OFF: mujoco_ros2_control's gtest targets link the rosidl
-# generator_py libraries without pulling in libpython, which fails against the
-# conda Python. Nothing here runs those tests, so skip building them.
-build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_TESTING=OFF"]}
+# robostack's lib*__rosidl_generator_py.so are built without linking libpython,
+# so anything that links them from a plain C++ process (mujoco_ros2_control's
+# hardware plugin, and its gtest targets) fails with "undefined symbol:
+# PyLong_FromLong" at dlopen. Link libpython explicitly to supply the symbols;
+# --no-as-needed is required because nothing in our own code references a Python
+# symbol directly, so the linker would otherwise drop the dependency. The
+# version tracks the `python` pin in [dependencies].
+build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,--no-as-needed,-lpython3.14", "-DCMAKE_EXE_LINKER_FLAGS=-Wl,--no-as-needed,-lpython3.14"]}
 clean = { cmd = "rm -rf build install log" }
 
 # Run Demos
