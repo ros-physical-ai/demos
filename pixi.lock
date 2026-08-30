@@ -534,7 +534,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-devtools-0.3.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-library-path-0.2.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-metadata-0.2.5-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-mixin-0.2.3-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-output-0.2.14-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-package-information-0.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-package-selection-0.2.10-pyhd8ed1ab_1.conda
@@ -1580,7 +1579,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-devtools-0.3.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-library-path-0.2.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-metadata-0.2.5-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-mixin-0.2.3-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-output-0.2.14-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-package-information-0.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-package-selection-0.2.10-pyhd8ed1ab_1.conda
@@ -2623,7 +2621,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-devtools-0.3.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-library-path-0.2.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-metadata-0.2.5-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-mixin-0.2.3-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-output-0.2.14-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-package-information-0.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-package-selection-0.2.10-pyhd8ed1ab_1.conda
@@ -3669,7 +3666,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-devtools-0.3.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-library-path-0.2.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-metadata-0.2.5-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-mixin-0.2.3-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-output-0.2.14-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-package-information-0.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-package-selection-0.2.10-pyhd8ed1ab_1.conda
@@ -4712,7 +4708,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-devtools-0.3.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-library-path-0.2.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-metadata-0.2.5-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-mixin-0.2.3-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-output-0.2.14-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-package-information-0.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-package-selection-0.2.10-pyhd8ed1ab_1.conda
@@ -5758,7 +5753,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-devtools-0.3.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-library-path-0.2.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-metadata-0.2.5-pyhd8ed1ab_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-mixin-0.2.3-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-output-0.2.14-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-package-information-0.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-package-selection-0.2.10-pyhd8ed1ab_1.conda
@@ -21685,19 +21679,6 @@ packages:
   - pkg:pypi/colcon-metadata?source=hash-mapping
   size: 20031
   timestamp: 1757624342935
-- conda: https://conda.anaconda.org/conda-forge/noarch/colcon-mixin-0.2.3-pyhd8ed1ab_1.conda
-  sha256: beabb15276e1e246b7b5715f82b7fa43593dda6cb51e0fee229729e0d4a8f2aa
-  md5: 8f6f5ee1a01268b62a07ff35e818c522
-  depends:
-  - colcon-core >=0.12
-  - python >=3.9
-  - pyyaml
-  license: Apache-2.0
-  license_family: APACHE
-  purls:
-  - pkg:pypi/colcon-mixin?source=hash-mapping
-  size: 25148
-  timestamp: 1736162602690
 - conda: https://conda.anaconda.org/conda-forge/noarch/colcon-output-0.2.14-pyhd8ed1ab_0.conda
   sha256: 832624fa22e6e6ce6dd55ad1cea9c719c41e6c8279ff44e0deaba71c797d8bda
   md5: 283bd31fe9199004e57966fe177d0dd6
