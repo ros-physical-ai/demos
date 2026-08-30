@@ -214,7 +214,9 @@ protobuf = ">=6.31.1,<7"
 # Both 0.10.0 and the latest 0.11.6 are affected (upstream issue dlwh/draccus#69),
 # so pin the branch from the open fix PR until it is merged and released.
 # TODO: point back at a released draccus once dlwh/draccus#70 lands.
-draccus = { git = "https://github.com/devangpratap/draccus.git", branch = "fix/py314-union-type-argparse" }
+# Pinned to a commit rather than a branch: a branch spec makes pixi re-query the
+# remote on every `pixi run`/`pixi shell`, which re-locks and costs ~80s each time.
+draccus = { git = "https://github.com/devangpratap/draccus.git", rev = "6f3f164953a7a910eb284dd26720c560830737e1" }
 
 [pypi-dependencies]
 huggingface-hub = "*"
@@ -230,7 +232,7 @@ uvicorn = "*"
 # SDF→MJCF converter: used at launch time to convert the canonical SDF world to MuJoCo format.
 # Installed from source (conda-forge 0.1.2 is too old for sdformat15).
 # TODO(francocipollone): Point to upstream once the PR is merged: https://github.com/gazebosim/gz-mujoco/pull/125
-sdformat-mjcf = { git = "https://github.com/francocipollone/gz-mujoco.git", branch = "francocipollone/avoid_eulerseq_compiler", subdirectory = "sdformat_mjcf" }
+sdformat-mjcf = { git = "https://github.com/francocipollone/gz-mujoco.git", rev = "79de56da1226568605d0aff35fa457aca10006e9", subdirectory = "sdformat_mjcf" }
 
 [activation]
 scripts = ["scripts/activate.sh"]

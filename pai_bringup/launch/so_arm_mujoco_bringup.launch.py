@@ -121,9 +121,7 @@ def launch_setup(context, *args, **kwargs):
     ).perform(context)
     controller_parameters = ParameterFile(controllers_file_str, allow_substs=True)
 
-    description_file = PathJoinSubstitution(
-        [FindPackageShare("pai_bringup"), "urdf", "so_arm101_mujoco.urdf.xacro"]
-    )
+    description_file = PathJoinSubstitution([FindPackageShare("pai_bringup"), "urdf", "so_arm101_mujoco.urdf.xacro"])
 
     control_node = Node(
         package="mujoco_ros2_control",
