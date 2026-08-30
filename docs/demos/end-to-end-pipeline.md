@@ -296,7 +296,7 @@ This section walks through the entire pipeline end-to-end using **Gazebo** and *
 ### Step 1 — Start the Zenoh Router
 
 ```bash
-pixi run start_zenoh
+pixi run start-zenoh-router
 ```
 
 ### Step 2 — Start Gazebo Simulation
@@ -357,7 +357,7 @@ Repeat (a)–(d) **3 times**.
 ```mermaid
 flowchart LR
     A["1. Start Zenoh
-    pixi run start_zenoh"] --> B["2. Start Gazebo
+    pixi run start-zenoh-router"] --> B["2. Start Gazebo
     pixi run so-arm-gz"]
     B --> C["3. Start Recorder
     ros2 launch rosetta ..."]

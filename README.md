@@ -18,7 +18,7 @@ pixi run build
 Launch the SO-ARM101 in Gazebo (start the Zenoh router first, in its own terminal):
 
 ```bash
-pixi run start_zenoh   # terminal 1
+pixi run start-zenoh-router   # terminal 1
 pixi run so-arm-gz     # terminal 2
 ```
 

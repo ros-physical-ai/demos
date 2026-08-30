@@ -8,7 +8,7 @@ This guide covers launching the SO-ARM101 in simulation (Gazebo or MuJoCo) or on
 > running for the duration of your session:
 >
 > ```bash
-> pixi run start_zenoh
+> pixi run start-zenoh-router
 > ```
 >
 > Then open a second terminal for the launch commands below. When using a manual
