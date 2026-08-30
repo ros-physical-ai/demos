@@ -62,7 +62,7 @@ Before running any ROS 2 commands, start the Zenoh router in a separate terminal
 Terminal 1 (start Zenoh router):
 
 ```bash
-pixi run start_zenoh
+pixi run zenoh-router
 ```
 
 Terminal 2 (launch Gazebo simulation):
@@ -91,7 +91,7 @@ You can run commands (e.g., `colcon build`, Python scripts) directly.
 This is useful for interactive debugging, testing, and running multiple commands.
 
 Note: When running ROS 2 commands manually in the shell, ensure the Zenoh router is running.
-Start it in a separate terminal using `pixi run start_zenoh`.
+Start it in a separate terminal using `pixi run zenoh-router`.
 
 Additional resources for using Pixi can be found at this [blog](https://jafarabdi.github.io/blog/2025/ros2-pixi-dev/).
 
