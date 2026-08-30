@@ -1,6 +1,6 @@
 [workspace]
 authors = ["Julia Jia <juliajster@gmail.com>"]
-channels = ["conda-forge", "https://prefix.dev/robostack-kilted"]
+channels = ["conda-forge", "https://prefix.dev/robostack-lyrical"]
 name = "demos"
 platforms = ["linux-64", "linux-aarch64"]
 version = "0.1.0"
@@ -78,10 +78,15 @@ cpp-expected = ">=1.1.0,<2"
 range-v3 = ">=0.12.0,<0.13"
 
 # Common base deps
-python = "3.12.*"
+# robostack-lyrical only publishes py314 builds.
+python = "3.14.*"
 pip = "*"
-# LeRobot 0.5.1 requires numpy>=2.0.0,<2.3.0 .
-numpy = ">=2.0.0,<2.3"
+# LeRobot declares numpy>=2.0.0,<2.3.0, but numpy has no py314 builds below
+# 2.3.0 (required by robostack-lyrical). Forced past LeRobot's declared upper
+# bound below via [pypi-options.dependency-overrides] since numpy<2.3 has no
+# Python 3.14 support at all; untested combination, watch for numpy API
+# breakage in LeRobot's ML code.
+numpy = ">=2.3,<3"
 pinocchio = "*"
 # Explicitly installing pillow through Conda (rather that letting pip pull it an as transitive dependency)
 # to avoid related issue to: libtiff.so.6: undefined symbol: jpeg12_write_raw_data, version LIBJPEG_8.0.
@@ -90,22 +95,22 @@ pillow = "*"
 packaging = ">=24.2,<26"
 
 # ROS dependencies
-ros-kilted-ros-core = "*"
-ros-kilted-ament-cmake = "*"
+ros-lyrical-ros-core = "*"
+ros-lyrical-ament-cmake = "*"
 # From pai_bringup
-ros-kilted-controller-manager = "*"
-ros-kilted-cv-bridge = "*"
-ros-kilted-launch = "*"
-ros-kilted-launch-ros = "*"
-ros-kilted-rclpy = "*"
-ros-kilted-robot-state-publisher = "*"
-ros-kilted-ros-gz-bridge = "*"
-ros-kilted-ros-gz-sim = "*"
-ros-kilted-ros2controlcli = "*"
+ros-lyrical-controller-manager = "*"
+ros-lyrical-cv-bridge = "*"
+ros-lyrical-launch = "*"
+ros-lyrical-launch-ros = "*"
+ros-lyrical-rclpy = "*"
+ros-lyrical-robot-state-publisher = "*"
+ros-lyrical-ros-gz-bridge = "*"
+ros-lyrical-ros-gz-sim = "*"
+ros-lyrical-ros2controlcli = "*"
 # From pai_data_collection
-ros-kilted-rosbag2 = ">=0.32.0,<0.33"
-ros-kilted-rosbag2-py = "*"
-ros-kilted-rosbag2-storage-mcap = ">=0.32.0,<0.33"
+ros-lyrical-rosbag2 = ">=0.33.0,<0.34"
+ros-lyrical-rosbag2-py = "*"
+ros-lyrical-rosbag2-storage-mcap = ">=0.33.0,<0.34"
 # Gazebo Sim (provides gz CLI and simulation engine)
 # Using version 9 to match ROS Kilted compatibility
 gz-sim9 = "*"
@@ -113,47 +118,58 @@ gz-sim9 = "*"
 gz-gui9 = "*"
 # Gazebo Rendering (required for ogre2 render engine plugin)
 gz-rendering9 = "*"
-ros-kilted-rviz2 = "*"
-ros-kilted-sensor-msgs = "*"
-ros-kilted-std-msgs = "*"
-ros-kilted-xacro = "*"
+ros-lyrical-rviz2 = "*"
+ros-lyrical-sensor-msgs = "*"
+ros-lyrical-std-msgs = "*"
+ros-lyrical-xacro = "*"
 # From so_arm100_description
-ros-kilted-joint-state-broadcaster = "*"
-ros-kilted-joint-trajectory-controller = "*"
-ros-kilted-parallel-gripper-controller = "*"
-ros-kilted-position-controllers = "*"
-ros-kilted-hardware-interface = "*"
-ros-kilted-transmission-interface = "*"
-ros-kilted-ament-index-python = "*"
-ros-kilted-nav2-common = "*"
-ros-kilted-gz-ros2-control = "*"
+ros-lyrical-joint-state-broadcaster = "*"
+ros-lyrical-joint-trajectory-controller = "*"
+ros-lyrical-parallel-gripper-controller = "*"
+# position_controllers/JointGroupPositionController is deprecated upstream in
+# favor of forward_command_controller/ForwardCommandController with
+# interface_name: position; robostack-lyrical no longer builds the old package.
+ros-lyrical-forward-command-controller = "*"
+ros-lyrical-hardware-interface = "*"
+ros-lyrical-transmission-interface = "*"
+ros-lyrical-ament-index-python = "*"
+# nav2_common isn't published for robostack-lyrical yet; ros2_so_arm's
+# so_arm100/101_description packages declare it as an exec_depend but don't
+# actually use it (no find_package/nav2_package() call), so it's safe to omit.
+ros-lyrical-gz-ros2-control = "*"
 # From so_arm100_moveit_config
-ros-kilted-moveit-ros-move-group = "*"
-ros-kilted-moveit-kinematics = "*"
-ros-kilted-moveit-planners = "*"
-ros-kilted-moveit-simple-controller-manager = "*"
-ros-kilted-joint-state-publisher = "*"
-ros-kilted-joint-state-publisher-gui = "*"
-ros-kilted-tf2-ros = "*"
-ros-kilted-moveit-ros-control-interface = "*"
-ros-kilted-moveit-ros-visualization = "*"
-ros-kilted-moveit-ros-warehouse = "*"
-ros-kilted-moveit-setup-assistant = "*"
-ros-kilted-rviz-common = "*"
-ros-kilted-rviz-default-plugins = "*"
+ros-lyrical-moveit-ros-move-group = "*"
+ros-lyrical-moveit-kinematics = "*"
+ros-lyrical-moveit-planners = "*"
+ros-lyrical-moveit-simple-controller-manager = "*"
+ros-lyrical-joint-state-publisher = "*"
+ros-lyrical-joint-state-publisher-gui = "*"
+ros-lyrical-tf2-ros = "*"
+ros-lyrical-moveit-ros-control-interface = "*"
+ros-lyrical-moveit-ros-visualization = "*"
+ros-lyrical-moveit-ros-warehouse = "*"
+ros-lyrical-moveit-setup-assistant = "*"
+ros-lyrical-rviz-common = "*"
+ros-lyrical-rviz-default-plugins = "*"
 # From feetech_ros2_driver
-ros-kilted-rclcpp = "*"
-ros-kilted-pluginlib = "*"
+ros-lyrical-rclcpp = "*"
+ros-lyrical-pluginlib = "*"
 # Zenoh middleware
-ros-kilted-rmw-zenoh-cpp = "*"
+ros-lyrical-rmw-zenoh-cpp = "*"
 # Camera driver
-ros-kilted-usb-cam = "*"
-ros-kilted-camera-calibration = ">=6.0.11,<7"
+ros-lyrical-usb-cam = "*"
+ros-lyrical-camera-calibration = ">=7.0.0,<8"
 # Differential inverse kinematics (Pink) + Pinocchio backend for the interactive marker IK demo.
 pink = ">=3.1,<5"
 nodejs = ">=18"
-ros-kilted-rosbridge-suite = ">=3.0.2,<4"
+ros-lyrical-rosbridge-suite = ">=4.0.0,<5"
 cbor2 = ">=6.1.2,<7"
+
+# Force numpy past LeRobot's declared numpy<2.3.0 upper bound: numpy has no
+# Python 3.14 builds below 2.3.0, and robostack-lyrical only ships py314.
+# Untested combination upstream; watch for numpy API breakage in LeRobot.
+[pypi-options.dependency-overrides]
+numpy = ">=2.3,<3"
 
 [pypi-dependencies]
 huggingface-hub = "*"
@@ -185,7 +201,7 @@ CMAKE_PREFIX_PATH = "${CONDA_PREFIX}"
 PKG_CONFIG_PATH = "/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig:${PKG_CONFIG_PATH}"
 # Gazebo rendering engine plugin path
 GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-9/engine-plugins"
-ROS_DISTRO = "kilted"
+ROS_DISTRO = "lyrical"
 # Force ROS 2 to use Zenoh middleware
 RMW_IMPLEMENTATION = "rmw_zenoh_cpp"
 # uv/PyPI: large wheels (e.g. torch) need a longer per-request timeout than the default 30s
