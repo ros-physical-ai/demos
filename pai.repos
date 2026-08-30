@@ -6,7 +6,7 @@ repositories:
   SO-ARM100/feetech_ros2_driver:
     type: git
     url: https://github.com/ros-physical-ai/feetech_ros2_driver.git
-    version: 2034e76f7f26c0bd2972ef52642a4e9e9356e7d4
+    version: 18aed7fb26d3e2b4c0b47762f39d8698b7032422
   mujoco_ros2_control:
     type: git
     url: https://github.com/ros-controls/mujoco_ros2_control.git

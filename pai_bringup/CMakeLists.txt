@@ -7,6 +7,10 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+
+# Install the Python package (launch helpers imported by the launch files).
+ament_python_install_package(${PROJECT_NAME})
 
 install(
   DIRECTORY config launch mjcf urdf

@@ -26,7 +26,7 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterFile
 from launch_ros.substitutions import FindPackageShare
-from nav2_common.launch import ReplaceString, RewrittenYaml
+from pai_bringup.launch_utils import ReplaceString
 
 
 def launch_setup(context, *args, **kwargs):
@@ -51,15 +51,7 @@ def launch_setup(context, *args, **kwargs):
         source_file=controllers_file,
         replacements={"<robot_namespace>": ""},
     )
-    controller_parameters = ParameterFile(
-        RewrittenYaml(
-            source_file=controllers_file_replaced,
-            root_key="",
-            param_rewrites={},
-            convert_types=True,
-        ),
-        allow_substs=True,
-    )
+    controller_parameters = ParameterFile(controllers_file_replaced, allow_substs=True)
 
     ros2_control_node = Node(
         package="controller_manager",

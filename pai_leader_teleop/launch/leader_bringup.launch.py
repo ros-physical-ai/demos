@@ -40,7 +40,6 @@ from launch.substitutions import (
 from launch_ros.actions import Node, PushRosNamespace
 from launch_ros.parameter_descriptions import ParameterFile, ParameterValue
 from launch_ros.substitutions import FindPackageShare
-from nav2_common.launch import RewrittenYaml
 
 
 def launch_setup(context, *args, **kwargs):
@@ -78,15 +77,7 @@ def launch_setup(context, *args, **kwargs):
     )
     robot_description = {"robot_description": ParameterValue(robot_description_content, value_type=str)}
 
-    controller_parameters = ParameterFile(
-        RewrittenYaml(
-            source_file=controllers_file,
-            root_key="",
-            param_rewrites={},
-            convert_types=True,
-        ),
-        allow_substs=True,
-    )
+    controller_parameters = ParameterFile(controllers_file, allow_substs=True)
 
     # ros2_control_node — reads the URDF from the namespaced robot_description topic
     ros2_control_node = Node(

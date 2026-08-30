@@ -17,7 +17,7 @@
 Owns the entire robot-facing pipeline: builds a Pinocchio model from the latched
 robot description, seeds the DifferentialIKSolver from ``/joint_states``, and at
 a fixed rate solves IK toward the latest target pose received on ``target_pose``,
-streaming joint positions to a JointGroupPositionController. The gripper setpoint
+streaming joint positions to a position-mode ForwardCommandController. The gripper setpoint
 is received as a scalar on ``gripper_command`` and clamped to URDF limits. The
 current commanded tool pose is republished on ``ee_pose`` so input adapters can
 initialize/anchor without any Pinocchio code.

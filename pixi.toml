@@ -10,7 +10,10 @@ dev = ["dev"]
 ci = ["ci"]
 
 [feature.dev.tasks]
-build = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
+# Named differently from the default `build` task on purpose: two environments
+# defining the same task name with different commands makes `pixi run build`
+# ambiguous and pixi refuses to pick one.
+build-debug = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
 
 [feature.ci.activation.env]
 CMAKE_INSTALL_MODE = "COPY"
@@ -93,6 +96,10 @@ pinocchio = "*"
 pillow = "*"
 # Pinned to <26 to satisfy lerobot packaging constraint (packaging>=24.2,<26.0)
 packaging = ">=24.2,<26"
+# labmaze (via dm_control, pulled in by sdformat_mjcf) publishes no cp314 wheel
+# and its sdist needs bazel to build. Take the conda-forge py314 build instead
+# so pip never tries to compile it.
+labmaze = "*"
 
 # ROS dependencies
 ros-lyrical-ros-core = "*"
@@ -111,13 +118,20 @@ ros-lyrical-ros2controlcli = "*"
 ros-lyrical-rosbag2 = ">=0.33.0,<0.34"
 ros-lyrical-rosbag2-py = "*"
 ros-lyrical-rosbag2-storage-mcap = ">=0.33.0,<0.34"
-# Gazebo Sim (provides gz CLI and simulation engine)
-# Using version 9 to match ROS Kilted compatibility
-gz-sim9 = "*"
+# Gazebo Sim (provides gz CLI and simulation engine).
+# Gazebo Jetty, to match what ROS 2 Lyrical's ros_gz vendor packages pull in
+# (libgz-sim >=10.4, libsdformat >=16, libgz-math >=9). Pinning the Ionic
+# packages here instead installs a second, older Gazebo alongside it.
+gz-sim = ">=10,<11"
 # Gazebo GUI (required for gz sim -g)
-gz-gui9 = "*"
+gz-gui = ">=10,<11"
 # Gazebo Rendering (required for ogre2 render engine plugin)
-gz-rendering9 = "*"
+gz-rendering = ">=10,<11"
+# Python bindings used by the MuJoCo bringup (SDF world -> MJCF conversion).
+# Requested explicitly so the py314 builds matching the Jetty stack are picked;
+# otherwise the solver is free to satisfy `sdformat` with an older major.
+sdformat-python = ">=16,<17"
+gz-math-python = ">=9,<10"
 ros-lyrical-rviz2 = "*"
 ros-lyrical-sensor-msgs = "*"
 ros-lyrical-std-msgs = "*"
@@ -165,11 +179,16 @@ nodejs = ">=18"
 ros-lyrical-rosbridge-suite = ">=4.0.0,<5"
 cbor2 = ">=6.1.2,<7"
 
-# Force numpy past LeRobot's declared numpy<2.3.0 upper bound: numpy has no
-# Python 3.14 builds below 2.3.0, and robostack-lyrical only ships py314.
-# Untested combination upstream; watch for numpy API breakage in LeRobot.
+# Force numpy and protobuf past LeRobot's declared upper bounds. Both are the
+# same py314 problem: robostack-lyrical only ships py314, and conda-forge has no
+# py314 builds of numpy below 2.3.0 or of protobuf below 6.33 (protobuf is
+# pinned into the conda solve by gz-msgs, so pip can't pick its own).
+# Untested combinations upstream; watch for numpy API breakage in LeRobot's ML
+# code, and for protobuf gencode/runtime warnings in lerobot's async client
+# (6.33 runtime reading 6.31 gencode is forward-compatible).
 [pypi-options.dependency-overrides]
 numpy = ">=2.3,<3"
+protobuf = ">=6.31.1,<7"
 
 [pypi-dependencies]
 huggingface-hub = "*"
@@ -200,7 +219,7 @@ CMAKE_PREFIX_PATH = "${CONDA_PREFIX}"
 # Supports both x86_64 and aarch64 architectures
 PKG_CONFIG_PATH = "/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig:${PKG_CONFIG_PATH}"
 # Gazebo rendering engine plugin path
-GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-9/engine-plugins"
+GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-10/engine-plugins"
 ROS_DISTRO = "lyrical"
 # Force ROS 2 to use Zenoh middleware
 RMW_IMPLEMENTATION = "rmw_zenoh_cpp"

@@ -6,7 +6,7 @@ The `ik_servo_node` owns the whole robot-facing pipeline: it builds a Pinocchio
 model from `/robot_description`, seeds the [Pink](https://github.com/stephane-caron/pink)
 differential IK solver from `/joint_states`, and at a fixed rate drives the
 tool frame toward a Cartesian target received on a topic, streaming joint
-positions to a `position_controllers/JointGroupPositionController`.
+positions to a position-mode `forward_command_controller/ForwardCommandController`.
 
 Any input source (an RViz interactive marker, a phone, a leader arm, a scripted
 trajectory, a bag replay) drives it by publishing a `geometry_msgs/PoseStamped`
@@ -89,7 +89,7 @@ only actuates the joints you list.
 | `inactivity_timeout`      | `0.3`                                   | Seconds of target inactivity after which the arm holds and stops republishing.     |
 | `target_lowpass_alpha`    | `0.5`                                   | SE3 low-pass per-tick geodesic fraction, `(0, 1]`; `1.0` disables filtering.       |
 | `qp_solver`               | `quadprog`                              | QP backend used by Pink.                                                           |
-| `command_topic`           | `/forward_position_controller/commands` | JointGroupPositionController command topic.                                        |
+| `command_topic`           | `/forward_position_controller/commands` | ForwardCommandController command topic.                                            |
 | `target_pose_topic`       | `ik_servo/target_pose`                  | Cartesian target input topic.                                                      |
 | `gripper_command_topic`   | `ik_servo/gripper_command`              | Gripper setpoint input topic.                                                      |
 | `ee_pose_topic`           | `ik_servo/ee_pose`                      | Commanded tool pose output topic.                                                  |

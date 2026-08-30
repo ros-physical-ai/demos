@@ -26,7 +26,7 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterFile
 from launch_ros.substitutions import FindPackageShare
-from nav2_common.launch import ReplaceString, RewrittenYaml
+from pai_bringup.launch_utils import ReplaceString
 
 
 def _generate_mjcf_at_launch(pkg_share, world_sdf_path, arm_base_xyz, arm_base_rpy):
@@ -37,16 +37,9 @@ def _generate_mjcf_at_launch(pkg_share, world_sdf_path, arm_base_xyz, arm_base_r
       2. Process so_arm101.xml.xacro → so_arm101.xml (hand-tuned robot, unchanged)
       3. Process scene_template.xml.xacro → scene.xml (composes world + robot)
     """
-    # sdformat_mjcf expects unversioned modules (`sdformat`, `gz.math`), but
-    # robostack-kilted ships versioned ones (`sdformat15`, `gz.math8`).
-    import sys
-
-    import gz.math8
-    import sdformat15
-
-    sys.modules.setdefault("sdformat", sdformat15)
-    sys.modules.setdefault("gz.math", gz.math8)
-
+    # conda-forge's sdformat-python/gz-math-python (Gazebo Jetty) install the
+    # unversioned `sdformat` and `gz.math` modules that sdformat_mjcf expects,
+    # so no module aliasing is needed here.
     from sdformat_mjcf.sdformat_to_mjcf.sdformat_to_mjcf import sdformat_file_to_mjcf
 
     mjcf_dir = Path(pkg_share) / "mjcf"
@@ -125,15 +118,7 @@ def launch_setup(context, *args, **kwargs):
         source_file=ros2_controllers_file,
         replacements={"<robot_namespace>": ""},
     )
-    controller_parameters = ParameterFile(
-        RewrittenYaml(
-            source_file=controllers_file_replaced,
-            root_key="",
-            param_rewrites={},
-            convert_types=True,
-        ),
-        allow_substs=True,
-    )
+    controller_parameters = ParameterFile(controllers_file_replaced, allow_substs=True)
 
     control_node = Node(
         package="mujoco_ros2_control",

@@ -28,7 +28,7 @@ from launch.substitutions import (
 )
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
-from nav2_common.launch import ReplaceString
+from pai_bringup.launch_utils import ReplaceString
 from ros_gz_sim.actions import GzServer
 
 
