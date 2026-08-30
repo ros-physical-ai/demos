@@ -92,10 +92,17 @@ def launch_setup(context, *args, **kwargs):
     # all (e.g. "parameter 'joints' is not initialized").
     param_file_args = ["--param-file", controllers_file] if controllers_file else []
     # Controller activation is carried out by the controller manager's update
-    # loop, which in simulation only runs once the sim is stepping. Allow more
-    # than the 5 s default so a spawner that wins the race against the
-    # simulation starting up still succeeds.
-    param_file_args += ["--switch-timeout", "30"]
+    # loop, which in simulation only runs once the sim is stepping. A spawner
+    # can reach the controller manager while the world is still paused, so the
+    # switch and the service calls need enough headroom to outlast that window.
+    param_file_args += [
+        "--switch-timeout",
+        "60",
+        "--service-call-timeout",
+        "60",
+        "--controller-manager-timeout",
+        "60",
+    ]
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",

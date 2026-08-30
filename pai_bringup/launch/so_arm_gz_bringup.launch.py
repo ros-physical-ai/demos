@@ -137,9 +137,10 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
-    # The Gazebo server starts paused, and ros2_control 6.x performs controller
-    # activation inside the update loop, so spawners time out while nothing is
-    # stepping. Start the simulation as soon as the robot has been spawned.
+    # The world starts paused so the arm is spawned into a still scene: with
+    # physics running, gravity collapses the arm before any controller holds it.
+    # Once the model is in, the world has to start stepping, because controller
+    # activation happens inside the controller manager's update loop.
     world_name = _world_name(LaunchConfiguration("world_file").perform(context))
     unpause_sim = ExecuteProcess(
         cmd=[
@@ -159,6 +160,8 @@ def launch_setup(context, *args, **kwargs):
         output="screen",
     )
 
+    # Composed server: the bridge shares the process with gz_server, which keeps
+    # the camera streams on intra-process transport.
     gzserver = GzServer(
         world_sdf_file=world_file,
         container_name="ros_gz_container",
