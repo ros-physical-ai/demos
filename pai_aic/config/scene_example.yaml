@@ -1,0 +1,109 @@
+# Example AIC scene definition for standalone spawning (no aic_engine).
+#
+# Spawn it with:
+#   pixi run aic-spawn-scene
+# or point --scene-file at your own copy of this file:
+#   pixi run aic-spawn-scene -- --scene-file /path/to/your_scene.yaml
+#
+# The `scene:` block uses the exact same schema as the `trials.<id>.scene`
+# block of the aic_engine config, so you can copy sections between them.
+# This example mirrors trial_1 of aic_engine/config/sample_config.yaml.
+
+# Optional: override the rail translation clamp limits (meters from rail center).
+task_board_limits:
+  nic_rail:
+    min_translation: -0.048
+    max_translation: 0.036
+  sc_rail:
+    min_translation: -0.055
+    max_translation: 0.055
+  mount_rail:
+    min_translation: -0.09625
+    max_translation: 0.09625
+
+scene:
+  task_board:
+    pose:
+      x: 0.15
+      y: -0.2
+      z: 1.14
+      roll: 0.0
+      pitch: 0.0
+      yaw: 3.1415
+
+    # NIC card mounts (nic_rail_0 .. nic_rail_4 -> nic_card_mount_0 .. _4)
+    nic_rail_0:
+      entity_present: true
+      entity_pose:
+        translation: 0.036
+        roll: 0.0
+        pitch: 0.0
+        yaw: 0.0
+    nic_rail_1:
+      entity_present: false
+    nic_rail_2:
+      entity_present: false
+    nic_rail_3:
+      entity_present: false
+    nic_rail_4:
+      entity_present: false
+
+    # SC ports (sc_rail_0 / sc_rail_1 -> sc_port_0 / sc_port_1)
+    sc_rail_0:
+      entity_present: true
+      entity_pose:
+        translation: 0.042
+        roll: 0.0
+        pitch: 0.0
+        yaw: 0.1
+    sc_rail_1:
+      entity_present: false
+
+    # Type-specific mounts (rail key is used directly as the entity prefix)
+    lc_mount_rail_0:
+      entity_present: true
+      entity_pose:
+        translation: 0.02
+        roll: 0.0
+        pitch: 0.0
+        yaw: 0.0
+    sfp_mount_rail_0:
+      entity_present: true
+      entity_pose:
+        translation: 0.03
+        roll: 0.0
+        pitch: 0.0
+        yaw: 0.0
+    sc_mount_rail_0:
+      entity_present: true
+      entity_pose:
+        translation: -0.02
+        roll: 0.0
+        pitch: 0.0
+        yaw: 0.0
+    lc_mount_rail_1:
+      entity_present: true
+      entity_pose:
+        translation: -0.01
+        roll: 0.0
+        pitch: 0.0
+        yaw: 0.0
+    sfp_mount_rail_1:
+      entity_present: false
+    sc_mount_rail_1:
+      entity_present: false
+
+  # Cables are spawned relative to the current gripper pose (world -> gripper/tcp)
+  # plus the gripper_offset below. Only one cable may attach to the gripper.
+  cables:
+    cable_0:
+      pose:
+        gripper_offset:
+          x: 0.0
+          y: 0.015385
+          z: 0.04245
+        roll: 0.4432
+        pitch: -0.4838
+        yaw: 1.3303
+      attach_cable_to_gripper: true
+      cable_type: "sfp_sc_cable" # [sfp_sc_cable, sfp_sc_cable_reversed]

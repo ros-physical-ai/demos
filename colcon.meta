@@ -1,0 +1,24 @@
+{
+    "names": {
+        "gz-cmake4":       { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "gz-utils3":       { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "gz-math8":        { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "gz-plugin3":      { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "gz-tools2":       { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "gz-common6":      { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "gz-msgs11":       { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "gz-transport14":  { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "gz-fuel_tools10": { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "gz-physics8":     { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "gz-sensors9":     { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "gz-gui9":         { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "gz-sim9":         { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "sdformat15":      { "cmake-args": ["-DBUILD_TESTING=OFF"] },
+        "gz-rendering9": {
+            "cmake-args": [
+                "-DSKIP_ogre=true",
+                "-DBUILD_TESTING=OFF"
+            ]
+        }
+    }
+}

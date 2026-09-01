@@ -10,6 +10,10 @@
 build/*
 install/*
 log/*
+# AIC demo build output (separate tree so it can coexist with the base build)
+build_aic/*
+install_aic/*
+log_aic/*
 
 # IDE metadata
 .vscode
@@ -21,6 +25,8 @@ outputs
 
 # External repos imported via vcs
 external/*
+# AIC demo sources imported via vcs (aic.repos)
+external_aic/*
 
 # Recorded datasets
 datasets/*

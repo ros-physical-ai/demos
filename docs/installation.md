@@ -18,10 +18,20 @@ This guide covers installing the workspace and its dependencies.
 ```bash
 git clone https://github.com/ros-physical-ai/demos
 cd demos
-vcs import external < pai.repos --recursive
 pixi install
-pixi run build
+pixi run setup     # import the SO-ARM101 demo sources (pai.repos)
+pixi run build     # build the base demo (conda-provided Gazebo)
 ```
+
+> [!NOTE]
+> The default Pixi environment is the **SO-ARM101** demo and uses
+> conda-provided Gazebo, so it never compiles the from-source Gazebo stack. The
+> separate **AIC cable-insertion** demo (UR5 + from-source Gazebo) has its own
+> `aic` environment — set it up with `pixi run setup-aic` followed by
+> `pixi run aic-build`, then run its `aic-*` tasks (which target the `aic` env
+> automatically). The two builds use separate `install/` and `install_aic/`
+> trees so they can coexist. See the
+> [AIC scenario guide](demos/aic-scenario.md).
 
 To install ML dependencies (PyTorch, LeRobot — automatically detects your GPU):
 

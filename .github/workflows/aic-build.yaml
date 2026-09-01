@@ -1,0 +1,56 @@
+name: CI (AIC demo)
+
+# The AIC cable-insertion demo builds the Gazebo stack from source (heavy, ~30+
+# min on a cold runner), so it lives in its own workflow and runs only when
+# AIC-relevant files change.
+on:
+  pull_request:
+    paths:
+      - "aic.repos"
+      - "colcon.meta"
+      - "pixi.toml"
+      - "pixi.lock"
+      - "pai_aic/**"
+      - ".github/workflows/aic-build.yaml"
+  push:
+    branches: [main]
+    paths:
+      - "aic.repos"
+      - "colcon.meta"
+      - "pixi.toml"
+      - "pixi.lock"
+      - "pai_aic/**"
+      - ".github/workflows/aic-build.yaml"
+
+# Cancel in-progress runs for the same PR/branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  aic-build:
+    # Single OS: this is an expensive from-source build, so we don't matrix it
+    # across Ubuntu versions like the base demo.
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libserial-dev
+
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+          frozen: true
+          # Only solve/install the aic environment (not default) to save time.
+          environments: aic
+
+      - name: Import external repos
+        run: pixi run -e aic setup-aic
+
+      - name: Build
+        env:
+          CMAKE_INSTALL_MODE: COPY
+        run: pixi run aic-build

@@ -1,0 +1,119 @@
+# Rosetta contract for the AIC (AI for Industry Challenge) cable-insertion
+# scenario. See pai_aic/README.md for full usage notes.
+#
+# This contract is consumed by:
+#   - rosetta/episode_recorder (record side)
+#   - rosetta/port_bags        (convert side)
+#   - rosetta/rosetta_client   (deploy Path B)
+# LerobotPolicy (deploy Path A) calls the same converter functions directly,
+# without using the contract's decoder/encoder fields at runtime.
+#
+# Action space: 6-dim — linear xyz (3) + angular xyz (3).
+# State space:  26-dim — TCP pose (7) + TCP linvel (3) + TCP angvel (3) +
+#                          TCP error (6) + joint pos (7).
+# Camera rate:  20 Hz (matches aic_adapter publish rate).
+# Control rate: 20 Hz (default in LerobotPolicy; configurable).
+#
+# Requires aic_adapter running (publishes /observations as
+# aic_model_interfaces/msg/Observation).
+
+robot_type: aic
+
+fps: 20
+max_duration_s: 60.0
+
+# ---------------------------------------------------------------------------
+# Observations
+# ---------------------------------------------------------------------------
+observations:
+  - key: observation.images.left_camera
+    topic: /left_camera/image
+    type: sensor_msgs/msg/Image
+    image:
+      resize: [480, 480]
+    align: { strategy: hold, stamp: header, tol_ms: 100 }
+    qos: { reliability: best_effort, history: keep_last, depth: 10 }
+
+  - key: observation.images.center_camera
+    topic: /center_camera/image
+    type: sensor_msgs/msg/Image
+    image:
+      resize: [480, 480]
+    align: { strategy: hold, stamp: header, tol_ms: 100 }
+    qos: { reliability: best_effort, history: keep_last, depth: 10 }
+
+  - key: observation.images.right_camera
+    topic: /right_camera/image
+    type: sensor_msgs/msg/Image
+    image:
+      resize: [480, 480]
+    align: { strategy: hold, stamp: header, tol_ms: 100 }
+    qos: { reliability: best_effort, history: keep_last, depth: 10 }
+
+  - key: observation.state
+    topic: /observations
+    type: aic_model_interfaces/msg/Observation
+    decoder: pai_aic.converters:decode_aic_observation
+    dtype: float64
+    # 26-dim layout (must match decode_aic_observation in pai_aic/converters.py):
+    #   [ 0: 7] tcp_pose (x,y,z + qx,qy,qz,qw)
+    #   [ 7:10] tcp_linear_velocity (x,y,z)
+    #   [10:13] tcp_angular_velocity (x,y,z)
+    #   [13:19] tcp_error (x,y,z,rx,ry,rz)
+    #   [19:26] joint_positions (6 arm joints + gripper)
+    selector:
+      names:
+        - tcp_pos_x
+        - tcp_pos_y
+        - tcp_pos_z
+        - tcp_quat_x
+        - tcp_quat_y
+        - tcp_quat_z
+        - tcp_quat_w
+        - tcp_linvel_x
+        - tcp_linvel_y
+        - tcp_linvel_z
+        - tcp_angvel_x
+        - tcp_angvel_y
+        - tcp_angvel_z
+        - tcp_err_x
+        - tcp_err_y
+        - tcp_err_z
+        - tcp_err_rx
+        - tcp_err_ry
+        - tcp_err_rz
+        - shoulder_pan_joint
+        - shoulder_lift_joint
+        - elbow_joint
+        - wrist_1_joint
+        - wrist_2_joint
+        - wrist_3_joint
+        - gripper
+    align: { strategy: hold, stamp: header, tol_ms: 100 }
+    qos: { reliability: reliable, history: keep_last, depth: 10 }
+
+# ---------------------------------------------------------------------------
+# Actions
+# ---------------------------------------------------------------------------
+actions:
+  - key: action
+    publish:
+      topic: /aic_controller/pose_commands
+      type: aic_control_interfaces/msg/MotionUpdate
+      qos: { reliability: reliable, history: keep_last, depth: 10 }
+    # 6-dim layout (must match encode/decode_aic_motion_update):
+    #   [0:3] linear twist (m/s), [3:6] angular twist (rad/s)
+    selector:
+      names:
+        - linear_x
+        - linear_y
+        - linear_z
+        - angular_x
+        - angular_y
+        - angular_z
+    decoder: pai_aic.converters:decode_aic_motion_update   # port_bags
+    encoder: pai_aic.converters:encode_aic_motion_update   # rosetta_client
+    safety_behavior: hold
+
+recording:
+  storage: mcap

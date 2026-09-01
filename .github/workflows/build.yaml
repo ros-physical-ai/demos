@@ -33,16 +33,17 @@ jobs:
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y libserial-dev
 
-      - name: Import external repos
-        run: |
-          pip install vcstool
-          vcs import external < pai.repos --recursive
-
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           cache: true
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
           frozen: true
+          # Only the ci environment is needed for the base build; without this,
+          # setup-pixi installs every environment (including the heavy aic env).
+          environments: ci
+
+      - name: Import external repos
+        run: pixi run -e ci setup
 
       - name: Build
         run: pixi run -e ci build

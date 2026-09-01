@@ -1,0 +1,181 @@
+repositories:
+  # The AIC monorepo (aic_bringup, aic_engine, aic_model, aic_adapter,
+  # aic_controller, …). Imported here — not in pai.repos — so the base
+  # SO-ARM101 demo never pulls it in.
+  aic:
+    type: git
+    url: https://github.com/intrinsic-dev/aic.git
+    version: main   # pin to a SHA before first CI run
+  aic_repos/UniversalRobots/Universal_Robots_Client_Library:
+    type: git
+    url: https://github.com/UniversalRobots/Universal_Robots_Client_Library.git
+    version: c35be114c0a765eeee0558d73182f1593179cc8d
+  aic_repos/UniversalRobots/Universal_Robots_ROS2_Description:
+    type: git
+    url: https://github.com/UniversalRobots/Universal_Robots_ROS2_Description.git
+    version: 4.3.0
+  aic_repos/UniversalRobots/ur_msgs:
+    type: git
+    url: https://github.com/ros-industrial/ur_msgs.git
+    version: 2.3.0
+  aic_repos/gazebo/gz_cmake_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_cmake_vendor.git
+    version: 0.3.2
+  aic_repos/gazebo/gz_common_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_common_vendor.git
+    version: 0.2.6
+  aic_repos/gazebo/gz_fuel_tools_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_fuel_tools_vendor.git
+    version: 0.2.3
+  aic_repos/gazebo/gz_gui_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_gui_vendor.git
+    version: 0.2.2
+  aic_repos/gazebo/gz_math_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_math_vendor.git
+    version: 0.2.5
+  aic_repos/gazebo/gz_msgs_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_msgs_vendor.git
+    version: 0.2.4
+  aic_repos/gazebo/gz_physics_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_physics_vendor.git
+    version: 0.2.3
+  aic_repos/gazebo/gz_plugin_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_plugin_vendor.git
+    version: 0.2.3
+  aic_repos/gazebo/gz_rendering_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_rendering_vendor.git
+    version: 0.2.6
+  aic_repos/gazebo/gz_sensors_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_sensors_vendor.git
+    version: 0.2.3
+  aic_repos/gazebo/gz_sim_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_sim_vendor.git
+    version: 0.2.3
+  aic_repos/gazebo/gz_tools_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_tools_vendor.git
+    version: 0.1.3
+  aic_repos/gazebo/gz_transport_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_transport_vendor.git
+    version: 0.2.4
+  aic_repos/gazebo/gz_utils_vendor:
+    type: git
+    url: https://github.com/gazebo-release/gz_utils_vendor.git
+    version: 3112207a812556e667e7f4eaa9e4321861dfc759
+  aic_repos/gazebo/sdformat_vendor:
+    type: git
+    url: https://github.com/gazebo-release/sdformat_vendor.git
+    version: 0.2.6
+  aic_repos/gazebo/gz_ros2_control:
+    type: git
+    # Using JohnTGZ's forked branch for fix in holding joint positions after deactivating effort controllers
+    url: https://github.com/JohnTGZ/gz_ros2_control.git
+    version: jt/2.0.13-patch-hold-joints
+  aic_repos/gazebo/ros_gz:
+    type: git
+    url: https://github.com/gazebosim/ros_gz.git
+    version: c706e201cec93f037f0b9641bcea9ee07d83a058
+  aic_repos/gazebo/gz-cmake:
+    type: git
+    url: https://github.com/gazebosim/gz-cmake
+    version: 7bfc784b208028e83b6367281030cabfcd0b8bd1
+  aic_repos/gazebo/gz-common:
+    type: git
+    url: https://github.com/gazebosim/gz-common
+    version: a69846b13e6db22833f12dd878d5ab83725c9c1d
+  aic_repos/gazebo/gz-fuel-tools:
+    type: git
+    url: https://github.com/gazebosim/gz-fuel-tools
+    version: 7f795546383e6faf2e0b294b610b2cc77b295b36
+  aic_repos/gazebo/gz-sim:
+    type: git
+    url: https://github.com/gazebosim/gz-sim
+    version: d99d458c9987b20a18347b9a273f907d3391db61
+  aic_repos/gazebo/gz-gui:
+    type: git
+    url: https://github.com/gazebosim/gz-gui
+    version: gz-gui9_9.0.2
+  aic_repos/gazebo/gz-math:
+    type: git
+    url: https://github.com/gazebosim/gz-math
+    version: b779522d210a09d163b4b79071ac9a56e0668f0f
+  aic_repos/gazebo/gz-msgs:
+    type: git
+    url: https://github.com/gazebosim/gz-msgs
+    version: 1f95a52c25a3adf11c53c8b7340135c5b4525376
+  aic_repos/gazebo/gz-physics:
+    type: git
+    url: https://github.com/gazebosim/gz-physics
+    version: 26d8e66ad113b4da6d21dc9dcedd40c509f75749
+  aic_repos/gazebo/gz-plugin:
+    type: git
+    url: https://github.com/gazebosim/gz-plugin
+    version: 2e12344637ba468ae6332873d60bb9e342f3ff45
+  aic_repos/gazebo/gz-rendering:
+    type: git
+    url: https://github.com/gazebosim/gz-rendering
+    version: 4c1988d13667404184efb91de36c9c2b1c12935d
+  aic_repos/gazebo/gz-sensors:
+    type: git
+    url: https://github.com/gazebosim/gz-sensors
+    version: 1d691704065918b7f18d84bc523288e8efdc5c00
+  aic_repos/gazebo/gz-tools:
+    type: git
+    url: https://github.com/gazebosim/gz-tools
+    version: gz-tools2_2.0.3
+  aic_repos/gazebo/gz-transport:
+    type: git
+    url: https://github.com/gazebosim/gz-transport
+    version: 264315858d0ca3099230a27d63aa9060b1da7dde
+  aic_repos/gazebo/gz-utils:
+    type: git
+    url: https://github.com/gazebosim/gz-utils
+    version: 30bd55d1793639f362110ebc6f3619f8512caba9
+  aic_repos/gazebo/sdformat:
+    type: git
+    url: https://github.com/gazebosim/sdformat
+    version: 940be3dcf9e9a0a43ded60703985fa7ebed40980
+  aic_repos/ros-controls/control_msgs:
+    type: git
+    url: https://github.com/ros-controls/control_msgs.git
+    version: 6.7.0
+  aic_repos/ros/joint_state_publisher:
+    type: git
+    url: https://github.com/ros/joint_state_publisher.git
+    version: 2.4.1
+  aic_repos/ros-controls/control_toolbox:
+    type: git
+    url: https://github.com/ros-controls/control_toolbox.git
+    version: 5.8.3
+  aic_repos/ros-controls/kinematics_interface:
+    type: git
+    url: https://github.com/ros-controls/kinematics_interface.git
+    version: 2.4.0
+  aic_repos/ros-controls/realtime_tools:
+    type: git
+    url: https://github.com/ros-controls/realtime_tools.git
+    version: 4.7.1
+  aic_repos/ros-controls/ros2_control:
+    type: git
+    url: https://github.com/ros-controls/ros2_control.git
+    version: 5.11.3
+  aic_repos/ros-controls/ros2_controllers:
+    type: git
+    url: https://github.com/ros-controls/ros2_controllers.git
+    version: 5.12.0
+  aic_repos/simulation_interfaces:
+    type: git
+    url: https://github.com/ros-simulation/simulation_interfaces.git
+    version: 1.6.1
