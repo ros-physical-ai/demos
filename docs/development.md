@@ -11,15 +11,9 @@ See [README.md](../README.md) for installation instructions:
 
 _Dependent repos_: Installed via `vcs import external < pai.repos --recursive`
 
-_libserial-dev_: Required for feetech_ros2_driver. Install via:
+_NVIDIA drivers and CUDA toolkit_ (Linux only): Required for GPU acceleration (system components). Not applicable on macOS, which runs CPU-only.
 
-```bash
-sudo apt update && sudo apt install -y libserial-dev
-```
-
-_NVIDIA drivers and CUDA toolkit_: Required for GPU acceleration (system components)
-
-ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pixi install`.
+ROS 2 Kilted dependencies (and `libserial`, needed by `feetech_ros2_driver`) are automatically installed via Pixi when you run `pixi install` — on Linux or macOS (Apple Silicon).
 
 ## Quick Start
 

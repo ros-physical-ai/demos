@@ -2,7 +2,7 @@
 authors = ["Julia Jia <juliajster@gmail.com>"]
 channels = ["conda-forge", "https://prefix.dev/robostack-kilted"]
 name = "demos"
-platforms = ["linux-64", "linux-aarch64"]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 version = "0.1.0"
 
 [environments]
@@ -11,6 +11,21 @@ ci = ["ci"]
 
 [feature.dev.tasks]
 build = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
+
+# feetech_ros2_driver doesn't build on macOS: libserial's BaudRate enum only
+# defines rates above 230400 (incl. the 1,000,000 baud Feetech servos need)
+# under `#ifdef __linux__`, since macOS's termios API doesn't expose them the
+# same way. This is an upstream libserial/feetech_ros2_driver limitation, not
+# fixable from this repo, so real-hardware SO-ARM101 control over Feetech
+# servos isn't supported on macOS for now.
+#
+# mujoco_ros2_control also doesn't build on macOS: its own driver code (e.g.
+# mujoco_lidar.cpp, mujoco_system_interface.cpp) trips AppleClang/libc++'s
+# -Wsign-conversion/-Wfloat-conversion (treated as errors), which GCC doesn't
+# flag the same way. Also an upstream issue, not fixable from this repo, so
+# the MuJoCo demo isn't supported on macOS for now (use Gazebo instead).
+[feature.dev.target.osx-arm64.tasks]
+build = { cmd = ["colcon", "build", "--symlink-install", "--packages-ignore", "feetech_ros2_driver", "mujoco_ros2_control", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
 
 [feature.ci.activation.env]
 CMAKE_INSTALL_MODE = "COPY"
@@ -26,6 +41,9 @@ install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh", env = { UV_HTTP_TIM
 # Build
 build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"]}
 clean = { cmd = "rm -rf build install log" }
+
+[target.osx-arm64.tasks]
+build = { cmd = ["colcon", "build", "--packages-ignore", "feetech_ros2_driver", "mujoco_ros2_control", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"]}
 
 # Run Demos
 zenoh-router = { cmd = [
@@ -60,6 +78,14 @@ test-joints = { cmd = [
   "10",
 ]}
 
+# usb_cam wraps V4L2, which only exists on Linux; camera nodes are unavailable
+# on macOS (launch with use_cameras:=false there).
+[target.linux-64.dependencies]
+ros-kilted-usb-cam = "*"
+
+[target.linux-aarch64.dependencies]
+ros-kilted-usb-cam = "*"
+
 [dependencies]
 # Lint/Format
 pre-commit = "*"
@@ -76,6 +102,7 @@ ffmpeg = "*"
 # Required by feetech_ros2_driver
 cpp-expected = ">=1.1.0,<2"
 range-v3 = ">=0.12.0,<0.13"
+libserial = ">=1.0.0,<2"
 
 # Common base deps
 python = "3.12.*"
@@ -88,6 +115,12 @@ pinocchio = "*"
 pillow = "*"
 # Pinned to <26 to satisfy lerobot packaging constraint (packaging>=24.2,<26.0)
 packaging = ">=24.2,<26"
+# Pinned to satisfy lerobot's setuptools>=71.0.0,<81.0.0 constraint; otherwise
+# the conda solver can pick a newer setuptools that conflicts with it.
+setuptools = ">=71.0.0,<81.0.0"
+# Pinned to satisfy lerobot[async]'s protobuf>=6.31.1,<6.32.0 constraint; otherwise
+# the conda solver can pick a newer protobuf that conflicts with it.
+protobuf = ">=6.31.1,<6.32.0"
 
 # ROS dependencies
 ros-kilted-ros-core = "*"
@@ -146,8 +179,6 @@ ros-kilted-rclcpp = "*"
 ros-kilted-pluginlib = "*"
 # Zenoh middleware
 ros-kilted-rmw-zenoh-cpp = "*"
-# Camera driver
-ros-kilted-usb-cam = "*"
 ros-kilted-camera-calibration = ">=6.0.11,<7"
 # Differential inverse kinematics (Pink) + Pinocchio backend for the interactive marker IK demo.
 pink = ">=3.1,<5"
