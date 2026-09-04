@@ -13,8 +13,8 @@ repositories:
     version: cd4340cc3878142def1f88845518f2b29647c7c2
   rosetta:
     type: git
-    url: https://github.com/tomcounihan/rosetta
-    version: xpu-enable
+    url: https://github.com/iblnkn/rosetta.git
+    version: fb3860cdd4bcc25dd301bb7bcbf1a58a70ade8ac
   rosetta_interfaces:
     type: git
     url: https://github.com/iblnkn/rosetta_interfaces.git
