@@ -112,6 +112,9 @@ packaging = ">=24.2,<26"
 # and its sdist needs bazel to build. Take the conda-forge py314 build instead
 # so pip never tries to compile it.
 labmaze = "*"
+# evdev (via lerobot -> pynput, Linux only) publishes no Python 3.14 wheel.
+# Take the conda-forge py314 build instead so pip never tries to compile it.
+evdev = "*"
 
 # ROS dependencies
 ros-lyrical-ros-core = "*"
