@@ -9,9 +9,8 @@ Requires Linux and [Pixi](https://pixi.sh/latest/installation/) (which bundles R
 ```bash
 git clone https://github.com/ros-physical-ai/demos
 cd demos
-vcs import external < pai.repos --recursive
 pixi install
-pixi run install-ml-deps   # PyTorch + LeRobot (auto-detects GPU)
+pixi run install-deps
 pixi run build
 ```
 

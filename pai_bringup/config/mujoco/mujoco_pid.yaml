@@ -1,0 +1,58 @@
+# PID gains for the SO-ARM101 MuJoCo hardware interface.
+#
+# Gains are only consulted for non-position MuJoCo actuators (e.g., <motor>).
+# The values below mirror the sts3215 position actuator class in
+# mjcf/so_arm101.xml.xacro (kp=998.22, kv=2.731, forcerange ±3.35) so that
+# swapping the actuators to <motor> preserves the same closed-loop behavior.
+/**:
+  ros__parameters:
+    pid_gains:
+      position:
+        shoulder_pan_joint:
+          p: 998.22
+          i: 0.0
+          d: 2.731
+          u_clamp_max: 3.35
+          u_clamp_min: -3.35
+          i_clamp_max: 1.0
+          i_clamp_min: -1.0
+        shoulder_lift_joint:
+          p: 998.22
+          i: 0.0
+          d: 2.731
+          u_clamp_max: 3.35
+          u_clamp_min: -3.35
+          i_clamp_max: 1.0
+          i_clamp_min: -1.0
+        elbow_flex_joint:
+          p: 998.22
+          i: 0.0
+          d: 2.731
+          u_clamp_max: 3.35
+          u_clamp_min: -3.35
+          i_clamp_max: 1.0
+          i_clamp_min: -1.0
+        wrist_flex_joint:
+          p: 998.22
+          i: 0.0
+          d: 2.731
+          u_clamp_max: 3.35
+          u_clamp_min: -3.35
+          i_clamp_max: 1.0
+          i_clamp_min: -1.0
+        wrist_roll_joint:
+          p: 998.22
+          i: 0.0
+          d: 2.731
+          u_clamp_max: 3.35
+          u_clamp_min: -3.35
+          i_clamp_max: 1.0
+          i_clamp_min: -1.0
+        gripper_joint:
+          p: 998.22
+          i: 0.0
+          d: 2.731
+          u_clamp_max: 3.35
+          u_clamp_min: -3.35
+          i_clamp_max: 1.0
+          i_clamp_min: -1.0

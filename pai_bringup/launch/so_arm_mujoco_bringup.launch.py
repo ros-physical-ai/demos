@@ -118,6 +118,11 @@ def launch_setup(context, *args, **kwargs):
     ).perform(context)
     controller_parameters = ParameterFile(controllers_file_str, allow_substs=True)
 
+    mujoco_plugins_file = PathJoinSubstitution(
+        [FindPackageShare("pai_bringup"), "config", "mujoco", "mujoco_ros2_control_plugins.yaml"]
+    )
+    mujoco_plugins_parameters = ParameterFile(mujoco_plugins_file, allow_substs=True)
+
     description_file = PathJoinSubstitution([FindPackageShare("pai_bringup"), "urdf", "so_arm101_mujoco.urdf.xacro"])
 
     control_node = Node(
@@ -127,6 +132,7 @@ def launch_setup(context, *args, **kwargs):
         parameters=[
             {"use_sim_time": True},
             controller_parameters,
+            mujoco_plugins_parameters,
         ],
         # The controller manager takes the URDF from ~/robot_description, not
         # from a robot_description parameter.
