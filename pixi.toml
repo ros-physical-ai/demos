@@ -1,6 +1,6 @@
 [workspace]
 authors = ["Julia Jia <juliajster@gmail.com>"]
-channels = ["conda-forge", "https://prefix.dev/robostack-kilted"]
+channels = ["conda-forge", "https://prefix.dev/robostack-lyrical"]
 name = "demos"
 platforms = ["linux-64", "linux-aarch64"]
 version = "0.1.0"
@@ -10,7 +10,8 @@ dev = ["dev"]
 ci = ["ci"]
 
 [feature.dev.tasks]
-build = { cmd = ["colcon", "build", "--symlink-install", "--cmake-args", "-DCMAKE_BUILD_TYPE=Debug"] }
+# Distinct from `build`: pixi refuses the same task name with different commands across environments.
+build-debug = { cmd = ["colcon", "build", "--symlink-install"], env = { CMAKE_BUILD_TYPE = "Debug" } }
 
 [feature.ci.activation.env]
 CMAKE_INSTALL_MODE = "COPY"
@@ -24,7 +25,8 @@ lint = { cmd = "pre-commit run --all-files" }
 install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
 
 # Build
-build = { cmd = ["colcon", "build", "--cmake-args", "-DCMAKE_BUILD_TYPE=Release"]}
+# cmake-args live in colcon_defaults.yaml (read from the workspace root).
+build = { cmd = ["colcon", "build"], env = { CMAKE_BUILD_TYPE = "Release" } }
 clean = { cmd = "rm -rf build install log" }
 
 # Run Demos
@@ -66,9 +68,11 @@ pre-commit = "*"
 
 # Build deps
 colcon-common-extensions = ">=0.3.0,<0.4"
-colcon-mixin = ">=0.2.3,<0.3"
 cmake = ">=3.30.5,<4"
 ninja = ">=1.13.1,<2"
+# Conda C/C++ toolchain so the compiler matches conda's `ld` already on PATH.
+c-compiler = "*"
+cxx-compiler = "*"
 pkg-config = "*"
 vcstool = "*"
 rosdep = "*"
@@ -76,84 +80,102 @@ ffmpeg = "*"
 # Required by feetech_ros2_driver
 cpp-expected = ">=1.1.0,<2"
 range-v3 = ">=0.12.0,<0.13"
+# Conda libserial: the system libserial-dev does not link against this sysroot.
+libserial = "*"
 
 # Common base deps
-python = "3.12.*"
+# robostack-lyrical only publishes py314 builds.
+python = "3.14.*"
 pip = "*"
-# LeRobot 0.5.1 requires numpy>=2.0.0,<2.3.0 .
-numpy = ">=2.0.0,<2.3"
+# numpy<2.3 has no py314 builds; LeRobot's declared upper bound is <2.3.
+numpy = ">=2.3,<3"
 pinocchio = "*"
 # Explicitly installing pillow through Conda (rather that letting pip pull it an as transitive dependency)
 # to avoid related issue to: libtiff.so.6: undefined symbol: jpeg12_write_raw_data, version LIBJPEG_8.0.
 pillow = "*"
 # Pinned to <26 to satisfy lerobot packaging constraint (packaging>=24.2,<26.0)
 packaging = ">=24.2,<26"
+# No cp314 wheels; conda so pip does not try to compile them.
+labmaze = "*"
+# evdev (via lerobot -> pynput, Linux only) publishes no Python 3.14 wheel.
+# Take the conda-forge py314 build instead so pip never tries to compile it.
+evdev = "*"
 
 # ROS dependencies
-ros-kilted-ros-core = "*"
-ros-kilted-ament-cmake = "*"
+ros-lyrical-ros-core = "*"
+ros-lyrical-ament-cmake = "*"
 # From pai_bringup
-ros-kilted-controller-manager = "*"
-ros-kilted-cv-bridge = "*"
-ros-kilted-launch = "*"
-ros-kilted-launch-ros = "*"
-ros-kilted-rclpy = "*"
-ros-kilted-robot-state-publisher = "*"
-ros-kilted-ros-gz-bridge = "*"
-ros-kilted-ros-gz-sim = "*"
-ros-kilted-ros2controlcli = "*"
+ros-lyrical-controller-manager = "*"
+ros-lyrical-cv-bridge = "*"
+ros-lyrical-launch = "*"
+ros-lyrical-launch-ros = "*"
+ros-lyrical-rclpy = "*"
+ros-lyrical-robot-state-publisher = "*"
+ros-lyrical-ros-gz-bridge = "*"
+ros-lyrical-ros-gz-sim = "*"
+ros-lyrical-ros2controlcli = "*"
 # From pai_data_collection
-ros-kilted-rosbag2 = ">=0.32.0,<0.33"
-ros-kilted-rosbag2-py = "*"
-ros-kilted-rosbag2-storage-mcap = ">=0.32.0,<0.33"
-# Gazebo Sim (provides gz CLI and simulation engine)
-# Using version 9 to match ROS Kilted compatibility
-gz-sim9 = "*"
+ros-lyrical-rosbag2 = ">=0.33.0,<0.34"
+ros-lyrical-rosbag2-py = "*"
+ros-lyrical-rosbag2-storage-mcap = ">=0.33.0,<0.34"
+# Gazebo Sim (provides gz CLI and simulation engine).
+# Jetty (gz-sim 10); an Ionic pin would install a second, older Gazebo.
+gz-sim = ">=10,<11"
 # Gazebo GUI (required for gz sim -g)
-gz-gui9 = "*"
+gz-gui = ">=10,<11"
 # Gazebo Rendering (required for ogre2 render engine plugin)
-gz-rendering9 = "*"
-ros-kilted-rviz2 = "*"
-ros-kilted-sensor-msgs = "*"
-ros-kilted-std-msgs = "*"
-ros-kilted-xacro = "*"
+gz-rendering = ">=10,<11"
+# Explicit majors so the solver cannot satisfy `sdformat` with an older Jetty-incompatible build.
+sdformat-python = ">=16,<17"
+gz-math-python = ">=9,<10"
+ros-lyrical-rviz2 = "*"
+ros-lyrical-sensor-msgs = "*"
+ros-lyrical-std-msgs = "*"
+ros-lyrical-xacro = "*"
 # From so_arm100_description
-ros-kilted-joint-state-broadcaster = "*"
-ros-kilted-joint-trajectory-controller = "*"
-ros-kilted-parallel-gripper-controller = "*"
-ros-kilted-position-controllers = "*"
-ros-kilted-hardware-interface = "*"
-ros-kilted-transmission-interface = "*"
-ros-kilted-ament-index-python = "*"
-ros-kilted-nav2-common = "*"
-ros-kilted-gz-ros2-control = "*"
+ros-lyrical-joint-state-broadcaster = "*"
+ros-lyrical-joint-trajectory-controller = "*"
+ros-lyrical-parallel-gripper-controller = "*"
+ros-lyrical-forward-command-controller = "*"
+ros-lyrical-hardware-interface = "*"
+ros-lyrical-transmission-interface = "*"
+ros-lyrical-ament-index-python = "*"
+ros-lyrical-gz-ros2-control = "*"
 # From so_arm100_moveit_config
-ros-kilted-moveit-ros-move-group = "*"
-ros-kilted-moveit-kinematics = "*"
-ros-kilted-moveit-planners = "*"
-ros-kilted-moveit-simple-controller-manager = "*"
-ros-kilted-joint-state-publisher = "*"
-ros-kilted-joint-state-publisher-gui = "*"
-ros-kilted-tf2-ros = "*"
-ros-kilted-moveit-ros-control-interface = "*"
-ros-kilted-moveit-ros-visualization = "*"
-ros-kilted-moveit-ros-warehouse = "*"
-ros-kilted-moveit-setup-assistant = "*"
-ros-kilted-rviz-common = "*"
-ros-kilted-rviz-default-plugins = "*"
+ros-lyrical-moveit-ros-move-group = "*"
+ros-lyrical-moveit-kinematics = "*"
+ros-lyrical-moveit-planners = "*"
+ros-lyrical-moveit-simple-controller-manager = "*"
+ros-lyrical-joint-state-publisher = "*"
+ros-lyrical-joint-state-publisher-gui = "*"
+ros-lyrical-tf2-ros = "*"
+ros-lyrical-moveit-ros-control-interface = "*"
+ros-lyrical-moveit-ros-visualization = "*"
+ros-lyrical-moveit-ros-warehouse = "*"
+ros-lyrical-moveit-setup-assistant = "*"
+ros-lyrical-rviz-common = "*"
+ros-lyrical-rviz-default-plugins = "*"
 # From feetech_ros2_driver
-ros-kilted-rclcpp = "*"
-ros-kilted-pluginlib = "*"
+ros-lyrical-rclcpp = "*"
+ros-lyrical-pluginlib = "*"
 # Zenoh middleware
-ros-kilted-rmw-zenoh-cpp = "*"
+ros-lyrical-rmw-zenoh-cpp = "*"
 # Camera driver
-ros-kilted-usb-cam = "*"
-ros-kilted-camera-calibration = ">=6.0.11,<7"
+ros-lyrical-usb-cam = "*"
+ros-lyrical-camera-calibration = ">=7.0.0,<8"
 # Differential inverse kinematics (Pink) + Pinocchio backend for the interactive marker IK demo.
 pink = ">=3.1,<5"
 nodejs = ">=18"
-ros-kilted-rosbridge-suite = ">=3.0.2,<4"
+ros-lyrical-rosbridge-suite = ">=4.0.0,<5"
 cbor2 = ">=6.1.2,<7"
+
+# Force past LeRobot's upper bounds: no py314 numpy<2.3, and gz-msgs pins protobuf into the conda solve.
+[pypi-options.dependency-overrides]
+numpy = ">=2.3,<3"
+protobuf = ">=6.31.1,<7"
+# Released draccus cannot parse PEP-604 unions on Python 3.14 (dlwh/draccus#69).
+# Pin a commit, not a branch, so pixi does not re-query the remote on every run.
+draccus = { git = "https://github.com/devangpratap/draccus.git", rev = "6f3f164953a7a910eb284dd26720c560830737e1" }
 
 [pypi-dependencies]
 huggingface-hub = "*"
@@ -169,7 +191,7 @@ uvicorn = "*"
 # SDF→MJCF converter: used at launch time to convert the canonical SDF world to MuJoCo format.
 # Installed from source (conda-forge 0.1.2 is too old for sdformat15).
 # TODO(francocipollone): Point to upstream once the PR is merged: https://github.com/gazebosim/gz-mujoco/pull/125
-sdformat-mjcf = { git = "https://github.com/francocipollone/gz-mujoco.git", branch = "francocipollone/avoid_eulerseq_compiler", subdirectory = "sdformat_mjcf" }
+sdformat-mjcf = { git = "https://github.com/francocipollone/gz-mujoco.git", rev = "79de56da1226568605d0aff35fa457aca10006e9", subdirectory = "sdformat_mjcf" }
 
 [activation]
 scripts = ["scripts/activate.sh"]
@@ -180,12 +202,9 @@ LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LIBRARY_PATH}"
 LD_LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
 # CMake needs this to find ROS 2 packages installed by robostack
 CMAKE_PREFIX_PATH = "${CONDA_PREFIX}"
-# pkg-config needs this to find system-installed packages like libserial-dev
-# Supports both x86_64 and aarch64 architectures
-PKG_CONFIG_PATH = "/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig:${PKG_CONFIG_PATH}"
 # Gazebo rendering engine plugin path
-GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-9/engine-plugins"
-ROS_DISTRO = "kilted"
+GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-10/engine-plugins"
+ROS_DISTRO = "lyrical"
 # Force ROS 2 to use Zenoh middleware
 RMW_IMPLEMENTATION = "rmw_zenoh_cpp"
 # uv/PyPI: large wheels (e.g. torch) need a longer per-request timeout than the default 30s

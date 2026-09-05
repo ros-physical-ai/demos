@@ -7,7 +7,7 @@
     Topic-driven Cartesian differential inverse kinematics servo. Builds a
     Pinocchio model from the robot description and drives any arm toward a
     target pose published on a topic, using the Pink differential IK solver,
-    streaming joint commands to a JointGroupPositionController. Arm-agnostic:
+    streaming joint commands to a position-mode ForwardCommandController. Arm-agnostic:
     the actuated joints, tool frame, and topics are all parameters.
   </description>
   <maintainer email="franco.cipollone@ekumenlabs.com">Franco Cipollone</maintainer>

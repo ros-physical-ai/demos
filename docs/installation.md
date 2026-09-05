@@ -6,7 +6,7 @@ This guide covers installing the workspace and its dependencies.
 
 - A Linux distribution (any recent x86_64 distro). The Pixi-managed environment bundles ROS 2, Gazebo, and all dependencies, so a specific Ubuntu release is **not** required.
 - [Pixi](https://pixi.sh/latest/installation/) (recommended) — manages ROS 2, Gazebo, and all dependencies automatically.
-- `libserial-dev` — required by `feetech_ros2_driver` (only needed for real hardware): `sudo apt install -y libserial-dev`.
+- LibSerial — required by `feetech_ros2_driver` (only needed for real hardware). Pixi installs it for you; for the manual install path below use `sudo apt install -y libserial-dev`.
 
 ### GPU
 
@@ -43,8 +43,8 @@ git clone https://github.com/ros-physical-ai/demos
 cd demos
 vcs import external < pai.repos --recursive
 cd ~/ws_pai
-rosdep install --from-paths src --ignore-src --rosdistro kilted -yir
-source /opt/ros/kilted/setup.bash
+rosdep install --from-paths src --ignore-src --rosdistro lyrical -yir
+source /opt/ros/lyrical/setup.bash
 colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
 
@@ -59,5 +59,5 @@ source ~/ws_pai/install/setup.bash
 > [!NOTE]
 > This project uses [rmw_zenoh](https://github.com/ros2/rmw_zenoh) as the default ROS 2 middleware.
 > When using Pixi, this is configured automatically. For manual installs, install it via
-> `sudo apt install ros-kilted-rmw-zenoh-cpp` and `export RMW_IMPLEMENTATION=rmw_zenoh_cpp`.
+> `sudo apt install ros-lyrical-rmw-zenoh-cpp` and `export RMW_IMPLEMENTATION=rmw_zenoh_cpp`.
 > Ensure the Zenoh router is running: `ros2 run rmw_zenoh_cpp rmw_zenohd` (or `pixi run zenoh-router`).

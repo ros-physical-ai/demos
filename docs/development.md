@@ -11,15 +11,9 @@ See [README.md](../README.md) for installation instructions:
 
 _Dependent repos_: Installed via `vcs import external < pai.repos --recursive`
 
-_libserial-dev_: Required for feetech_ros2_driver. Install via:
-
-```bash
-sudo apt update && sudo apt install -y libserial-dev
-```
-
 _NVIDIA drivers and CUDA toolkit_: Required for GPU acceleration (system components)
 
-ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pixi install`.
+ROS 2 Lyrical dependencies are automatically installed via Pixi when you run `pixi install`.
 
 ## Quick Start
 
@@ -28,7 +22,7 @@ ROS 2 Kilted dependencies are automatically installed via Pixi when you run `pix
 Install base environment and ML dependencies:
 
 ```bash
-# Step 1: Install base environment (includes ROS 2 Kilted dependencies)
+# Step 1: Install base environment (includes ROS 2 Lyrical dependencies)
 pixi install
 
 # Step 2: Install ML dependencies (automatically detects GPU and installs appropriate PyTorch)
