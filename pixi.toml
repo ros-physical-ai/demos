@@ -21,6 +21,9 @@ CMAKE_INSTALL_MODE = "COPY"
 # Lint
 lint = { cmd = "pre-commit run --all-files" }
 
+# Bring external repos via vcstool
+install-source-deps = { cmd = "vcs import external --recursive < pai.repos" }
+
 # Longer uv download timeout (PyTorch wheels are huge).
 install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
 
