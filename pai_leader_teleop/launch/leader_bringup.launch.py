@@ -99,8 +99,8 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
-    # ros2_control 6.x (Lyrical) no longer passes the controller manager's own
-    # parameter file down to the controllers it loads, so hand it to the spawner.
+    # Controllers do not inherit the controller manager's YAML; pass it to the
+    # spawner or they start with uninitialized parameters.
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",

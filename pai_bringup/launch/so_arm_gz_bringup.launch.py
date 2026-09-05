@@ -137,10 +137,8 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
-    # The world starts paused so the arm is spawned into a still scene: with
-    # physics running, gravity collapses the arm before any controller holds it.
-    # Once the model is in, the world has to start stepping, because controller
-    # activation happens inside the controller manager's update loop.
+    # Spawn into a paused world so gravity does not drop the arm before a
+    # controller holds it; unpause after spawn so the manager can activate.
     world_name = _world_name(LaunchConfiguration("world_file").perform(context))
     unpause_sim = ExecuteProcess(
         cmd=[

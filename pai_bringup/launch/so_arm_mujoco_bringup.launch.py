@@ -38,9 +38,6 @@ def _generate_mjcf_at_launch(pkg_share, world_sdf_path, arm_base_xyz, arm_base_r
       2. Process so_arm101.xml.xacro → so_arm101.xml (hand-tuned robot, unchanged)
       3. Process scene_template.xml.xacro → scene.xml (composes world + robot)
     """
-    # conda-forge's sdformat-python/gz-math-python (Gazebo Jetty) install the
-    # unversioned `sdformat` and `gz.math` modules that sdformat_mjcf expects,
-    # so no module aliasing is needed here.
     from sdformat_mjcf.sdformat_to_mjcf.sdformat_to_mjcf import sdformat_file_to_mjcf
 
     mjcf_dir = Path(pkg_share) / "mjcf"
@@ -131,10 +128,8 @@ def launch_setup(context, *args, **kwargs):
             {"use_sim_time": True},
             controller_parameters,
         ],
-        # The controller manager only ever takes the URDF from its own
-        # ~/robot_description topic; point it at the one robot_state_publisher
-        # latches (the robot_description *parameter* is ignored in
-        # ros2_control 6.x).
+        # The controller manager takes the URDF from ~/robot_description, not
+        # from a robot_description parameter.
         remappings=[("~/robot_description", "/robot_description")],
     )
 

@@ -10,9 +10,7 @@ dev = ["dev"]
 ci = ["ci"]
 
 [feature.dev.tasks]
-# Named differently from the default `build` task on purpose: two environments
-# defining the same task name with different commands makes `pixi run build`
-# ambiguous and pixi refuses to pick one.
+# Distinct from `build`: pixi refuses the same task name with different commands across environments.
 build-debug = { cmd = ["colcon", "build", "--symlink-install"], env = { CMAKE_BUILD_TYPE = "Debug" } }
 
 [feature.ci.activation.env]
@@ -27,8 +25,7 @@ lint = { cmd = "pre-commit run --all-files" }
 install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
 
 # Build
-# Shared cmake-args live in colcon_defaults.yaml, which colcon reads from the
-# workspace root.
+# cmake-args live in colcon_defaults.yaml (read from the workspace root).
 build = { cmd = ["colcon", "build"], env = { CMAKE_BUILD_TYPE = "Release" } }
 clean = { cmd = "rm -rf build install log" }
 
@@ -73,11 +70,7 @@ pre-commit = "*"
 colcon-common-extensions = ">=0.3.0,<0.4"
 cmake = ">=3.30.5,<4"
 ninja = ">=1.13.1,<2"
-# Build with the conda toolchain, not the system one. The environment already
-# carries conda's binutils, which shadows the system `ld` on PATH; pairing that
-# linker with /usr/bin/c++ resolves libpthread/libdl from the conda sysroot and
-# fails with GLIBC_PRIVATE undefined references. It also matches how the
-# robostack ROS packages themselves were built.
+# Conda C/C++ toolchain so the compiler matches conda's `ld` already on PATH.
 c-compiler = "*"
 cxx-compiler = "*"
 pkg-config = "*"
@@ -87,20 +80,14 @@ ffmpeg = "*"
 # Required by feetech_ros2_driver
 cpp-expected = ">=1.1.0,<2"
 range-v3 = ">=0.12.0,<0.13"
-# LibSerial from conda-forge rather than the system libserial-dev: linking the
-# system copy against the conda toolchain's sysroot fails with GLIBC_PRIVATE
-# undefined references (system glibc 2.39 vs sysroot 2.28).
+# Conda libserial: the system libserial-dev does not link against this sysroot.
 libserial = "*"
 
 # Common base deps
 # robostack-lyrical only publishes py314 builds.
 python = "3.14.*"
 pip = "*"
-# LeRobot declares numpy>=2.0.0,<2.3.0, but numpy has no py314 builds below
-# 2.3.0 (required by robostack-lyrical). Forced past LeRobot's declared upper
-# bound below via [pypi-options.dependency-overrides] since numpy<2.3 has no
-# Python 3.14 support at all; untested combination, watch for numpy API
-# breakage in LeRobot's ML code.
+# numpy<2.3 has no py314 builds; LeRobot's declared upper bound is <2.3.
 numpy = ">=2.3,<3"
 pinocchio = "*"
 # Explicitly installing pillow through Conda (rather that letting pip pull it an as transitive dependency)
@@ -108,9 +95,7 @@ pinocchio = "*"
 pillow = "*"
 # Pinned to <26 to satisfy lerobot packaging constraint (packaging>=24.2,<26.0)
 packaging = ">=24.2,<26"
-# labmaze (via dm_control, pulled in by sdformat_mjcf) publishes no cp314 wheel
-# and its sdist needs bazel to build. Take the conda-forge py314 build instead
-# so pip never tries to compile it.
+# No cp314 wheels; conda so pip does not try to compile them.
 labmaze = "*"
 # evdev (via lerobot -> pynput, Linux only) publishes no Python 3.14 wheel.
 # Take the conda-forge py314 build instead so pip never tries to compile it.
@@ -134,17 +119,13 @@ ros-lyrical-rosbag2 = ">=0.33.0,<0.34"
 ros-lyrical-rosbag2-py = "*"
 ros-lyrical-rosbag2-storage-mcap = ">=0.33.0,<0.34"
 # Gazebo Sim (provides gz CLI and simulation engine).
-# Gazebo Jetty, to match what ROS 2 Lyrical's ros_gz vendor packages pull in
-# (libgz-sim >=10.4, libsdformat >=16, libgz-math >=9). Pinning the Ionic
-# packages here instead installs a second, older Gazebo alongside it.
+# Jetty (gz-sim 10); an Ionic pin would install a second, older Gazebo.
 gz-sim = ">=10,<11"
 # Gazebo GUI (required for gz sim -g)
 gz-gui = ">=10,<11"
 # Gazebo Rendering (required for ogre2 render engine plugin)
 gz-rendering = ">=10,<11"
-# Python bindings used by the MuJoCo bringup (SDF world -> MJCF conversion).
-# Requested explicitly so the py314 builds matching the Jetty stack are picked;
-# otherwise the solver is free to satisfy `sdformat` with an older major.
+# Explicit majors so the solver cannot satisfy `sdformat` with an older Jetty-incompatible build.
 sdformat-python = ">=16,<17"
 gz-math-python = ">=9,<10"
 ros-lyrical-rviz2 = "*"
@@ -155,16 +136,10 @@ ros-lyrical-xacro = "*"
 ros-lyrical-joint-state-broadcaster = "*"
 ros-lyrical-joint-trajectory-controller = "*"
 ros-lyrical-parallel-gripper-controller = "*"
-# position_controllers/JointGroupPositionController is deprecated upstream in
-# favor of forward_command_controller/ForwardCommandController with
-# interface_name: position; robostack-lyrical no longer builds the old package.
 ros-lyrical-forward-command-controller = "*"
 ros-lyrical-hardware-interface = "*"
 ros-lyrical-transmission-interface = "*"
 ros-lyrical-ament-index-python = "*"
-# nav2_common isn't published for robostack-lyrical yet; ros2_so_arm's
-# so_arm100/101_description packages declare it as an exec_depend but don't
-# actually use it (no find_package/nav2_package() call), so it's safe to omit.
 ros-lyrical-gz-ros2-control = "*"
 # From so_arm100_moveit_config
 ros-lyrical-moveit-ros-move-group = "*"
@@ -194,25 +169,12 @@ nodejs = ">=18"
 ros-lyrical-rosbridge-suite = ">=4.0.0,<5"
 cbor2 = ">=6.1.2,<7"
 
-# Force numpy and protobuf past LeRobot's declared upper bounds. Both are the
-# same py314 problem: robostack-lyrical only ships py314, and conda-forge has no
-# py314 builds of numpy below 2.3.0 or of protobuf below 6.33 (protobuf is
-# pinned into the conda solve by gz-msgs, so pip can't pick its own).
-# Untested combinations upstream; watch for numpy API breakage in LeRobot's ML
-# code, and for protobuf gencode/runtime warnings in lerobot's async client
-# (6.33 runtime reading 6.31 gencode is forward-compatible).
+# Force past LeRobot's upper bounds: no py314 numpy<2.3, and gz-msgs pins protobuf into the conda solve.
 [pypi-options.dependency-overrides]
 numpy = ">=2.3,<3"
 protobuf = ">=6.31.1,<7"
-# LeRobot pins draccus==0.10.0, which cannot build its argument parser on
-# Python 3.14: argparse now rejects a non-callable `type=`, and draccus passes
-# PEP-604 unions (`str | None`) straight through. That breaks lerobot-train,
-# lerobot-replay *and* Policy.from_pretrained, i.e. all of the ML pipeline.
-# Both 0.10.0 and the latest 0.11.6 are affected (upstream issue dlwh/draccus#69),
-# so pin the branch from the open fix PR until it is merged and released.
-# TODO: point back at a released draccus once dlwh/draccus#70 lands.
-# Pinned to a commit rather than a branch: a branch spec makes pixi re-query the
-# remote on every `pixi run`/`pixi shell`, which re-locks and costs ~80s each time.
+# Released draccus cannot parse PEP-604 unions on Python 3.14 (dlwh/draccus#69).
+# Pin a commit, not a branch, so pixi does not re-query the remote on every run.
 draccus = { git = "https://github.com/devangpratap/draccus.git", rev = "6f3f164953a7a910eb284dd26720c560830737e1" }
 
 [pypi-dependencies]
@@ -240,13 +202,11 @@ LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LIBRARY_PATH}"
 LD_LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
 # CMake needs this to find ROS 2 packages installed by robostack
 CMAKE_PREFIX_PATH = "${CONDA_PREFIX}"
-# Keep pkg-config inside the Pixi environment: mixing system .pc files with the
-# conda toolchain produces sysroot/glibc link errors (see the libserial note).
+# Stay inside the pixi .pc set; mixing system pkg-config with this sysroot fails to link.
 PKG_CONFIG_PATH = "${CONDA_PREFIX}/lib/pkgconfig:${CONDA_PREFIX}/share/pkgconfig:${PKG_CONFIG_PATH}"
 # Gazebo rendering engine plugin path
 GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-10/engine-plugins"
-# Build with the environment's own compilers (see the c-compiler/cxx-compiler
-# note in [dependencies]); CMake would otherwise default to /usr/bin/c++.
+# CMake defaults to /usr/bin/c++ if these are unset.
 CC = "${CONDA_PREFIX}/bin/gcc"
 CXX = "${CONDA_PREFIX}/bin/g++"
 ROS_DISTRO = "lyrical"

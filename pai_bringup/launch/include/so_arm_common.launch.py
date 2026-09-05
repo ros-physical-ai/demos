@@ -86,15 +86,11 @@ def launch_setup(context, *args, **kwargs):
         parameters=[robot_description, {"use_sim_time": use_sim_time}],
     )
 
-    # ros2_control 6.x (Lyrical) no longer hands the controller manager's own
-    # parameter file down to the controllers it loads; each spawner has to pass
-    # the file explicitly, otherwise controllers come up with no parameters at
-    # all (e.g. "parameter 'joints' is not initialized").
+    # Controllers do not inherit the controller manager's YAML; spawners must
+    # pass it or they start with uninitialized parameters (e.g. joints).
     param_file_args = ["--param-file", controllers_file] if controllers_file else []
-    # Controller activation is carried out by the controller manager's update
-    # loop, which in simulation only runs once the sim is stepping. A spawner
-    # can reach the controller manager while the world is still paused, so the
-    # switch and the service calls need enough headroom to outlast that window.
+    # Switch and service calls wait for the controller manager update loop,
+    # which in sim only runs once the world is stepping.
     param_file_args += [
         "--switch-timeout",
         "60",
