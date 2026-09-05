@@ -202,8 +202,6 @@ LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LIBRARY_PATH}"
 LD_LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
 # CMake needs this to find ROS 2 packages installed by robostack
 CMAKE_PREFIX_PATH = "${CONDA_PREFIX}"
-# Stay inside the pixi .pc set; mixing system pkg-config with this sysroot fails to link.
-PKG_CONFIG_PATH = "${CONDA_PREFIX}/lib/pkgconfig:${CONDA_PREFIX}/share/pkgconfig:${PKG_CONFIG_PATH}"
 # Gazebo rendering engine plugin path
 GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-10/engine-plugins"
 # CMake defaults to /usr/bin/c++ if these are unset.
