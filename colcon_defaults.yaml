@@ -1,6 +1,7 @@
 # cmake-args for every `colcon` invocation from this directory.
 # CMAKE_BUILD_TYPE is an env var; a CLI --cmake-args would replace this list.
 build:
+  symlink-install: true
   cmake-args:
     # Robostack rosidl Python libs do not link libpython; C++ consumers need
     # --no-as-needed,-lpython3.14 or dlopen fails on undefined Py* symbols.
