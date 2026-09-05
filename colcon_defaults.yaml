@@ -5,5 +5,8 @@ build:
   cmake-args:
     # Robostack rosidl Python libs do not link libpython; C++ consumers need
     # --no-as-needed,-lpython3.14 or dlopen fails on undefined Py* symbols.
+    # TODO: drop these flags once robostack-lyrical Linux packages DT_NEEDED
+    # libpython again (same as RoboStack/ros-kilted#76: make
+    # ros-lyrical-rosidl-generator-py.patch osx-only and rebuild).
     - -DCMAKE_SHARED_LINKER_FLAGS=-Wl,--no-as-needed,-lpython3.14
     - -DCMAKE_EXE_LINKER_FLAGS=-Wl,--no-as-needed,-lpython3.14
