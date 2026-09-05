@@ -45,7 +45,7 @@ The Zenoh router must be running first (see the repository README). Then launch
 your hardware/sim bringup and the SO-ARM101 demo (which also starts the IK servo):
 
 ```bash
-pixi run start_zenoh        # terminal 1
+pixi run zenoh-router       # terminal 1
 pixi run so-arm-mujoco      # terminal 2 (MuJoCo + controllers; or another bringup)
 pixi run so-arm-rviz-ik     # terminal 3 (IK servo + marker adapter)
 ```
