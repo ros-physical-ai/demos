@@ -204,9 +204,6 @@ LD_LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
 CMAKE_PREFIX_PATH = "${CONDA_PREFIX}"
 # Gazebo rendering engine plugin path
 GZ_RENDERING_ENGINE_PATH = "${CONDA_PREFIX}/lib/gz-rendering-10/engine-plugins"
-# CMake defaults to /usr/bin/c++ if these are unset.
-CC = "${CONDA_PREFIX}/bin/gcc"
-CXX = "${CONDA_PREFIX}/bin/g++"
 ROS_DISTRO = "lyrical"
 # Force ROS 2 to use Zenoh middleware
 RMW_IMPLEMENTATION = "rmw_zenoh_cpp"
