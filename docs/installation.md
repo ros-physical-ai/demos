@@ -11,7 +11,10 @@ This guide covers installing the workspace and its dependencies.
 ### GPU
 
 - **Simulation (Gazebo / MuJoCo):** no GPU is strictly required — both simulators run with software rendering — but any GPU with a working OpenGL driver is recommended for smooth rendering.
-- **ML inference & training (LeRobot):** training and inference run on [PyTorch](https://pytorch.org/) (LeRobot's deep-learning backend), so a CUDA-capable **NVIDIA GPU** is strongly recommended — training is impractically slow on CPU. The `install-ml-deps` task auto-detects your GPU via `nvidia-smi` and installs a matching PyTorch build: a CUDA wheel when an NVIDIA GPU is present, or a CPU-only build otherwise. CPU is fine for quick tests but not for real workloads.
+- **ML inference & training (LeRobot):** training and inference run on [PyTorch](https://pytorch.org/) (LeRobot's deep-learning backend), so a GPU is strongly recommended — training is impractically slow on CPU. The `install-ml-deps` task auto-detects your GPU and installs a matching PyTorch build:
+  - **NVIDIA GPUs:** auto-detected via `nvidia-smi`; installs CUDA-enabled PyTorch wheel.
+  - **Intel GPUs (iGPU & discrete):** auto-detected; installs Intel XPU-enabled PyTorch wheel for optimized inference.
+  - **No GPU detected:** falls back to CPU-only build. CPU is fine for quick tests but impractical for real workloads.
 
 ## Install with Pixi (recommended)
 
