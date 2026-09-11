@@ -2,7 +2,7 @@
 
 ## Linting & Pre-commit
 
-This repository uses [pre-commit](https://pre-commit.com/) to enforce consistent code quality. The following hooks are configured:
+This repository uses [pre-commit](https://pre-commit.com/) to enforce consistent code quality. The commands below are run from the repository root and cover every file in the repository, regardless of which application you are working in. The following hooks are configured:
 
 - **General**: trailing whitespace, end-of-file fixer, YAML/XML validation, large file check, merge conflict markers
 - **Python**: [Ruff](https://docs.astral.sh/ruff/) for linting and formatting
@@ -28,4 +28,5 @@ Hooks will run automatically on staged files when you `git commit`. To run all h
 pre-commit run --all-files
 ```
 
-With Pixi: `pixi run lint`
+`pre-commit` is also available inside any application environment, so
+`cd apps/so_arm101 && pixi run lint` works without installing it globally.

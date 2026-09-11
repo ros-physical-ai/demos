@@ -1,15 +1,15 @@
 # pixi environments
-.pixi/*
-!.pixi/config.toml
+**/.pixi/*
+!**/.pixi/config.toml
 *.egg-info
 
 # Python
 *.pyc
 
-# Build output
-build/*
-install/*
-log/*
+# Build output (root and per-application workspaces)
+**/build/
+**/install/
+**/log/
 
 # IDE metadata
 .vscode
@@ -19,12 +19,12 @@ node_modules/
 logs
 outputs
 
-# External repos imported via vcs
-external/*
+# External repos imported via vcs (per-application workspaces)
+**/external/
 
-# Recorded datasets
-datasets/*
-datasets_lerobot/*
+# Recorded datasets (root and per-application workspaces)
+**/datasets/
+**/datasets_lerobot/
 
 # wandb
 wandb

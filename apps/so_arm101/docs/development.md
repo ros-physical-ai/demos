@@ -6,12 +6,12 @@ Install Pixi first by following [its official documentation](https://pixi.prefix
 
 ## Prerequisites
 
-The following must be installed system-wide.
-See [README.md](../README.md) for installation instructions:
+Pixi installs ROS 2, Gazebo and every build dependency for you — see
+[Installation](installation.md). Only the items below come from outside Pixi:
 
-_Dependent repos_: Installed via `vcs import external < pai.repos --recursive`
+_Dependent repos_: fetched by `pixi run install-source-deps` (run from `apps/so_arm101/`)
 
-_GPU drivers (optional)_: For GPU acceleration, install the appropriate drivers for your hardware:
+_GPU drivers (optional)_: installed system-wide, for GPU acceleration:
 
 - **NVIDIA**: NVIDIA drivers and CUDA toolkit for CUDA-based acceleration
 - **Intel**: Intel GPU drivers for XPU-based acceleration on iGPU or discrete Intel Arc GPUs
@@ -26,6 +26,9 @@ ROS 2 Lyrical dependencies are automatically installed via Pixi when you run `pi
 Install base environment and ML dependencies:
 
 ```bash
+# Step 0: Navigate to the SO-ARM101 application directory (where its pixi.toml lives)
+cd apps/so_arm101
+
 # Step 1: Install base environment (includes ROS 2 Lyrical dependencies)
 pixi install
 
@@ -40,11 +43,11 @@ The `install-ml-deps` task automatically:
 
 ### 2. Build
 
-Build the workspace directly from the repository root folder:
+Build the workspace from the SO-ARM101 application directory:
 
 ```bash
-# Navigate to the repository root (where pixi.toml is located)
-cd demos
+# Navigate to the SO-ARM101 application directory (where its pixi.toml is located)
+cd apps/so_arm101
 
 # Build the workspace using Pixi task
 pixi run build
@@ -80,7 +83,7 @@ pixi run so-arm-mujoco
 For interactive development, you can use `pixi shell` to enter an interactive shell with the environment activated.
 
 ```bash
-cd demos
+cd apps/so_arm101
 pixi shell
 ```
 

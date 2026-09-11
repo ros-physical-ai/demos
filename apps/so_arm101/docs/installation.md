@@ -20,8 +20,8 @@ This guide covers installing the workspace and its dependencies.
 
 ```bash
 git clone https://github.com/ros-physical-ai/demos
-cd demos
-vcs import external < pai.repos --recursive
+cd demos/apps/so_arm101
+pixi run install-source-deps
 pixi install
 pixi run build
 ```
@@ -43,12 +43,13 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y libserial-dev python3-vcstool
 mkdir ~/ws_pai/src -p && cd ~/ws_pai/src
 git clone https://github.com/ros-physical-ai/demos
-cd demos
-vcs import external < pai.repos --recursive
+cd demos/apps/so_arm101
+vcs import external --recursive < ../../common/common.repos
+vcs import external --recursive < so_arm101.repos
 cd ~/ws_pai
 rosdep install --from-paths src --ignore-src --rosdistro lyrical -yir
 source /opt/ros/lyrical/setup.bash
-colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+colcon build --base-paths src/demos/apps/so_arm101 src/demos/common --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
 
 When using this approach, source the workspace before running demos:
@@ -63,4 +64,4 @@ source ~/ws_pai/install/setup.bash
 > This project uses [rmw_zenoh](https://github.com/ros2/rmw_zenoh) as the default ROS 2 middleware.
 > When using Pixi, this is configured automatically. For manual installs, install it via
 > `sudo apt install ros-lyrical-rmw-zenoh-cpp` and `export RMW_IMPLEMENTATION=rmw_zenoh_cpp`.
-> Ensure the Zenoh router is running: `ros2 run rmw_zenoh_cpp rmw_zenohd` (or `pixi run zenoh-router`).
+> Ensure the Zenoh router is running: `ros2 run rmw_zenoh_cpp rmw_zenohd` (or, from `apps/so_arm101/`, `pixi run zenoh-router`).

@@ -11,7 +11,7 @@ ci = ["ci"]
 
 [feature.dev.tasks]
 # Distinct from `build`: pixi refuses the same task name with different commands across environments.
-build-debug = { cmd = ["colcon", "build", "--symlink-install"], env = { CMAKE_BUILD_TYPE = "Debug" } }
+build-debug = { cmd = ["colcon", "build", "--symlink-install", "--base-paths", ".", "../../common"], env = { CMAKE_BUILD_TYPE = "Debug" } }
 
 [feature.ci.activation.env]
 CMAKE_INSTALL_MODE = "COPY"
@@ -22,15 +22,20 @@ CMAKE_INSTALL_MODE = "COPY"
 lint = { cmd = "pre-commit run --all-files" }
 
 # Install dependencies
-# Bring external repos via vcstool
-install-source-deps = { cmd = "vcs import external --recursive < pai.repos" }
+# Bring external repos via vcstool: the shared pipeline first, then this
+# application's own sources. Both land in this application's external/.
+install-source-deps = """
+  vcs import external --recursive < ../../common/common.repos &&
+  vcs import external --recursive < so_arm101.repos
+"""
 # Longer uv download timeout (PyTorch wheels are huge).
 install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
 install-deps = { depends-on = ["install-source-deps", "install-ml-deps"] }
 
 # Build
-# cmake-args live in colcon_defaults.yaml (read from the workspace root).
-build = { cmd = ["colcon", "build"], env = { CMAKE_BUILD_TYPE = "Release" } }
+# cmake-args live in colcon_defaults.yaml (read from this directory).
+# --base-paths scopes discovery to this application plus the shared tree;
+build = { cmd = ["colcon", "build", "--base-paths", ".", "../../common"], env = { CMAKE_BUILD_TYPE = "Release" } }
 clean = { cmd = "rm -rf build install log" }
 
 # Run Demos
