@@ -40,10 +40,10 @@ To optionally use a calibration file with the leader:
 ```bash
 ros2 launch pai_leader_teleop leader_bringup.launch.py \
     usb_port:=/dev/so101_leader \
-    joint_config_file:=$(ros2 pkg prefix pai_bringup)/share/pai_bringup/config/hardware/leader.yaml
+    joint_config_file:=$(ros2 pkg prefix pai_leader_teleop)/share/pai_leader_teleop/config/hardware/leader.yaml
 ```
 
-See [`pai_bringup/config/hardware/leader.yaml`](../pai_bringup/config/hardware/leader.yaml) for an example calibration file.
+See [`pai_leader_teleop/config/hardware/leader.yaml`](config/hardware/leader.yaml) for an example calibration file.
 
 ## Usage
 

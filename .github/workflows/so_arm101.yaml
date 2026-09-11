@@ -1,31 +1,32 @@
-name: CI
+name: CI (SO-ARM101)
 
 on:
   pull_request:
+    paths:
+      - "apps/so_arm101/**"
+      - "common/**"
+      - ".github/workflows/so_arm101.yaml"
   push:
     branches: [main]
+    paths:
+      - "apps/so_arm101/**"
+      - "common/**"
+      - ".github/workflows/so_arm101.yaml"
 
-# Cancel in-progress runs for the same PR/branch
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  lint:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Run pre-commit
-        uses: pre-commit/action@v3.0.1
-
   build:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, ubuntu-24.04]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: apps/so_arm101
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,10 +34,12 @@ jobs:
       - name: Import external repos
         run: |
           pip install vcstool
-          vcs import external < pai.repos --recursive
+          vcs import external --recursive < ../../common/common.repos
+          vcs import external --recursive < so_arm101.repos
 
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
+          manifest-path: apps/so_arm101/pixi.toml
           cache: true
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
           frozen: true

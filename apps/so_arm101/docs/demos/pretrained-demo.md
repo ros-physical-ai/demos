@@ -59,7 +59,7 @@ The pretrained policy is an **ACT** ([Action Chunking with Transformers](https:/
 
 ## Prerequisites
 
-Follow the main [README](../../README.md) to set up the workspace (Pixi install + `pixi run build`). You will also need:
+Follow the [SO-ARM101 quick start](../../README.md#quick-start) to set up the workspace (inside `apps/so_arm101/`: Pixi install + `pixi run build`). You will also need:
 
 - A **GPU (recommended)** — inference runs faster on GPU:
   - **NVIDIA GPUs**: Use `policy_device:=cuda` for CUDA-accelerated inference.
@@ -159,7 +159,7 @@ The arm should start reaching for the cubes and placing them onto the tray. Infe
 
 ## Reset the Cubes and Run Again
 
-Once the cubes are placed, the scene stays as-is. To run the policy again, reset the cubes' positions using the [`gz_set_cubes_poses.py`](../../pai_data_collection/README.md#workflow) helper:
+Once the cubes are placed, the scene stays as-is. To run the policy again, reset the cubes' positions using the [`gz_set_cubes_poses.py`](../../pai_data_collection/README.md#workflow) helper (from `apps/so_arm101/`):
 
 ```bash
 # Reset to the nominal starting layout.

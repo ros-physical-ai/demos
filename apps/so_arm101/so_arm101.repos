@@ -1,3 +1,5 @@
+# Sources specific to the SO-ARM101 application.
+# The shared Rosetta pipeline lives in ../../common/common.repos.
 repositories:
   SO-ARM100/ros2_so_arm100:
     type: git
@@ -15,15 +17,3 @@ repositories:
     type: git
     url: https://github.com/ros-controls/mujoco_ros2_control.git
     version: 7f0aa57c19057f141cb2b74c875cca0064109c0e
-  rosetta:
-    type: git
-    url: https://github.com/iblnkn/rosetta.git
-    version: fb3860cdd4bcc25dd301bb7bcbf1a58a70ade8ac
-  rosetta_interfaces:
-    type: git
-    url: https://github.com/iblnkn/rosetta_interfaces.git
-    version: 90e979108b9b8cdbe791697ee9a338192e16e9fc
-  lerobot-robot-rosetta:
-    type: git
-    url: https://github.com/iblnkn/lerobot-robot-rosetta.git
-    version: e4ed91ee5cd58c0163dabf0af699d3e3c1f193dc
