@@ -1,78 +1,88 @@
-robot_type: so_arm101
+# Rosetta contract for the SO-ARM101.
+#
+# Schema: rosetta 0.2.0. Full field reference:
+# https://iblnkn.github.io/rosetta/reference/contract.html
+#
+# The same contract serves every backend (Gazebo, MuJoCo, real hardware),
+# because all three publish the same topics.
 
-# Recording parameters
-fps: 50 # Matches controller update rate
-max_duration_s: 120.0
+robot_type: so_arm101
+robot_interface: ros2
+
+# Frame clock. Matches the ros2_control update rate.
+fps: 50
 
 observations:
-  - key: observation.images.wrist
-    topic: /wrist_camera/image_raw
-    type: sensor_msgs/msg/Image
-    image:
-      # Resize for neural network input
-      resize: [480, 480]
-    align: { strategy: hold, stamp: header, tol_ms: 100 }
-    qos: { reliability: best_effort, history: keep_last, depth: 10 }
+  observation.images.wrist:
+    channel:
+      topic: /wrist_camera/image_raw
+      type: sensor_msgs/msg/Image
+      qos: { reliability: best_effort, history: keep_last, depth: 10 }
+    align: { strategy: hold, timeline: header }
+    # Resize for neural network input. FORWARD_ONLY, which is legal on an
+    # observation and would be refused on an action.
+    apply: [resize: [480, 480]]
 
-  - key: observation.images.static
-    topic: /static_camera/image_raw
-    type: sensor_msgs/msg/Image
-    image:
-      # Resize for neural network input
-      resize: [480, 480]
-    align: { strategy: hold, stamp: header, tol_ms: 100 }
-    qos: { reliability: best_effort, history: keep_last, depth: 10 }
+  observation.images.static:
+    channel:
+      topic: /static_camera/image_raw
+      type: sensor_msgs/msg/Image
+      qos: { reliability: best_effort, history: keep_last, depth: 10 }
+    align: { strategy: hold, timeline: header }
+    apply: [resize: [480, 480]]
 
-  - key: observation.state
-    topic: /joint_states
-    type: sensor_msgs/msg/JointState
-    selector:
-      # All 6 joints: 5 arm joints + 1 gripper jaw
-      # Names must match the joint names in /joint_states (URDF names)
-      names:
-        [
-          position.shoulder_pan_joint,
-          position.shoulder_lift_joint,
-          position.elbow_flex_joint,
-          position.wrist_flex_joint,
-          position.wrist_roll_joint,
-          position.gripper_joint,
-        ]
-    align: { strategy: hold, stamp: header, tol_ms: 100 }
-    qos: { reliability: reliable, history: keep_last, depth: 50 }
-    # Convert radians (ROS) to degrees (LeRobot)
-    unit_conversion: rad2deg
+  observation.state:
+    channel:
+      topic: /joint_states
+      type: sensor_msgs/msg/JointState
+      qos: { reliability: reliable, history: keep_last, depth: 50 }
+    align: { strategy: hold, timeline: header }
+    # All 6 joints: 5 arm joints + 1 gripper jaw. These are real field
+    # lookups — the names must match the URDF joint names in /joint_states.
+    select:
+      [
+        position.shoulder_pan_joint,
+        position.shoulder_lift_joint,
+        position.elbow_flex_joint,
+        position.wrist_flex_joint,
+        position.wrist_roll_joint,
+        position.gripper_joint,
+      ]
+    # Radians (ROS) -> degrees (LeRobot). BIJECTIVE, so rosetta round-trip
+    # verifies the inverse at contract load.
+    apply: [rad2deg]
 
 actions:
-  - key: action
-    publish:
+  action:
+    channel:
       topic: /forward_position_controller/commands
       type: std_msgs/msg/Float64MultiArray
-      layout: flat
       qos: { reliability: reliable, history: keep_last, depth: 10 }
-      strategy:
-        mode: nearest
-        tolerance_ms: 100
-    selector:
-      # Joint names matching LeRobot so101_follower motor names (with .pos suffix).
-      # These are the features recorded in the LeRobot dataset.
-      # We could be using the same names as in the observation states to be more consistent.
-      # Matching LeRobot's so101_follower motor names is ideal to allow compatibility to lerobot tools like lerobot-replay.
-      names:
-        [
-          shoulder_pan.pos,
-          shoulder_lift.pos,
-          elbow_flex.pos,
-          wrist_flex.pos,
-          wrist_roll.pos,
-          gripper.pos,
-        ]
-    # Convert radians (ROS) to degrees (LeRobot)
-    unit_conversion: rad2deg
-    from_tensor:
-      # Clamp to safe joint limits (radians)
-      clamp: [-3.14159, 3.14159]
-    safety_behavior: hold # Maintain last position when stopped
-
-recording:
-  storage: mcap
+      # Watchdog and on-deactivate behavior: re-send the last command rather
+      # than commanding the zero pose (`zeros` would slam a position-controlled
+      # arm to zero). Bounded by the clamp in `apply` below.
+      safety: hold
+    # Float64MultiArray carries no std_msgs/Header, so `receive` is the only
+    # timeline this channel provides; `header` is a load-time error here.
+    align: { strategy: hold, timeline: receive }
+    # Joint names matching LeRobot so101_follower motor names (with .pos
+    # suffix) for compatibility with LeRobot tools like lerobot-replay.
+    # For a MultiArray these are labels only: the codec ignores them, and they
+    # serve to declare the vector width and name the dataset features.
+    select:
+      [
+        shoulder_pan.pos,
+        shoulder_lift.pos,
+        elbow_flex.pos,
+        wrist_flex.pos,
+        wrist_roll.pos,
+        gripper.pos,
+      ]
+    # Order is load-bearing. Recording runs this front-to-back forward;
+    # serving runs it back-to-front through the inverses, i.e. deg2rad then
+    # clamp — so the clamp bounds the outgoing command in radians, which is
+    # what the pre-0.2.0 `from_tensor: {clamp: ...}` meant. Reversing these
+    # two would clamp degrees to +/-3.14 and destroy every command.
+    apply:
+      - clamp: { min: -3.14159, max: 3.14159 }
+      - rad2deg

@@ -67,11 +67,21 @@ The SO-ARM101 contract lives at `pai_data_collection/config/rosetta/so_arm101.ya
 Key contract features:
 
 - **FPS**: 50 Hz (matches the `ros2_control` update rate)
-- **Image resize**: 480×480 for neural network input
-- **Unit conversion**: `rad2deg` — automatically converts ROS 2 radians to LeRobot degrees during recording and back during inference
-- **Safety behavior**: `hold` — maintains last commanded position when inference stops
+- **Image resize**: `apply: [resize: [480, 480]]` for neural network input
+- **Unit conversion**: `apply: [rad2deg]` — automatically converts ROS 2 radians to LeRobot degrees during recording and back during inference
+- **Safety behavior**: `channel.safety: hold` — maintains last commanded position when inference stops
 
 You can inspect or modify the contract to fit your robot or sensor configuration. For example, you could add more cameras, change the FPS, or adjust image resolution.
+
+> [!IMPORTANT]
+> On an action, `apply` is a **directional** pipeline: recording runs it front-to-back, and inference runs it back-to-front through each operator's inverse. Our action declares `apply: [clamp: {...}, rad2deg]` so that inference runs `deg2rad` and _then_ clamps — bounding the outgoing command in radians. Writing the two in the other order would clamp degrees to ±3.14 and destroy every command. See the [contract reference](https://iblnkn.github.io/rosetta/reference/contract.html#operators).
+
+> [!TIP]
+> The contract is validated entirely at load time, so loading it is a complete test of codecs, timelines, operator invertibility, and image geometry:
+>
+> ```bash
+> python -c "from rosetta.contract.schema import load_contract; load_contract('$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml'); print('OK')"
+> ```
 
 ### 2. Recording Episodes
 
@@ -91,6 +101,7 @@ The commands:
 
 ```bash
 # Terminal 1: Start the episode recorder (works with any backend)
+# Add use_sim_time:=true for the Gazebo and MuJoCo backends, which publish /clock.
 ros2 launch rosetta episode_recorder_launch.py \
     contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     bag_base_dir:=<output_directory>
@@ -98,6 +109,12 @@ ros2 launch rosetta episode_recorder_launch.py \
 # Terminal 2: Start the keyboard controller
 ros2 run rosetta episode_keyboard_node
 ```
+
+> [!NOTE]
+> **The recorder records every topic on the graph**, not just the contract's, so you never lose data you might want to train on later. The contract acts as a _manifest_: its topics are required to be present, and the recorder reports per-topic message counts at episode end and flags contract topics that received nothing. Trim with `record_all:=false` or the `exclude_topics` regex list in `params/episode_recorder.yaml`. Cameras are the exception — the recorder keeps one `image_transport` stream per camera, since republishers encode only while subscribed and recording all of them would make one camera encode every frame several ways at once.
+
+> [!NOTE]
+> Episodes are recorded as **raw** rosbag2 messages, with the contract text embedded in each bag's `metadata.yaml`. Decoding, resizing, alignment, and unit conversion all happen at conversion or inference time — so **revising the contract never requires re-recording**. The same bags can produce different datasets as your schema evolves.
 
 Keyboard controls:
 
@@ -137,21 +154,24 @@ ros2 bag play <path_to_bag_directory>
 
 ### 3. Converting to LeRobot Dataset
 
-After recording, convert the rosbags into a LeRobot dataset using `rosetta.port_bags`. The contract's `unit_conversion: rad2deg` is applied automatically during conversion.
+After recording, convert the rosbags into a LeRobot dataset using the `rosetta_port` CLI. The contract's `apply: [rad2deg]` is applied automatically during conversion, and `rosetta_port` runs the same resampling code as live inference, so the offline dataset matches what the robot sees at runtime.
 
 ```bash
-python -m rosetta.port_bags \
+ros2 run rosetta rosetta_port \
     --raw-dir <path_to_bags> \
     --contract $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     --repo-id <dataset_name> \
     --root <datasets_directory>
 ```
 
+> [!NOTE]
+> One bag directory is one episode. Observation topics must be present in the bag; actions, rewards, and signals may be missing and will zero-fill. The dataset gets a `meta/rosetta_contract.yaml` sidecar, which is what lets a checkpoint resolve its own contract at deploy time.
+
 > [!TIP]
 > Add `--push-to-hub` (with a namespaced `--repo-id`) to upload the converted dataset to the [HuggingFace Hub](https://huggingface.co/datasets) in the same step:
 >
 > ```bash
-> python -m rosetta.port_bags \
+> ros2 run rosetta rosetta_port \
 >     --raw-dir <path_to_bags> \
 >     --contract $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
 >     --repo-id <hf_user>/<dataset_name> \
@@ -160,16 +180,20 @@ python -m rosetta.port_bags \
 >
 > Make sure you are logged in first (`hf auth login`).
 
-#### port_bags Arguments
+#### rosetta_port Arguments
 
-| Argument        | Required | Description                                                           |
-| --------------- | -------- | --------------------------------------------------------------------- |
-| `--raw-dir`     | Yes      | Directory containing bag subdirectories (each with `metadata.yaml`)   |
-| `--contract`    | Yes      | Path to Rosetta contract YAML                                         |
-| `--repo-id`     | No       | Dataset name. Defaults to the `--raw-dir` directory name              |
-| `--root`        | No       | Parent directory for datasets. Dataset saved to `root/repo-id`        |
-| `--push-to-hub` | No       | Upload to HuggingFace Hub after conversion                            |
-| `--vcodec`      | No       | Video codec (default: `libsvtav1`). Use `libx264` for faster encoding |
+| Argument                        | Required | Description                                                                   |
+| ------------------------------- | -------- | ----------------------------------------------------------------------------- |
+| `--raw-dir`                     | Yes      | Directory containing bag subdirectories (each with `metadata.yaml`)           |
+| `--contract`                    | Yes      | Path to Rosetta contract YAML                                                 |
+| `--repo-id`                     | No       | Dataset name. Defaults to the `--raw-dir` directory name                      |
+| `--root`                        | No       | Parent directory for datasets. Dataset saved to `root/repo-id`                |
+| `--framework`                   | No       | Learning framework to write for (default: `lerobot`, resolved by entry point) |
+| `--push-to-hub`                 | No       | Upload to HuggingFace Hub after conversion                                    |
+| `--vcodec`                      | No       | Video codec (default: `libsvtav1`). Use `libx264` for faster encoding         |
+| `--streaming-encoding`          | No       | Encode frames directly instead of via intermediate PNGs (faster)              |
+| `--num-shards`, `--shard-index` | No       | Split the conversion across parallel invocations                              |
+| `--no-embed-contract`           | No       | Skip the `meta/rosetta_contract.yaml` sidecar                                 |
 
 ### 4. Training a Policy
 
@@ -235,7 +259,7 @@ lerobot-replay \
     --dataset.episode=0
 ```
 
-Unit conversion (`rad2deg` ↔ `deg2rad`) is handled automatically by the contract.
+Unit conversion (`rad2deg` ↔ `deg2rad`) is handled automatically by the contract's `apply` pipeline, run forward on record and inverse on replay.
 
 #### Replay Directly on Real Hardware via LeRobot
 
@@ -253,20 +277,19 @@ lerobot-replay \
     --play_sounds=false
 ```
 
-- `--robot.use_degrees=true` — required because the dataset contains degree values (from `unit_conversion: rad2deg` in the contract)
+- `--robot.use_degrees=true` — required because the dataset contains degree values (from `apply: [rad2deg]` in the contract)
 - `--play_sounds=false` — disables audio feedback (avoids `spd-say` errors)
 
 ### 6. Deploying a Policy
 
-The `rosetta_client_node` wraps LeRobot's inference pipeline in a ROS 2 action server. It loads the trained policy, subscribes to observation topics, and publishes actions — all following the contract. Unit conversion is handled automatically.
+The `policy_runner_node` wraps a learning framework's inference pipeline in a ROS 2 action server. It loads the trained policy, subscribes to observation topics, and publishes actions — all following the contract. Unit conversion is handled automatically.
 
 ```bash
-# Launch the Rosetta client
-ros2 launch rosetta rosetta_client_launch.py \
+# Launch the policy runner
+ros2 launch rosetta policy_runner_launch.py \
     contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     pretrained_name_or_path:=<path_to_checkpoint> \
-    policy_type:=<policy_type> \
-    policy_device:=cuda
+    policy_type:=<policy_type>
 
 # Trigger inference
 ros2 action send_goal /run_policy \
@@ -275,17 +298,40 @@ ros2 action send_goal /run_policy \
 
 Because the contract defines the topic interface, the same deployment command works whether the robot backend is Gazebo, MuJoCo, or real hardware.
 
-#### Rosetta Client Parameters
+> [!TIP]
+> **You can omit `contract_path` entirely.** Datasets ported with default settings embed the contract, so the runner resolves it from the checkpoint chain: `pretrained_name_or_path` → `train_config.json` → the training dataset → `meta/rosetta_contract.yaml`. This is the surest way to guarantee the deployed translation is the one the policy was trained with. A non-empty `contract_path` is used as given and never compared against the checkpoint's own.
 
-| Parameter                 | Default          | Description                                             |
-| ------------------------- | ---------------- | ------------------------------------------------------- |
-| `contract_path`           | —                | Path to contract YAML                                   |
-| `pretrained_name_or_path` | —                | HuggingFace model ID or local path to checkpoint        |
-| `policy_type`             | `act`            | Policy type: `act`, `smolvla`, `diffusion`, `pi0`, etc. |
-| `policy_device`           | `cuda`           | Inference device: `cuda`, `cpu`                         |
-| `server_address`          | `127.0.0.1:8080` | Policy server address (for remote inference)            |
-| `actions_per_chunk`       | `30`             | Actions per inference chunk                             |
-| `launch_local_server`     | `true`           | Launch local gRPC policy server or connect to remote    |
+#### Policy Runner Parameters
+
+Deployment-specific parameters are launch arguments; everything else is set in `params/policy_runner.yaml`. Run `ros2 launch rosetta policy_runner_launch.py --show-args` for the current list.
+
+| Parameter                 | Default            | Description                                                             |
+| ------------------------- | ------------------ | ----------------------------------------------------------------------- |
+| `contract_path`           | —                  | Path to contract YAML. Optional — resolved from the checkpoint if empty |
+| `pretrained_name_or_path` | —                  | HuggingFace model ID or local path to checkpoint                        |
+| `framework`               | `lerobot`          | Learning framework adapter, resolved by entry-point name                |
+| `policy_type`             | `act`              | Policy type: `act`, `smolvla`, `diffusion`, `pi0`, etc.                 |
+| `policy_device`           | `cuda`             | Inference device: `cuda`, `xpu`, `mps`, `cpu` (falls back to `cpu`)     |
+| `server_address`          | `127.0.0.1:8080`   | Policy server address (for remote inference)                            |
+| `actions_per_chunk`       | `30`               | Actions per inference chunk                                             |
+| `aggregate_fn_name`       | `weighted_average` | How to blend an arriving chunk with the one still executing             |
+| `launch_local_server`     | `true`             | Launch local gRPC policy server or connect to remote                    |
+| `default_max_duration_s`  | `0.0`              | Max run duration. `0.0` runs until stopped                              |
+
+> [!NOTE]
+> **Remote inference.** Set `launch_local_server:=false` and point `server_address` at a machine running `rosetta_policy_server`, which has no ROS 2 dependency and can run on any machine with a GPU. This lets a resource-constrained robot offload inference over the network.
+
+#### Reading the Action Result
+
+Rosetta 0.2.0 reworked how the actions report completion. There is no `success` field; the terminal `GoalStatus` is the mechanics and `termination_reason` names the cause:
+
+| Terminal `GoalStatus` | Meaning                                                     |
+| --------------------- | ----------------------------------------------------------- |
+| `SUCCEEDED`           | The work reached a defined end (e.g. `max_duration_s` hit)  |
+| `CANCELED`            | A client took it away — **this is how an untimed run ends** |
+| `ABORTED`             | The server stopped it: an error, or a lifecycle deactivate  |
+
+Cancelling an untimed recording or policy run is the normal path, not a failure. `termination_reason` carries the exact cause, with the legal values declared as constants in each `.action` file.
 
 ---
 
@@ -313,8 +359,11 @@ pixi run so-arm-gz
 ```bash
 ros2 launch rosetta episode_recorder_launch.py \
     contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
-    bag_base_dir:=datasets/so_arm101/bags
+    bag_base_dir:=datasets/so_arm101/bags \
+    use_sim_time:=true
 ```
+
+`use_sim_time:=true` paces the recorder on Gazebo's `/clock` at the contract's 50 Hz. Drop it when recording from real hardware.
 
 ### Step 3b — Start the Keyboard Controller
 
@@ -389,7 +438,7 @@ Watch the robot — it should reproduce the forward motion. If anything looks of
 ### Step 5 — Convert to LeRobot Dataset
 
 ```bash
-python -m rosetta.port_bags \
+ros2 run rosetta rosetta_port \
     --raw-dir datasets/so_arm101/bags \
     --contract $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     --repo-id move_arm \
@@ -416,15 +465,16 @@ lerobot-train \
 
 ### Step 7 — Deploy
 
-**Terminal 3** — Launch the Rosetta client:
+**Terminal 3** — Launch the policy runner:
 
 ```bash
-ros2 launch rosetta rosetta_client_launch.py \
+ros2 launch rosetta policy_runner_launch.py \
     contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     pretrained_name_or_path:=outputs/train/act_move_arm/checkpoints/last/pretrained_model \
-    policy_type:=act \
-    policy_device:=cuda
+    policy_type:=act
 ```
+
+The dataset you ported in Step 5 embedded the contract, so `contract_path` can also be omitted, the runner then resolves the contract from the checkpoint itself.
 
 **Terminal 4** — Run the policy:
 
