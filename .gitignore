@@ -28,3 +28,6 @@ datasets_lerobot/*
 
 # wandb
 wandb
+
+# Claude Code session state
+.claude

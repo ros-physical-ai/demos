@@ -11,9 +11,13 @@ See [README.md](../README.md) for installation instructions:
 
 _Dependent repos_: Installed via `vcs import external < pai.repos --recursive`
 
-_NVIDIA drivers and CUDA toolkit_ (Linux only): Required for GPU acceleration (system components). Not applicable on macOS, which runs CPU-only.
+_GPU drivers (optional, Linux only)_: For GPU acceleration, install the appropriate drivers for your hardware:
 
-ROS 2 Kilted dependencies (and `libserial`, needed by `feetech_ros2_driver`) are automatically installed via Pixi when you run `pixi install` — on Linux or macOS (Apple Silicon).
+- **NVIDIA**: NVIDIA drivers and CUDA toolkit for CUDA-based acceleration
+- **Intel**: Intel GPU drivers for XPU-based acceleration on iGPU or discrete Intel Arc GPUs
+- If no GPU drivers are present (or on macOS), the system falls back to CPU-based inference (slower)
+
+ROS 2 Lyrical dependencies (and `libserial`, needed by `feetech_ros2_driver`) are automatically installed via Pixi when you run `pixi install` — on Linux or macOS (Apple Silicon).
 
 ## Quick Start
 
@@ -22,7 +26,7 @@ ROS 2 Kilted dependencies (and `libserial`, needed by `feetech_ros2_driver`) are
 Install base environment and ML dependencies:
 
 ```bash
-# Step 1: Install base environment (includes ROS 2 Kilted dependencies)
+# Step 1: Install base environment (includes ROS 2 Lyrical dependencies)
 pixi install
 
 # Step 2: Install ML dependencies (automatically detects GPU and installs appropriate PyTorch)
@@ -31,7 +35,7 @@ pixi run install-ml-deps
 
 The `install-ml-deps` task automatically:
 
-- Detects your GPU (RTX 5090 or standard)
+- Detects your GPU (NVIDIA CUDA, Intel XPU iGPU/Arc, or CPU fallback)
 - Installs the appropriate PyTorch version
 
 ### 2. Build
@@ -56,7 +60,7 @@ Before running any ROS 2 commands, start the Zenoh router in a separate terminal
 Terminal 1 (start Zenoh router):
 
 ```bash
-pixi run start_zenoh
+pixi run zenoh-router
 ```
 
 Terminal 2 (launch Gazebo simulation):
@@ -85,7 +89,7 @@ You can run commands (e.g., `colcon build`, Python scripts) directly.
 This is useful for interactive debugging, testing, and running multiple commands.
 
 Note: When running ROS 2 commands manually in the shell, ensure the Zenoh router is running.
-Start it in a separate terminal using `pixi run start_zenoh`.
+Start it in a separate terminal using `pixi run zenoh-router`.
 
 Additional resources for using Pixi can be found at this [blog](https://jafarabdi.github.io/blog/2025/ros2-pixi-dev/).
 

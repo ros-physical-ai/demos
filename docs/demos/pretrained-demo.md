@@ -61,7 +61,10 @@ The pretrained policy is an **ACT** ([Action Chunking with Transformers](https:/
 
 Follow the main [README](../../README.md) to set up the workspace (Pixi install + `pixi run build`). You will also need:
 
-- An **NVIDIA GPU** — `policy_device:=cuda` requires CUDA to run inference. Switch to `cpu` if you don't have one (inference will be slower).
+- A **GPU (recommended)** — inference runs faster on GPU:
+  - **NVIDIA GPUs**: Use `policy_device:=cuda` for CUDA-accelerated inference.
+  - **Intel GPUs** (iGPU or Arc): Use `policy_device:=xpu` for Intel XPU-accelerated inference.
+  - **CPU fallback**: Use `policy_device:=cpu` if no GPU is available (inference will be slower).
 - **Internet access** — the pretrained model is fetched from the HuggingFace Hub on first launch and cached under `~/.cache/huggingface/`.
 
 > [!IMPORTANT]
@@ -70,7 +73,7 @@ Follow the main [README](../../README.md) to set up the workspace (Pixi install 
 > running for the duration of your session:
 >
 > ```bash
-> pixi run start_zenoh
+> pixi run zenoh-router
 > ```
 >
 > See [Running the Robot](../running-the-robot.md) for details.
@@ -87,7 +90,7 @@ The fastest path to seeing the policy in action is to skip the rosbags and datas
 ```mermaid
 flowchart LR
     A["1. Start Zenoh
-    pixi run start_zenoh"] --> B["2. Start Gazebo
+    pixi run zenoh-router"] --> B["2. Start Gazebo
     pixi run so-arm-gz"]
     B --> C["3. Launch Rosetta Client
     pretrained_name_or_path:=francocipollone/rospai_act_sim_arm101_place_cubes_on_tray"]
@@ -129,7 +132,7 @@ Key flags:
 | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
 | `pretrained_name_or_path:=francocipollone/rospai_act_sim_arm101_place_cubes_on_tray` | HuggingFace repo ID — Rosetta downloads and loads the checkpoint via LeRobot on first launch |
 | `policy_type:=act`                                                                   | Must match the architecture of the checkpoint                                                |
-| `policy_device:=cuda`                                                                | Use the GPU for inference. Use `cpu` if you don't have one                                   |
+| `policy_device:=cuda` or `xpu` or `cpu`                                              | `cuda` for NVIDIA GPUs, `xpu` for Intel GPUs (iGPU/Arc), `cpu` for CPU-only inference        |
 | `use_sim_time:=true`                                                                 | Required because Gazebo publishes its clock on `/clock` (instead of using wall-clock time)   |
 
 The first launch will download the model weights into your local HuggingFace cache (`~/.cache/huggingface/`). Subsequent launches are instant.

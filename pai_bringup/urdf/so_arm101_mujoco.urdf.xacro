@@ -29,23 +29,17 @@
       <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
       <param name="mujoco_model">$(arg mujoco_model)</param>
       <param name="sim_speed_factor">1.0</param>
-      <param name="camera_publish_rate">10.0</param>
+      <param name="pids_config_file">$(find pai_bringup)/config/mujoco/mujoco_pid.yaml</param>
     </hardware>
 
     <joint name="$(arg prefix)shoulder_pan_joint">
       <param name="initial_position">0.0</param>
-      <param name="id">1</param>
-      <param name="p_cofficient">8</param>
-      <param name="offset">2048</param>
       <command_interface name="position" />
       <state_interface name="position" />
       <state_interface name="velocity" />
     </joint>
 
     <joint name="$(arg prefix)shoulder_lift_joint">
-      <param name="id">2</param>
-      <param name="p_cofficient">16</param>
-      <param name="offset">2125</param>
       <param name="initial_position">0.0</param>
       <command_interface name="position" />
       <state_interface name="position" />
@@ -53,9 +47,6 @@
     </joint>
 
     <joint name="$(arg prefix)elbow_flex_joint">
-      <param name="id">3</param>
-      <param name="offset">2080</param>
-      <param name="p_cofficient">16</param>
       <param name="initial_position">0.0</param>
       <command_interface name="position" />
       <state_interface name="position" />
@@ -63,9 +54,6 @@
     </joint>
 
     <joint name="$(arg prefix)wrist_flex_joint">
-      <param name="id">4</param>
-      <param name="offset">3110</param>
-      <param name="p_cofficient">16</param>
       <param name="initial_position">0.0</param>
       <command_interface name="position" />
       <state_interface name="position" />
@@ -73,9 +61,6 @@
     </joint>
 
     <joint name="$(arg prefix)wrist_roll_joint">
-      <param name="id">5</param>
-      <param name="offset">1024</param>
-      <param name="p_cofficient">16</param>
       <param name="initial_position">0.0</param>
       <command_interface name="position" />
       <state_interface name="position" />
@@ -83,30 +68,11 @@
     </joint>
 
     <joint name="$(arg prefix)gripper_joint">
-      <param name="id">6</param>
-      <param name="offset">2070</param>
-      <param name="p_cofficient">16</param>
       <param name="initial_position">0.0</param>
       <command_interface name="position" />
       <state_interface name="position" />
       <state_interface name="velocity" />
     </joint>
-
-    <!-- Wrist camera (MuJoCo camera name must match sensor name) -->
-    <sensor name="wrist_camera">
-      <param name="frame_name">wrist_camera_link</param>
-      <param name="info_topic">/wrist_camera/camera_info</param>
-      <param name="image_topic">/wrist_camera/image_raw</param>
-      <param name="depth_topic">/wrist_camera/depth</param>
-    </sensor>
-
-    <!-- Static camera -->
-    <sensor name="static_camera">
-      <param name="frame_name">static_camera_link</param>
-      <param name="info_topic">/static_camera/camera_info</param>
-      <param name="image_topic">/static_camera/image_raw</param>
-      <param name="depth_topic">/static_camera/depth</param>
-    </sensor>
   </ros2_control>
 
 </robot>

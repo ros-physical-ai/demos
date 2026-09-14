@@ -9,16 +9,15 @@ Requires Linux or macOS (Apple Silicon) and [Pixi](https://pixi.sh/latest/instal
 ```bash
 git clone https://github.com/ros-physical-ai/demos
 cd demos
-vcs import external < pai.repos --recursive
 pixi install
-pixi run install-ml-deps   # PyTorch + LeRobot (auto-detects GPU)
+pixi run install-deps
 pixi run build
 ```
 
 Launch the SO-ARM101 in Gazebo (start the Zenoh router first, in its own terminal):
 
 ```bash
-pixi run start_zenoh   # terminal 1
+pixi run zenoh-router  # terminal 1
 pixi run so-arm-gz     # terminal 2
 ```
 

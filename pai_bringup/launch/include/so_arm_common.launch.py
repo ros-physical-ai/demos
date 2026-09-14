@@ -55,6 +55,7 @@ def launch_setup(context, *args, **kwargs):
     description_file = LaunchConfiguration("description_file").perform(context)
     description_xacro_args = LaunchConfiguration("description_xacro_args").perform(context)
     ros2_control_file = LaunchConfiguration("ros2_control_file").perform(context)
+    controllers_file = LaunchConfiguration("controllers_file").perform(context)
     use_sim_time = LaunchConfiguration("use_sim_time").perform(context).lower() == "true"
     initial_joint_controller = LaunchConfiguration("initial_joint_controller").perform(context)
     activate_joint_controller = LaunchConfiguration("activate_joint_controller").perform(context).lower() == "true"
@@ -85,6 +86,20 @@ def launch_setup(context, *args, **kwargs):
         parameters=[robot_description, {"use_sim_time": use_sim_time}],
     )
 
+    # Controllers do not inherit the controller manager's YAML; spawners must
+    # pass it or they start with uninitialized parameters (e.g. joints).
+    param_file_args = ["--param-file", controllers_file] if controllers_file else []
+    # Switch and service calls wait for the controller manager update loop,
+    # which in sim only runs once the world is stepping.
+    param_file_args += [
+        "--switch-timeout",
+        "60",
+        "--service-call-timeout",
+        "60",
+        "--controller-manager-timeout",
+        "60",
+    ]
+
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -92,14 +107,15 @@ def launch_setup(context, *args, **kwargs):
             "joint_state_broadcaster",
             "--controller-manager",
             "/controller_manager",
+            *param_file_args,
         ],
         output="both",
     )
 
     # Initial joint controller - started or stopped depending on argument
-    controller_args = [initial_joint_controller, "-c", "/controller_manager"]
+    controller_args = [initial_joint_controller, "-c", "/controller_manager", *param_file_args]
     if not activate_joint_controller:
-        controller_args.append("--stopped")
+        controller_args.append("--inactive")
     initial_joint_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -117,9 +133,9 @@ def launch_setup(context, *args, **kwargs):
     # since that controller does not include the gripper joint.
     # With forward_position_controller (default), the gripper joint is already included.
     if initial_joint_controller == "joint_trajectory_controller":
-        gripper_controller_args = ["gripper_controller", "-c", "/controller_manager"]
+        gripper_controller_args = ["gripper_controller", "-c", "/controller_manager", *param_file_args]
         if not activate_joint_controller:
-            gripper_controller_args.append("--stopped")
+            gripper_controller_args.append("--inactive")
         gripper_controller_spawner = Node(
             package="controller_manager",
             executable="spawner",
@@ -194,6 +210,12 @@ def generate_launch_description():
             "description_xacro_args",
             default_value="",
             description="Extra arguments to pass to the xacro command.",
+        ),
+        DeclareLaunchArgument(
+            "controllers_file",
+            default_value="",
+            description="Path to the ros2_controllers YAML file. Passed to each controller "
+            "spawner as '--param-file' so the controllers get their parameters.",
         ),
         DeclareLaunchArgument(
             "ros2_control_file",

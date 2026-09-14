@@ -3,7 +3,7 @@
 # Docker image for ROS Physical AI Demos.
 # Build: docker buildx build . -t pai_demo --load
 
-ARG DISTRO=kilted
+ARG DISTRO=lyrical
 FROM ros:${DISTRO}
 
 # Avoid interactive prompts during apt installs

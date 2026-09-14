@@ -1,0 +1,18 @@
+/**:
+  ros__parameters:
+    mujoco_plugins:
+      mujoco_camera_plugin:
+        type: "mujoco_ros2_control_plugins/CameraPlugin"
+        camera_publish_rate: 10.0
+        wrist_camera:
+          policy: streaming
+          frame_name: wrist_camera_link
+          info_topic: /wrist_camera/camera_info
+          image_topic: /wrist_camera/image_raw
+          depth_topic: /wrist_camera/depth
+        static_camera:
+          policy: streaming
+          frame_name: static_camera_link
+          info_topic: /static_camera/camera_info
+          image_topic: /static_camera/image_raw
+          depth_topic: /static_camera/depth
