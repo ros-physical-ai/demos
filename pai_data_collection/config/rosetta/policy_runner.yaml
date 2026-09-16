@@ -1,48 +1,39 @@
 # Policy runner parameters for the SO-ARM101 demos.
 #
-# Pass this to rosetta's policy_runner_launch.py, which takes it as the source
-# of truth for everything that is not a launch argument:
+# Pass this file to rosetta's policy_runner_launch.py as the params file:
 #
 #   ros2 launch rosetta policy_runner_launch.py \
 #       params_file:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/policy_runner.yaml \
 #       pretrained_name_or_path:=<checkpoint>
 #
-# `policy_device` in particular is NOT a launch argument — it can only be set
-# here (or in rosetta's own params/policy_runner.yaml). Supplying this file
-# replaces rosetta's default params file; anything omitted below falls back to
-# the node's declared default, which is why only the interesting knobs appear.
+# The values below configure the policy_runner node. Parameters not listed here
+# take the node's declared default.
 
 policy_runner:
   ros__parameters:
-    # Inference device: "cuda" (NVIDIA), "xpu" (Intel iGPU/Arc), "mps" (Apple),
-    # "cpu", or a specific device like "cuda:0". If the requested backend is
-    # unavailable the runner logs a warning and falls back to "cpu" — check the
-    # log if inference is unexpectedly slow.
+    # Inference device: "cuda", "xpu", "mps", "cpu", or e.g. "cuda:0".
+    # Falls back to "cpu" with a warning if unavailable.
     policy_device: "cuda"
 
-    # Policy architecture. Must match the checkpoint, or configure fails inside
-    # LeRobot's from_pretrained. Usually set as a launch argument instead.
+    # Policy architecture. Must match the checkpoint.
     policy_type: "act"
 
-    # Actions requested per inference chunk. Larger chunks mean fewer inference
-    # calls and a less reactive robot.
+    # Actions requested per inference chunk. Larger chunks are less reactive.
     actions_per_chunk: 30
 
     # Queue fill ratio at which to request the next chunk (0.0 - 1.0).
     chunk_size_threshold: 0.95
 
-    # How to blend an arriving chunk with the one still executing. Our action
-    # vector is all continuous joint positions, so interpolation is safe; use
-    # "latest_only" if you add a binary or quaternion slice.
+    # How to blend an arriving chunk with the one still executing.
+    # "latest_only" for non-interpolatable action slices.
     aggregate_fn_name: "weighted_average"
 
     # Run until stopped. Override per-goal with RunPolicy's max_duration_s.
     default_max_duration_s: 0.0
 
-    # Start the gRPC policy server locally at configure time, preloading the
-    # model so the first goal costs the same as any other. Set false to point
-    # server_address at a remote GPU machine instead.
+    # Start the gRPC policy server locally at configure time.
+    # Set false to use a remote server at server_address.
     launch_local_server: true
 
-    # Raise if the first launch has to download weights from the HF Hub.
+    # Covers a first-launch download of weights from the HF Hub.
     server_startup_timeout_sec: 120.0

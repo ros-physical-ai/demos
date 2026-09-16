@@ -3,8 +3,8 @@
 # Schema: rosetta 0.2.0. Full field reference:
 # https://iblnkn.github.io/rosetta/reference/contract.html
 #
-# The same contract serves every backend (Gazebo, MuJoCo, real hardware),
-# because all three publish the same topics.
+# The same contract serves simulation and real hardware, which publish the
+# same topics.
 
 robot_type: so_arm101
 robot_interface: ros2
@@ -19,8 +19,7 @@ observations:
       type: sensor_msgs/msg/Image
       qos: { reliability: best_effort, history: keep_last, depth: 10 }
     align: { strategy: hold, timeline: header }
-    # Resize for neural network input. FORWARD_ONLY, which is legal on an
-    # observation and would be refused on an action.
+    # Resize for neural network input. FORWARD_ONLY, legal on an observation.
     apply: [resize: [480, 480]]
 
   observation.images.static:
@@ -37,8 +36,7 @@ observations:
       type: sensor_msgs/msg/JointState
       qos: { reliability: reliable, history: keep_last, depth: 50 }
     align: { strategy: hold, timeline: header }
-    # All 6 joints: 5 arm joints + 1 gripper jaw. These are real field
-    # lookups — the names must match the URDF joint names in /joint_states.
+    # Names must match the joint names published in /joint_states.
     select:
       [
         position.shoulder_pan_joint,
@@ -48,8 +46,8 @@ observations:
         position.wrist_roll_joint,
         position.gripper_joint,
       ]
-    # Radians (ROS) -> degrees (LeRobot). BIJECTIVE, so rosetta round-trip
-    # verifies the inverse at contract load.
+    # Radians (ROS) -> degrees (LeRobot). BIJECTIVE, so the inverse is
+    # verified at contract load.
     apply: [rad2deg]
 
 actions:
@@ -58,17 +56,12 @@ actions:
       topic: /forward_position_controller/commands
       type: std_msgs/msg/Float64MultiArray
       qos: { reliability: reliable, history: keep_last, depth: 10 }
-      # Watchdog and on-deactivate behavior: re-send the last command rather
-      # than commanding the zero pose (`zeros` would slam a position-controlled
-      # arm to zero). Bounded by the clamp in `apply` below.
       safety: hold
-    # Float64MultiArray carries no std_msgs/Header, so `receive` is the only
-    # timeline this channel provides; `header` is a load-time error here.
+    # Float64MultiArray carries no header, so `receive` is the only timeline
+    # available here.
     align: { strategy: hold, timeline: receive }
-    # Joint names matching LeRobot so101_follower motor names (with .pos
-    # suffix) for compatibility with LeRobot tools like lerobot-replay.
-    # For a MultiArray these are labels only: the codec ignores them, and they
-    # serve to declare the vector width and name the dataset features.
+    # Names match LeRobot's so101_follower motors, for compatibility with
+    # LeRobot tools.
     select:
       [
         shoulder_pan.pos,
@@ -78,11 +71,7 @@ actions:
         wrist_roll.pos,
         gripper.pos,
       ]
-    # Order is load-bearing. Recording runs this front-to-back forward;
-    # serving runs it back-to-front through the inverses, i.e. deg2rad then
-    # clamp — so the clamp bounds the outgoing command in radians, which is
-    # what the pre-0.2.0 `from_tensor: {clamp: ...}` meant. Reversing these
-    # two would clamp degrees to +/-3.14 and destroy every command.
+    # Order matters. Recording applies this front-to-back.
     apply:
       - clamp: { min: -3.14159, max: 3.14159 }
       - rad2deg

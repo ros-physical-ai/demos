@@ -323,15 +323,13 @@ Deployment-specific parameters are launch arguments; everything else is set in `
 
 #### Reading the Action Result
 
-Rosetta 0.2.0 reworked how the actions report completion. There is no `success` field; the terminal `GoalStatus` is the mechanics and `termination_reason` names the cause:
-
 | Terminal `GoalStatus` | Meaning                                                     |
 | --------------------- | ----------------------------------------------------------- |
 | `SUCCEEDED`           | The work reached a defined end (e.g. `max_duration_s` hit)  |
 | `CANCELED`            | A client took it away — **this is how an untimed run ends** |
 | `ABORTED`             | The server stopped it: an error, or a lifecycle deactivate  |
 
-Cancelling an untimed recording or policy run is the normal path, not a failure. `termination_reason` carries the exact cause, with the legal values declared as constants in each `.action` file.
+An untimed recording or policy run ends when a client cancels it, which the server reports as `CANCELED`. `termination_reason` carries the exact cause, with the legal values declared as constants in each `.action` file.
 
 ---
 
@@ -363,7 +361,7 @@ ros2 launch rosetta episode_recorder_launch.py \
     use_sim_time:=true
 ```
 
-`use_sim_time:=true` paces the recorder on Gazebo's `/clock` at the contract's 50 Hz. Drop it when recording from real hardware.
+`use_sim_time:=true` paces the recorder on the simulator's `/clock` at the contract's 50 Hz. Drop it when recording from real hardware.
 
 ### Step 3b — Start the Keyboard Controller
 

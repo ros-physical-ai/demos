@@ -45,7 +45,7 @@ ros2 launch rosetta episode_recorder_launch.py \
 ```
 
 > [!NOTE]
-> The recorder captures **every topic on the graph** by default, not just the contract's, the contract is a manifest of what must be present, not a filter. Set `record_all:=false`, or trim with the `exclude_topics` regex list in rosetta's `params/episode_recorder.yaml`, if the bags get too large. Episodes are stored as raw messages with the contract text embedded in `metadata.yaml`, so revising the contract never requires re-recording.
+> The recorder captures **every topic on the graph** by default. The contract declares which topics must be present for the episode to be valid. Set `record_all:=false` to record only the contract's topics, or trim the capture with the `exclude_topics` regex list in rosetta's `params/episode_recorder.yaml`, if the bags get too large. Episodes are stored as raw messages with the contract text embedded in `metadata.yaml`, so a revised contract can be applied to existing recordings.
 
 4. Start the keyboard controller (in a new terminal):
 

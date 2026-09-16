@@ -179,15 +179,8 @@ cbor2 = ">=6.1.2,<7"
 [pypi-options.dependency-overrides]
 numpy = ">=2.3,<3"
 protobuf = ">=6.31.1,<7"
-# Released draccus cannot parse PEP-604 unions on Python 3.14 (dlwh/draccus#69),
-# fixed by devangpratap's PR (marin-community/draccus#70). On top of that, draccus
-# 0.11 stopped writing the top-level "type" discriminator when dumping a concrete
-# ChoiceRegistry member (e.g. lerobot's ACTConfig), so LeRobot checkpoints could no
-# longer be reloaded (PreTrainedConfig.from_pretrained). This fork restores that on
-# top of PR #70. Pin a commit, not a branch, so pixi does not re-query the remote.
-# TODO(francocipollone): Remove the fork pin once PR #70 lands in a released
-# draccus and lerobot drops the draccus==0.10.0 requirement (upstream tracking:
-# huggingface/lerobot#4509).
+# TODO(francocipollone): Drop the fork once PR #70 is released and lerobot drops
+# the draccus==0.10.0 requirement (huggingface/lerobot#4509).
 draccus = { git = "https://github.com/francocipollone/draccus.git", rev = "8976f1d5bd3c7f78521f43c9c302396076064af2" }
 
 [pypi-dependencies]
