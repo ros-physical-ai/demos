@@ -61,10 +61,10 @@ The pretrained policy is an **ACT** ([Action Chunking with Transformers](https:/
 
 Follow the main [README](../../README.md) to set up the workspace (Pixi install + `pixi run build`). You will also need:
 
-- A **GPU (recommended)** — inference runs faster on GPU:
-  - **NVIDIA GPUs**: Use `policy_device:=cuda` for CUDA-accelerated inference.
-  - **Intel GPUs** (iGPU or Arc): Use `policy_device:=xpu` for Intel XPU-accelerated inference.
-  - **CPU fallback**: Use `policy_device:=cpu` if no GPU is available (inference will be slower).
+- A **GPU (recommended)** — inference runs faster on GPU. Set `policy_device` in `pai_data_collection/config/rosetta/policy_runner.yaml` (see [Step 2](#step-2--launch-the-policy-runner)):
+  - **NVIDIA GPUs**: `policy_device: "cuda"` for CUDA-accelerated inference.
+  - **Intel GPUs** (iGPU or Arc): `policy_device: "xpu"` for Intel XPU-accelerated inference.
+  - **CPU fallback**: `policy_device: "cpu"` if no GPU is available (inference will be slower).
 - **Internet access** — the pretrained model is fetched from the HuggingFace Hub on first launch and cached under `~/.cache/huggingface/`.
 
 > [!IMPORTANT]
@@ -92,7 +92,7 @@ flowchart LR
     A["1. Start Zenoh
     pixi run zenoh-router"] --> B["2. Start Gazebo
     pixi run so-arm-gz"]
-    B --> C["3. Launch Rosetta Client
+    B --> C["3. Launch Policy Runner
     pretrained_name_or_path:=francocipollone/rospai_act_sim_arm101_place_cubes_on_tray"]
     C --> D["4. Trigger Inference
     ros2 action send_goal /run_policy ..."]
@@ -109,20 +109,20 @@ pixi run so-arm-gz
 
 Wait for the simulation to fully come up — Gazebo window visible, robot settled in its home pose, and the three cubes (`cube_small`, `cube_medium`, `cube_large`) sitting on the table.
 
-### Step 2 — Launch the Rosetta Client
+### Step 2 — Launch the Policy Runner
 
-In a third terminal, launch `rosetta_client_node` pointing at the pretrained checkpoint on the Hub:
+In a third terminal, launch `policy_runner_node` pointing at the pretrained checkpoint on the Hub:
 
 ```bash
 pixi shell
 ```
 
 ```bash
-ros2 launch rosetta rosetta_client_launch.py \
+ros2 launch rosetta policy_runner_launch.py \
+    params_file:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/policy_runner.yaml \
     contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     pretrained_name_or_path:=francocipollone/rospai_act_sim_arm101_place_cubes_on_tray \
     policy_type:=act \
-    policy_device:=cuda \
     use_sim_time:=true
 ```
 
@@ -130,15 +130,25 @@ Key flags:
 
 | Flag                                                                                 | Why                                                                                          |
 | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `params_file:=.../config/rosetta/policy_runner.yaml`                                 | This repo's runner settings, including the inference device — see the note below             |
 | `pretrained_name_or_path:=francocipollone/rospai_act_sim_arm101_place_cubes_on_tray` | HuggingFace repo ID — Rosetta downloads and loads the checkpoint via LeRobot on first launch |
 | `policy_type:=act`                                                                   | Must match the architecture of the checkpoint                                                |
-| `policy_device:=cuda` or `xpu` or `cpu`                                              | `cuda` for NVIDIA GPUs, `xpu` for Intel GPUs (iGPU/Arc), `cpu` for CPU-only inference        |
 | `use_sim_time:=true`                                                                 | Required because Gazebo publishes its clock on `/clock` (instead of using wall-clock time)   |
+
+> [!IMPORTANT]
+> **The inference device is not a launch argument.** Set `policy_device` in the params file — `cuda` for NVIDIA GPUs, `xpu` for Intel GPUs (iGPU/Arc), `mps` for Apple silicon, or `cpu`:
+>
+> ```bash
+> # Edit the `policy_device:` line in:
+> $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/policy_runner.yaml
+> ```
+>
+> Passing `policy_device:=xpu` on the `ros2 launch` command line is silently ignored, since `ros2 launch` drops undeclared arguments. If the requested backend is unavailable the runner logs a warning and falls back to `cpu`, so check the log when inference is unexpectedly slow.
 
 The first launch will download the model weights into your local HuggingFace cache (`~/.cache/huggingface/`). Subsequent launches are instant.
 
 > [!TIP]
-> See the [Rosetta Client Parameters](end-to-end-pipeline.md#rosetta-client-parameters) table for the full set of launch arguments (`actions_per_chunk`, `server_address`, `launch_local_server`, etc.).
+> See the [Policy Runner Parameters](end-to-end-pipeline.md#policy-runner-parameters) table for the full set (`actions_per_chunk`, `server_address`, `launch_local_server`, etc.), and `ros2 launch rosetta policy_runner_launch.py --show-args` for which of them are launch arguments.
 
 ### Step 3 — Trigger Inference
 

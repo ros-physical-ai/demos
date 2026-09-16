@@ -60,7 +60,8 @@ Full documentation lives in [`docs/`](docs/README.md). Highlights:
 | [ros2_so_arm](https://github.com/ros-physical-ai/ros2_so_arm)                                                     | URDF descriptions, MoveIt config, Gazebo support, and utilities for the SO-ARM robots |
 | [feetech_ros2_driver](https://github.com/ros-physical-ai/feetech_ros2_driver)                                     | ros2_control hardware interface for Feetech servo motors                              |
 | [mujoco_ros2_control](https://github.com/ros-controls/mujoco_ros2_control)                                        | ros2_control integration with the MuJoCo physics simulator                            |
-| [rosetta](https://github.com/iblnkn/rosetta) / [rosetta_interfaces](https://github.com/iblnkn/rosetta_interfaces) | ROS 2–LeRobot bridge for recording demonstration datasets                             |
+| [rosetta](https://github.com/iblnkn/rosetta) / [rosetta_interfaces](https://github.com/iblnkn/rosetta_interfaces) | Contract-driven bridge between ROS 2 robots and robot-learning frameworks             |
+| [lerobot-rosetta](https://github.com/iblnkn/lerobot-rosetta)                                                      | Rosetta's LeRobot adapter — dataset writer, policy runner, and gRPC inference servers |
 | [lerobot-robot-rosetta](https://github.com/iblnkn/lerobot-robot-rosetta)                                          | LeRobot Robot plugin for Rosetta — bridges ROS 2 topics to LeRobot's Robot interface  |
 
 We would like to acknowledge the great work of [JafarAbdi](https://github.com/JafarAbdi) in creating ROS 2 drivers for the SO-ARM robots, and transferring his repositories to the `ros-physical-ai` organization.
@@ -69,7 +70,7 @@ We would like to acknowledge the great work of [JafarAbdi](https://github.com/Ja
 
 ### Try a Pre-trained Policy in Simulation
 
-New to the repo? Skip the slow Record → Train → Deploy loop and see a working policy in Gazebo in minutes. We provide **60 pre-recorded rosbags**, a **converted LeRobot dataset**, and a **trained ACT policy** — all hosted on the HuggingFace Hub. Just point `rosetta_client_launch.py` at the checkpoint and run inference. See [Try a Pre-trained Policy](docs/demos/pretrained-demo.md) for the full walkthrough.
+New to the repo? Skip the slow Record → Train → Deploy loop and see a working policy in Gazebo in minutes. We provide **60 pre-recorded rosbags**, a **converted LeRobot dataset**, and a **trained ACT policy** — all hosted on the HuggingFace Hub. Just point `policy_runner_launch.py` at the checkpoint and run inference. See [Try a Pre-trained Policy](docs/demos/pretrained-demo.md) for the full walkthrough.
 
 ### End-to-End Learning Pipeline with SO-ARM
 

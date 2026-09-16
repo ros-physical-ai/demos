@@ -54,7 +54,9 @@ rosetta-record-mujoco = { cmd = [
   "episode_recorder_launch.py",
   "contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml",
   "bag_base_dir:=datasets/so_arm101_mujoco/bags",
+  "use_sim_time:=true",
 ] }
+
 test-joints = { cmd = [
   "ros2",
   "topic",
@@ -177,15 +179,15 @@ cbor2 = ">=6.1.2,<7"
 [pypi-options.dependency-overrides]
 numpy = ">=2.3,<3"
 protobuf = ">=6.31.1,<7"
-# Released draccus cannot parse PEP-604 unions on Python 3.14 (dlwh/draccus#69).
-# Pin a commit, not a branch, so pixi does not re-query the remote on every run.
-draccus = { git = "https://github.com/devangpratap/draccus.git", rev = "6f3f164953a7a910eb284dd26720c560830737e1" }
+# TODO(francocipollone): Drop the fork once PR #70 is released and lerobot drops
+# the draccus==0.10.0 requirement (huggingface/lerobot#4509).
+draccus = { git = "https://github.com/francocipollone/draccus.git", rev = "8976f1d5bd3c7f78521f43c9c302396076064af2" }
 
 [pypi-dependencies]
 huggingface-hub = "*"
-# LeRobot 0.5.x imports scipy.fftpack.idct (pi0_fast policy); SciPy 2.0 removed fftpack re-exports.
+# Upper bound only: LeRobot's pi0_fast imports scipy.fftpack.idct, dropped in SciPy 2.0.
 scipy = ">=1.11.0,<2"
-lerobot = { version = "==0.5.1", extras = ["feetech", "async"] }
+lerobot = { version = "==0.6.0", extras = ["dataset", "feetech", "async", "training"] }
 # pai_phone_teleop pulls in the upstream SpesRobotics/teleop package, which
 # provides the WebXR phone bridge (python3 -m teleop.ros2). Its hard deps
 # (uvicorn + fastapi<1.0) are listed explicitly here.
