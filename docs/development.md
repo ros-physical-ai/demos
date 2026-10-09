@@ -9,8 +9,6 @@ Install Pixi first by following [its official documentation](https://pixi.prefix
 The following must be installed system-wide.
 See [README.md](../README.md) for installation instructions:
 
-_Dependent repos_: Installed via `vcs import external < pai.repos --recursive`
-
 _GPU drivers (optional)_: For GPU acceleration, install the appropriate drivers for your hardware:
 
 - **NVIDIA**: NVIDIA drivers and CUDA toolkit for CUDA-based acceleration
@@ -29,8 +27,8 @@ Install base environment and ML dependencies:
 # Step 1: Install base environment (includes ROS 2 Lyrical dependencies)
 pixi install
 
-# Step 2: Install ML dependencies (automatically detects GPU and installs appropriate PyTorch)
-pixi run install-ml-deps
+# Step 2: Install source and ML dependencies (automatically detects GPU and installs appropriate PyTorch)
+pixi run install-deps
 ```
 
 The `install-ml-deps` task automatically:
