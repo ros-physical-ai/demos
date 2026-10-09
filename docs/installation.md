@@ -21,8 +21,8 @@ This guide covers installing the workspace and its dependencies.
 ```bash
 git clone https://github.com/ros-physical-ai/demos
 cd demos
-vcs import external < pai.repos --recursive
 pixi install
+pixi run install-source-deps
 pixi run build
 ```
 
