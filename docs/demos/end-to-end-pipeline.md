@@ -92,7 +92,7 @@ Recording captures rosbags of demonstration episodes through the Rosetta episode
 3. **Start the episode recorder** — points to the contract and an output directory for bags.
 4. **For each episode:**
    a. Reset the scene — send the arm to its home pose. In Gazebo sim, if your task involves the cubes in the `pai_world` scene, you can additionally reset their positions via the [data-collection workflow](../../pai_data_collection/README.md#workflow) helper (`gz_set_cubes_poses.py`, supports `--random` for variety).
-   b. Start recording (`r` key in the keyboard controller, or via the `/episode_recorder/record_episode` action).
+   b. Start recording (`r` key in the keyboard controller, or via the `/record_episode` action).
    c. Perform the task — via leader teleop, scripted commands, or any other method.
    d. Stop recording (`s` to save, `d` to discard and re-record).
 5. **Repeat** to collect as many episodes as needed.
@@ -126,7 +126,7 @@ Keyboard controls:
 | `t`       | Edit task prompt for the next episode |
 
 > [!NOTE]
-> You can also trigger recording directly via the ROS 2 action interface if you prefer scripted control: `ros2 action send_goal /episode_recorder/record_episode rosetta_interfaces/action/RecordEpisode "{prompt: '<task>'}"`. Stop by pressing `Ctrl+C` on that command.
+> You can also trigger recording directly via the ROS 2 action interface if you prefer scripted control: `ros2 action send_goal /record_episode rosetta_interfaces/action/RecordEpisode "{prompt: '<task>'}"`. Stop by pressing `Ctrl+C` on that command.
 
 > [!NOTE]
 > The input method doesn't matter to the recorder — anything that publishes to the topics defined in the contract gets captured. Leader arm teleop, scripted commands, MoveIt planning, or a custom controller all work the same way.
@@ -190,7 +190,7 @@ ros2 run rosetta rosetta_port \
 | `--root`                        | No       | Parent directory for datasets. Dataset saved to `root/repo-id`                |
 | `--framework`                   | No       | Learning framework to write for (default: `lerobot`, resolved by entry point) |
 | `--push-to-hub`                 | No       | Upload to HuggingFace Hub after conversion                                    |
-| `--vcodec`                      | No       | Video codec (default: `libsvtav1`). Use `libx264` for faster encoding         |
+| `--vcodec`                      | No       | Video codec (default: `libsvtav1`). Use `h264` for faster encoding            |
 | `--streaming-encoding`          | No       | Encode frames directly instead of via intermediate PNGs (faster)              |
 | `--num-shards`, `--shard-index` | No       | Split the conversion across parallel invocations                              |
 | `--no-embed-contract`           | No       | Skip the `meta/rosetta_contract.yaml` sidecar                                 |

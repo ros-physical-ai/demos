@@ -23,8 +23,13 @@ install(
 
 if(BUILD_TESTING)
   find_package(ament_cmake_pytest REQUIRED)
-  ament_add_pytest_test(test_ik_solver test/test_ik_solver.py)
-  ament_add_pytest_test(test_se3_filter test/test_se3_filter.py)
+  # The launch_testing pytest plugins break collection on pytest>=9; these
+  # tests do not use them.
+  set(_pytest_env "PYTEST_ADDOPTS=-p no:launch_testing -p no:launch_ros")
+  ament_add_pytest_test(test_ik_solver test/test_ik_solver.py
+    ENV ${_pytest_env})
+  ament_add_pytest_test(test_se3_filter test/test_se3_filter.py
+    ENV ${_pytest_env})
 endif()
 
 ament_package()

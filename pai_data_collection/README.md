@@ -180,7 +180,7 @@ ros2 run rosetta rosetta_port \
 | `--root`               | No       | Parent directory for datasets. Dataset saved to `root/repo-id`                |
 | `--framework`          | No       | Learning framework to write for (default: `lerobot`, resolved by entry point) |
 | `--push-to-hub`        | No       | Upload to HuggingFace Hub after conversion                                    |
-| `--vcodec`             | No       | Video codec (default: `libsvtav1`). Use `libx264` for faster encoding         |
+| `--vcodec`             | No       | Video codec (default: `libsvtav1`). Use `h264` for faster encoding            |
 | `--streaming-encoding` | No       | Encode frames directly instead of via intermediate PNGs (faster)              |
 | `--no-embed-contract`  | No       | Skip the `meta/rosetta_contract.yaml` sidecar                                 |
 
