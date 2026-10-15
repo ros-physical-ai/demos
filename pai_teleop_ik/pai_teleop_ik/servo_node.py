@@ -161,7 +161,7 @@ class IKServoNode(Node):
             self._gripper_joint
         )
         if self._gripper_joint and not self._has_gripper:
-            self.get_logger().warn(
+            self.get_logger().warning(
                 f"gripper_joint '{self._gripper_joint}' not found in URDF; gripper omitted from commands."
             )
         self._command_joints = list(self._solver.joint_names)
@@ -218,7 +218,7 @@ class IKServoNode(Node):
             return self._frame_cache[frame]
         if not self._solver.model.existFrame(frame):
             if frame not in self._warned_frames:
-                self.get_logger().warn(f"frame '{frame}' not found in model; treating target as root frame.")
+                self.get_logger().warning(f"frame '{frame}' not found in model; treating target as root frame.")
                 self._warned_frames.add(frame)
             self._frame_cache[frame] = pin.SE3.Identity()
             return self._frame_cache[frame]
@@ -241,7 +241,7 @@ class IKServoNode(Node):
             if q is None:
                 for joint in self._solver.joint_names:
                     if joint not in positions and joint not in self._warned_missing:
-                        self.get_logger().warn(
+                        self.get_logger().warning(
                             f"Arm joint '{joint}' missing from {self._joint_states_topic}; "
                             "arm joints not available yet."
                         )
@@ -315,7 +315,7 @@ class IKServoNode(Node):
                     q_cmd = self._solver.solve(self._target_filtered, dt)
                     self._last_q_cmd = q_cmd
                 except Exception as exc:
-                    self.get_logger().warn(f"IK solve failed: {exc}", throttle_duration_sec=2.0)
+                    self.get_logger().warning(f"IK solve failed: {exc}", throttle_duration_sec=2.0)
             else:
                 # Idle: command no arm motion. Tell the solver it is stationary so
                 # the AccelerationLimit ramps from rest when tracking resumes, and
