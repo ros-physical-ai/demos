@@ -1,0 +1,39 @@
+# Policy runner parameters for the SO-ARM101 demos.
+#
+# Pass this file to rosetta's policy_runner_launch.py as the params file:
+#
+#   ros2 launch rosetta policy_runner_launch.py \
+#       params_file:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/policy_runner.yaml \
+#       pretrained_name_or_path:=<checkpoint>
+#
+# The values below configure the policy_runner node. Parameters not listed here
+# take the node's declared default.
+
+policy_runner:
+  ros__parameters:
+    # Inference device: "cuda", "xpu", "mps", "cpu", or e.g. "cuda:0".
+    # Falls back to "cpu" with a warning if unavailable.
+    policy_device: "cuda"
+
+    # Policy architecture. Must match the checkpoint.
+    policy_type: "act"
+
+    # Actions requested per inference chunk. Larger chunks are less reactive.
+    actions_per_chunk: 30
+
+    # Queue fill ratio at which to request the next chunk (0.0 - 1.0).
+    chunk_size_threshold: 0.95
+
+    # How to blend an arriving chunk with the one still executing.
+    # "latest_only" for non-interpolatable action slices.
+    aggregate_fn_name: "weighted_average"
+
+    # Run until stopped. Override per-goal with RunPolicy's max_duration_s.
+    default_max_duration_s: 0.0
+
+    # Start the gRPC policy server locally at configure time.
+    # Set false to use a remote server at server_address.
+    launch_local_server: true
+
+    # Covers a first-launch download of weights from the HF Hub.
+    server_startup_timeout_sec: 120.0

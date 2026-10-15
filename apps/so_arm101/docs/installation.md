@@ -21,8 +21,8 @@ This guide covers installing the workspace and its dependencies.
 ```bash
 git clone https://github.com/ros-physical-ai/demos
 cd demos/apps/so_arm101
-pixi run install-source-deps
 pixi install
+pixi run install-source-deps
 pixi run build
 ```
 

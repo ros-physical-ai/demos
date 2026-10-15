@@ -9,8 +9,6 @@ Install Pixi first by following [its official documentation](https://pixi.prefix
 Pixi installs ROS 2, Gazebo and every build dependency for you — see
 [Installation](installation.md). Only the items below come from outside Pixi:
 
-_Dependent repos_: fetched by `pixi run install-source-deps` (run from `apps/so_arm101/`)
-
 _GPU drivers (optional)_: installed system-wide, for GPU acceleration:
 
 - **NVIDIA**: NVIDIA drivers and CUDA toolkit for CUDA-based acceleration
@@ -32,8 +30,8 @@ cd apps/so_arm101
 # Step 1: Install base environment (includes ROS 2 Lyrical dependencies)
 pixi install
 
-# Step 2: Install ML dependencies (automatically detects GPU and installs appropriate PyTorch)
-pixi run install-ml-deps
+# Step 2: Install source and ML dependencies (automatically detects GPU and installs appropriate PyTorch)
+pixi run install-deps
 ```
 
 The `install-ml-deps` task automatically:
