@@ -67,7 +67,7 @@ class LeaderTeleopNode(Node):
         cmd.data = []
         for joint_name in JOINT_ORDER:
             if joint_name not in name_to_pos:
-                self.get_logger().warn(
+                self.get_logger().warning(
                     f"Joint '{joint_name}' not found in leader joint states, skipping message.",
                     throttle_duration_sec=2.0,
                 )

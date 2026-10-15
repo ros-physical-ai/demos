@@ -227,7 +227,7 @@ class InteractiveIKNode(Node):
         with self._lock:
             pose = self._latest_ee_pose
             if pose is None:
-                self.get_logger().warn("Reset ignored: end-effector pose not available yet.")
+                self.get_logger().warning("Reset ignored: end-effector pose not available yet.")
                 return
             self._target_pose = pose
             self._gripper_target = None
