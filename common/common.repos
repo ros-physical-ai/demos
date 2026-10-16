@@ -1,11 +1,4 @@
-# Shared Record -> Train -> Deploy pipeline, imported by every application.
-#
-# One pin serves all applications on purpose: identical contract format,
-# recorder, and dataset layout across applications is the point of the
-# pipeline. Applications may be on different ROS distributions, so these are
-# shared as SOURCE and compiled separately into each application's install/.
-# If a SHA here ever fails to build under one application's distro, that is a
-# signal worth seeing — document the divergence before pinning per-app.
+# Common dependencies used by all applications.
 repositories:
   rosetta:
     type: git
