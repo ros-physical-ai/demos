@@ -19,8 +19,8 @@ The pipeline is **not tied to a specific task**. The same workflow applies wheth
 Follow the main [README](../../README.md) to set up the workspace:
 
 ```bash
-git clone https://github.com/ros-physical-ai/demos && cd demos
-vcs import external < pai.repos --recursive
+git clone https://github.com/ros-physical-ai/demos && cd demos/apps/so_arm101
+pixi run install-source-deps
 pixi install
 pixi run install-ml-deps   # PyTorch + LeRobot (auto-detects GPU)
 pixi run build

@@ -24,7 +24,7 @@ Step 1 and Step 2 cover the calibration flow and optional `joint_config_file`.
 Default workflow: complete Step 1 only.
 You do not need to keep repo copies of JSON or YAML up to date for ROS bringup (launch uses an empty `joint_config_file` unless you set it).
 
-The files under `pai_bringup/config/lerobot/*.json` and `pai_bringup/config/hardware/{follower,leader}.yaml` are examples or seeds (for instance copying JSON into LeRobot’s cache per other docs).
+The files under `pai_bringup/config/lerobot/*.json`, `pai_bringup/config/hardware/follower.yaml`, and `pai_leader_teleop/config/hardware/leader.yaml` are examples or seeds (for instance copying JSON into LeRobot’s cache per other docs).
 They are not automatic runtime inputs for ROS unless you wire them yourself.
 
 Advanced use (LeRobot and ROS must stay aligned): pick one authoring source for shared motor fields (`homing_offset`, limits, PID, protection).
@@ -86,7 +86,7 @@ LeRobot writes a JSON file per arm under:
 If you want to make those values explicit in this project, copy the relevant fields into a `joint_config_file`, for example:
 
 - [`pai_bringup/config/hardware/follower.yaml`](../../pai_bringup/config/hardware/follower.yaml)
-- [`pai_bringup/config/hardware/leader.yaml`](../../pai_bringup/config/hardware/follower.yaml)
+- [`pai_leader_teleop/config/hardware/leader.yaml`](../../pai_leader_teleop/config/hardware/leader.yaml)
 
 Use a `joint_config_file` only if you want to keep a versioned per-robot configuration in the repo, override existing motor settings, or set additional driver parameters.
 

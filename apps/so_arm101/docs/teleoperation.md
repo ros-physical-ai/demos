@@ -4,6 +4,8 @@ The SO-ARM101 follower arm can be teleoperated with several input methods. All o
 them publish to the same `/forward_position_controller/commands` topic, so they
 work against any backend — Gazebo, MuJoCo, or real hardware.
 
+All `pixi run` commands below are run from the SO-ARM101 application directory, `apps/so_arm101/`.
+
 | Method                      | Input device                          | Guide                                                 |
 | --------------------------- | ------------------------------------- | ----------------------------------------------------- |
 | **Leader arm**              | A second physical SO-ARM101 (by hand) | [`pai_leader_teleop`](../pai_leader_teleop/README.md) |

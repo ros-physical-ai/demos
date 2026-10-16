@@ -4,6 +4,8 @@ Connect the SO-ARM101 to an AI agent running the [ROS-MCP server](https://github
 so the agent can control, introspect, or debug the robot. This works across all three bringups
 (Gazebo, MuJoCo, and real hardware).
 
+The `pixi run` command below is run from the SO-ARM101 application directory, `apps/so_arm101/`.
+
 ## Step 1: Set up the AI Client
 
 Follow `Step 1` of the [ROS-MCP installation guide](https://github.com/robotmcp/ros-mcp-server/blob/main/docs/install/installation.md), which has instructions for adding the MCP server to your client. (Claude Code, Codex, Gemini, local agent harnesses, etc.)

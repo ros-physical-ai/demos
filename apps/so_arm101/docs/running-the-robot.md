@@ -2,6 +2,8 @@
 
 This guide covers launching the SO-ARM101 in simulation (Gazebo or MuJoCo) or on real hardware.
 
+All `pixi run` commands below are run from the SO-ARM101 application directory, `apps/so_arm101/`.
+
 > [!IMPORTANT]
 > This project uses `rmw_zenoh` as the ROS 2 middleware. The Zenoh router must be
 > running before launching any demo. Start it in a dedicated terminal and leave it

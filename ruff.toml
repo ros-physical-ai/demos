@@ -1,6 +1,7 @@
 indent-width = 4
 line-length = 120
 target-version = "py312"
+src = [".", "apps/so_arm101", "common"]
 
 [lint]
 # Matches _, __, and _var but not _var_
