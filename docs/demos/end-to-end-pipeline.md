@@ -102,12 +102,12 @@ The commands:
 ```bash
 # Terminal 1: Start the episode recorder (works with any backend)
 # Add use_sim_time:=true for the Gazebo and MuJoCo backends, which publish /clock.
-ros2 launch rosetta episode_recorder_launch.py \
+ros2 launch rosetta_ros episode_recorder_launch.py \
     contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     bag_base_dir:=<output_directory>
 
 # Terminal 2: Start the keyboard controller
-ros2 run rosetta episode_keyboard_node
+ros2 run rosetta_ros episode_keyboard_node
 ```
 
 > [!NOTE]
@@ -157,7 +157,7 @@ ros2 bag play <path_to_bag_directory>
 After recording, convert the rosbags into a LeRobot dataset using the `rosetta_port` CLI. The contract's `apply: [rad2deg]` is applied automatically during conversion, and `rosetta_port` runs the same resampling code as live inference, so the offline dataset matches what the robot sees at runtime.
 
 ```bash
-ros2 run rosetta rosetta_port \
+ros2 run rosetta_ros rosetta_port \
     --raw-dir <path_to_bags> \
     --contract $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     --repo-id <dataset_name> \
@@ -171,7 +171,7 @@ ros2 run rosetta rosetta_port \
 > Add `--push-to-hub` (with a namespaced `--repo-id`) to upload the converted dataset to the [HuggingFace Hub](https://huggingface.co/datasets) in the same step:
 >
 > ```bash
-> ros2 run rosetta rosetta_port \
+> ros2 run rosetta_ros rosetta_port \
 >     --raw-dir <path_to_bags> \
 >     --contract $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
 >     --repo-id <hf_user>/<dataset_name> \
@@ -248,7 +248,7 @@ Before training, you can replay recorded episodes to visually verify data qualit
 
 #### Replay via ROS 2 (Simulation or Real)
 
-Uses the [`lerobot_robot_rosetta`](https://github.com/iblnkn/lerobot-robot-rosetta) plugin to replay actions through the ROS 2 control stack. This works with any backend (Gazebo, MuJoCo, or real hardware):
+Uses the [`lerobot_robot_rosetta`](https://github.com/iblnkn/rosetta/tree/main/policies/lerobot/lerobot_robot_rosetta) plugin to replay actions through the ROS 2 control stack. This works with any backend (Gazebo, MuJoCo, or real hardware):
 
 ```bash
 lerobot-replay \
@@ -286,10 +286,9 @@ The `policy_runner_node` wraps a learning framework's inference pipeline in a RO
 
 ```bash
 # Launch the policy runner
-ros2 launch rosetta policy_runner_launch.py \
+ros2 launch rosetta_ros policy_runner_launch.py \
     contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
-    pretrained_name_or_path:=<path_to_checkpoint> \
-    policy_type:=<policy_type>
+    pretrained_name_or_path:=<path_to_checkpoint>
 
 # Trigger inference
 ros2 action send_goal /run_policy \
@@ -303,20 +302,20 @@ Because the contract defines the topic interface, the same deployment command wo
 
 #### Policy Runner Parameters
 
-Deployment-specific parameters are launch arguments; everything else is set in `params/policy_runner.yaml`. Run `ros2 launch rosetta policy_runner_launch.py --show-args` for the current list.
+Deployment-specific parameters are launch arguments; everything else is set in `params/policy_runner.yaml`. Run `ros2 launch rosetta_ros policy_runner_launch.py --show-args` for the current list.
 
-| Parameter                 | Default            | Description                                                             |
-| ------------------------- | ------------------ | ----------------------------------------------------------------------- |
-| `contract_path`           | —                  | Path to contract YAML. Optional — resolved from the checkpoint if empty |
-| `pretrained_name_or_path` | —                  | HuggingFace model ID or local path to checkpoint                        |
-| `framework`               | `lerobot`          | Learning framework adapter, resolved by entry-point name                |
-| `policy_type`             | `act`              | Policy type: `act`, `smolvla`, `diffusion`, `pi0`, etc.                 |
-| `policy_device`           | `cuda`             | Inference device: `cuda`, `xpu`, `mps`, `cpu` (falls back to `cpu`)     |
-| `server_address`          | `127.0.0.1:8080`   | Policy server address (for remote inference)                            |
-| `actions_per_chunk`       | `30`               | Actions per inference chunk                                             |
-| `aggregate_fn_name`       | `weighted_average` | How to blend an arriving chunk with the one still executing             |
-| `launch_local_server`     | `true`             | Launch local gRPC policy server or connect to remote                    |
-| `default_max_duration_s`  | `0.0`              | Max run duration. `0.0` runs until stopped                              |
+| Parameter                 | Default            | Description                                                                                |
+| ------------------------- | ------------------ | ------------------------------------------------------------------------------------------ |
+| `contract_path`           | —                  | Path to contract YAML. Optional — resolved from the checkpoint if empty                    |
+| `pretrained_name_or_path` | —                  | HuggingFace model ID or local path to checkpoint                                           |
+| `framework`               | `lerobot`          | Learning framework adapter, resolved by entry-point name                                   |
+| `policy_type`             | (empty)            | Policy type: `act`, `smolvla`, `diffusion`, `pi0`, etc. Empty reads it from the checkpoint |
+| `policy_device`           | `cuda`             | Inference device: `cuda`, `xpu`, `mps`, `cpu` (falls back to `cpu`)                        |
+| `server_address`          | `127.0.0.1:8080`   | Policy server address (for remote inference)                                               |
+| `actions_per_chunk`       | `30`               | Actions per inference chunk                                                                |
+| `aggregate_fn_name`       | `weighted_average` | How to blend an arriving chunk with the one still executing                                |
+| `launch_local_server`     | `true`             | Launch local gRPC policy server or connect to remote                                       |
+| `default_max_duration_s`  | `0.0`              | Max run duration. `0.0` runs until stopped                                                 |
 
 > [!NOTE]
 > **Remote inference.** Set `launch_local_server:=false` and point `server_address` at a machine running `rosetta_policy_server`, which has no ROS 2 dependency and can run on any machine with a GPU. This lets a resource-constrained robot offload inference over the network.
@@ -355,7 +354,7 @@ pixi run so-arm-gz
 ### Step 3 — Start the Episode Recorder
 
 ```bash
-ros2 launch rosetta episode_recorder_launch.py \
+ros2 launch rosetta_ros episode_recorder_launch.py \
     contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     bag_base_dir:=datasets/so_arm101/bags \
     use_sim_time:=true
@@ -368,7 +367,7 @@ ros2 launch rosetta episode_recorder_launch.py \
 In a **separate terminal**, start the keyboard controller. This is how you start, save, and discard episodes:
 
 ```bash
-ros2 run rosetta episode_keyboard_node
+ros2 run rosetta_ros episode_keyboard_node
 ```
 
 First, set the task prompt with `t`, type `move arm forward`, then press `Enter`.
@@ -407,9 +406,9 @@ flowchart LR
     pixi run zenoh-router"] --> B["2. Start Gazebo
     pixi run so-arm-gz"]
     B --> C["3. Start Recorder
-    ros2 launch rosetta ..."]
+    ros2 launch rosetta_ros ..."]
     C --> Ck["3b. Start Keyboard Controller
-    ros2 run rosetta episode_keyboard_node"]
+    ros2 run rosetta_ros episode_keyboard_node"]
     Ck --> D["a) Send Arm Home
     all joints → 0"]
     D --> E["b) Start Episode
@@ -436,7 +435,7 @@ Watch the robot — it should reproduce the forward motion. If anything looks of
 ### Step 5 — Convert to LeRobot Dataset
 
 ```bash
-ros2 run rosetta rosetta_port \
+ros2 run rosetta_ros rosetta_port \
     --raw-dir datasets/so_arm101/bags \
     --contract $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     --repo-id move_arm \
@@ -466,10 +465,9 @@ lerobot-train \
 **Terminal 3** — Launch the policy runner:
 
 ```bash
-ros2 launch rosetta policy_runner_launch.py \
+ros2 launch rosetta_ros policy_runner_launch.py \
     contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
-    pretrained_name_or_path:=outputs/train/act_move_arm/checkpoints/last/pretrained_model \
-    policy_type:=act
+    pretrained_name_or_path:=outputs/train/act_move_arm/checkpoints/last/pretrained_model
 ```
 
 The dataset you ported in Step 5 embedded the contract, so `contract_path` can also be omitted, the runner then resolves the contract from the checkpoint itself.

@@ -2,21 +2,18 @@
 #
 # Pass this file to rosetta's policy_runner_launch.py as the params file:
 #
-#   ros2 launch rosetta policy_runner_launch.py \
+#   ros2 launch rosetta_ros policy_runner_launch.py \
 #       params_file:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/policy_runner.yaml \
 #       pretrained_name_or_path:=<checkpoint>
 #
-# The values below configure the policy_runner node. Parameters not listed here
-# take the node's declared default.
+# The values below layer over rosetta_ros's params/policy_runner.yaml, so
+# parameters not listed here take the value in that file.
 
 policy_runner:
   ros__parameters:
     # Inference device: "cuda", "xpu", "mps", "cpu", or e.g. "cuda:0".
     # Falls back to "cpu" with a warning if unavailable.
     policy_device: "cuda"
-
-    # Policy architecture. Must match the checkpoint.
-    policy_type: "act"
 
     # Actions requested per inference chunk. Larger chunks are less reactive.
     actions_per_chunk: 30

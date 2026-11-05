@@ -6,7 +6,7 @@ Data collection tools for Physical AI demos using [rosetta](https://github.com/i
 
 This project uses [Pixi](https://pixi.sh/) for environment management. Make sure the workspace is set up following the [Development Guide](../docs/development.md).
 
-The required external repos (`rosetta`, `rosetta_interfaces`, `lerobot_rosetta`, and `lerobot_robot_rosetta`) are included in `pai.repos` and will be fetched automatically during workspace setup:
+The [rosetta](https://github.com/iblnkn/rosetta) repository, which holds `rosetta`, `rosetta_ros`, `rosetta_interfaces`, and the LeRobot packages, is included in `pai.repos` and is fetched during workspace setup:
 
 ```bash
 vcs import external < pai.repos --recursive
@@ -38,7 +38,7 @@ pixi run so-arm-gz # ros2 launch pai_bringup so_arm_gz_bringup.launch.py
 3. Start the episode recorder (using rosetta's launch file with our contract):
 
 ```bash
-ros2 launch rosetta episode_recorder_launch.py \
+ros2 launch rosetta_ros episode_recorder_launch.py \
     contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     bag_base_dir:=datasets/so_arm101/bags \
     use_sim_time:=true
@@ -50,7 +50,7 @@ ros2 launch rosetta episode_recorder_launch.py \
 4. Start the keyboard controller (in a new terminal):
 
 ```bash
-ros2 run rosetta episode_keyboard_node
+ros2 run rosetta_ros episode_keyboard_node
 ```
 
 Press `t` to set a task prompt, then `r` (or `→`) to start recording.
@@ -101,9 +101,9 @@ flowchart LR
     pixi run zenoh-router"] --> B["2. Start Simulation
     pixi run so-arm-gz"]
     B --> C["3. Start Episode Recorder
-    ros2 launch rosetta episode_recorder_launch.py ..."]
+    ros2 launch rosetta_ros episode_recorder_launch.py ..."]
     C --> D["4. Start Keyboard Controller
-    ros2 run rosetta episode_keyboard_node"]
+    ros2 run rosetta_ros episode_keyboard_node"]
     D --> E["5. Start Episode
     Press r"]
     E --> F["6. Move the Arm
@@ -123,7 +123,7 @@ Use MuJoCo simulation with the same `so_arm101.yaml` contract.
 1. Start zenoh router: `pixi run zenoh-router`
 2. Start MuJoCo + camera relay: `pixi run so-arm-mujoco`
 3. Start rosetta recorder: `pixi run rosetta-record-mujoco`
-4. Start keyboard controller (new terminal): `ros2 run rosetta episode_keyboard_node`
+4. Start keyboard controller (new terminal): `ros2 run rosetta_ros episode_keyboard_node`
 5. Press `t` to set a prompt, `r` to start recording
 6. Move the arm: `$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/scripts/arm_demo_positions.sh` (or `ros2 topic pub`; MuJoCo must already be running from step 2)
 7. Press `s` to save or `d` to discard the episode
@@ -154,14 +154,14 @@ Run conversion (Gazebo bags use `datasets/so_arm101/bags`; MuJoCo bags use `data
 
 ```bash
 # Gazebo
-ros2 run rosetta rosetta_port \
+ros2 run rosetta_ros rosetta_port \
     --raw-dir datasets/so_arm101/bags \
     --contract $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     --repo-id move_arm \
     --root datasets_lerobot
 
 # MuJoCo
-ros2 run rosetta rosetta_port \
+ros2 run rosetta_ros rosetta_port \
     --raw-dir datasets/so_arm101_mujoco/bags \
     --contract $(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml \
     --repo-id move_arm_mujoco \
@@ -170,7 +170,7 @@ ros2 run rosetta rosetta_port \
 
 ### rosetta_port arguments
 
-`rosetta_port` replaced `python -m rosetta.port_bags` in rosetta 0.2.0. It is invoked through `ros2 run` because rosetta installs its console scripts into `lib/rosetta` rather than onto `PATH`.
+`rosetta_port` is invoked through `ros2 run` because `rosetta_ros` installs its console scripts into `lib/rosetta_ros` rather than onto `PATH`.
 
 | Argument               | Required | Description                                                                   |
 | ---------------------- | -------- | ----------------------------------------------------------------------------- |

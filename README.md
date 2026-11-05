@@ -55,14 +55,12 @@ Full documentation lives in [`docs/`](docs/README.md). Highlights:
 
 ### External (imported via `pai.repos`)
 
-| Source                                                                                                            | Description                                                                           |
-| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| [ros2_so_arm](https://github.com/ros-physical-ai/ros2_so_arm)                                                     | URDF descriptions, MoveIt config, Gazebo support, and utilities for the SO-ARM robots |
-| [feetech_ros2_driver](https://github.com/ros-physical-ai/feetech_ros2_driver)                                     | ros2_control hardware interface for Feetech servo motors                              |
-| [mujoco_ros2_control](https://github.com/ros-controls/mujoco_ros2_control)                                        | ros2_control integration with the MuJoCo physics simulator                            |
-| [rosetta](https://github.com/iblnkn/rosetta) / [rosetta_interfaces](https://github.com/iblnkn/rosetta_interfaces) | Contract-driven bridge between ROS 2 robots and robot-learning frameworks             |
-| [lerobot-rosetta](https://github.com/iblnkn/lerobot-rosetta)                                                      | Rosetta's LeRobot adapter — dataset writer, policy runner, and gRPC inference servers |
-| [lerobot-robot-rosetta](https://github.com/iblnkn/lerobot-robot-rosetta)                                          | LeRobot Robot plugin for Rosetta — bridges ROS 2 topics to LeRobot's Robot interface  |
+| Source                                                                        | Description                                                                                                                      |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| [ros2_so_arm](https://github.com/ros-physical-ai/ros2_so_arm)                 | URDF descriptions, MoveIt config, Gazebo support, and utilities for the SO-ARM robots                                            |
+| [feetech_ros2_driver](https://github.com/ros-physical-ai/feetech_ros2_driver) | ros2_control hardware interface for Feetech servo motors                                                                         |
+| [mujoco_ros2_control](https://github.com/ros-controls/mujoco_ros2_control)    | ros2_control integration with the MuJoCo physics simulator                                                                       |
+| [rosetta](https://github.com/iblnkn/rosetta)                                  | Contract-driven bridge between ROS 2 robots and robot-learning frameworks, with its ROS 2 nodes, interfaces, and LeRobot plugins |
 
 We would like to acknowledge the great work of [JafarAbdi](https://github.com/JafarAbdi) in creating ROS 2 drivers for the SO-ARM robots, and transferring his repositories to the `ros-physical-ai` organization.
 

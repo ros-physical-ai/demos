@@ -50,7 +50,7 @@ rerun-viz = { cmd = ["ros2", "launch", "pai_rerun_visualizer", "visualizer.launc
 rosetta-record-mujoco = { cmd = [
   "ros2",
   "launch",
-  "rosetta",
+  "rosetta_ros",
   "episode_recorder_launch.py",
   "contract_path:=$(ros2 pkg prefix pai_data_collection)/share/pai_data_collection/config/rosetta/so_arm101.yaml",
   "bag_base_dir:=datasets/so_arm101_mujoco/bags",
@@ -93,6 +93,8 @@ libserial = "*"
 # robostack-lyrical only publishes py314 builds.
 python = "3.14.*"
 pip = "*"
+# launch_testing's pytest plugin fails to load on 9.1, which breaks `colcon test`.
+pytest = "<9.1"
 # numpy<2.3 has no py314 builds; LeRobot's declared upper bound is <2.3.
 numpy = ">=2.3,<3"
 pinocchio = "*"
@@ -179,15 +181,17 @@ cbor2 = ">=6.1.2,<7"
 [pypi-options.dependency-overrides]
 numpy = ">=2.3,<3"
 protobuf = ">=6.31.1,<7"
-# TODO(francocipollone): Drop the fork once PR #70 is released and lerobot drops
-# the draccus==0.10.0 requirement (huggingface/lerobot#4509).
+# The fork is draccus 0.11.6 plus the Python 3.14 fix, inside LeRobot 0.6.1's
+# draccus>=0.11.6,<0.12 range.
+# TODO(francocipollone): Drop the fork once dlwh/draccus#70 is released.
 draccus = { git = "https://github.com/francocipollone/draccus.git", rev = "8976f1d5bd3c7f78521f43c9c302396076064af2" }
 
 [pypi-dependencies]
 huggingface-hub = "*"
 # Upper bound only: LeRobot's pi0_fast imports scipy.fftpack.idct, dropped in SciPy 2.0.
 scipy = ">=1.11.0,<2"
-lerobot = { version = "==0.6.0", extras = ["dataset", "feetech", "async", "training"] }
+# 0.6.1 is the last release with the async_inference rosetta's policy runner uses.
+lerobot = { version = "==0.6.1", extras = ["dataset", "feetech", "async", "training"] }
 # pai_phone_teleop pulls in the upstream SpesRobotics/teleop package, which
 # provides the WebXR phone bridge (python3 -m teleop.ros2). Its hard deps
 # (uvicorn + fastapi<1.0) are listed explicitly here.
