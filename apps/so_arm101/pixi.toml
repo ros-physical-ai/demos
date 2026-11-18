@@ -29,7 +29,7 @@ install-source-deps = """
   vcs import external --recursive < so_arm101.repos
 """
 # Longer uv download timeout (PyTorch wheels are huge).
-install-ml-deps = { cmd = "bash scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
+install-ml-deps = { cmd = "bash ../../common/scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
 install-deps = { depends-on = ["install-source-deps", "install-ml-deps"] }
 
 # Build
