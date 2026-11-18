@@ -33,6 +33,10 @@ install-deps = { depends-on = ["install-source-deps", "install-ml-deps"] }
 build = { cmd = ["colcon", "build"], env = { CMAKE_BUILD_TYPE = "Release" } }
 clean = { cmd = "rm -rf build install log" }
 
+# Hardware setup
+# Prints the udev properties to help on configuration.
+list-hw-devices = { cmd = "bash scripts/list_hw_devices.sh" }
+
 # Run Demos
 zenoh-router = { cmd = [
   "ros2",
@@ -76,6 +80,7 @@ pre-commit = "*"
 colcon-common-extensions = ">=0.3.0,<0.4"
 cmake = ">=3.30.5,<4"
 ninja = ">=1.13.1,<2"
+make = "*"
 # Conda C/C++ toolchain so the compiler matches conda's `ld` already on PATH.
 c-compiler = "*"
 cxx-compiler = "*"

@@ -23,36 +23,34 @@
 #
 # ── Setup ──────────────────────────────────────────────────────────
 #
-# 1. Plug in each arm and find its
+# 1. Find the udev properties of each device:
 #
-#     # Arms (e.g., for device /dev/ttyACM0)
-#     udevadm info --query=property --name=/dev/ttyACM0 | egrep 'ID_VENDOR_ID|ID_MODEL_ID|ID_SERIAL_SHORT|ID_PATH'
+#      pixi run list-hw-devices
 #
-#     Example output:
-#       ID_MODEL_ID=55d3
-#       ID_SERIAL_SHORT=5B14033172
-#       ID_VENDOR_ID=1a86
-#       ID_PATH_WITH_USB_REVISION=pci-0000:67:00.0-usbv2-0:1:1.0
-#       ID_PATH=pci-0000:67:00.0-usb-0:1:1.0
-#       ID_PATH_TAG=pci-0000_67_00_0-usb-0_1_1_0
+#    It lists every serial port with ID_VENDOR_ID, ID_MODEL_ID and ID_SERIAL_SHORT,
+#    and every /dev/video* node with its ID_PATH.
 #
-#     # Cameras (e.g., for device /dev/video0)
-#     udevadm info --name=/dev/video0 --query=all | egrep 'ID_VENDOR_ID|ID_MODEL_ID|ID_SERIAL_SHORT|ID_PATH'
+#    Arms: both arms report the same vendor and model IDs, so ID_SERIAL_SHORT
+#    tells them apart. Plug in one arm at a time to see which serial is which.
 #
-#     Example output:
-#       E: ID_MODEL_ID=0010
-#       E: ID_SERIAL_SHORT=SN0001
-#       E: ID_VENDOR_ID=3277
-#       E: ID_PATH_WITH_USB_REVISION=pci-0000:6a:00.0-usbv2-0:1:1.0
-#       E: ID_PATH=pci-0000:6a:00.0-usb-0:1:1.0
-#       E: ID_PATH_TAG=pci-0000_6a_00_0-usb-0_1_1_0
+#    Cameras: each camera has a [video stream] node and a [metadata] node with
+#    the same ID_PATH. Unplug one camera to see which ID_PATH is which.
+#
+#    Example output:
+#      /dev/ttyACM0
+#        ID_VENDOR_ID=1a86
+#        ID_MODEL_ID=55d3
+#        ID_SERIAL_SHORT=5B14033172
+#      /dev/video2  [video stream]
+#        name=USB2.0_CAM1: USB2.0_CAM1
+#        ID_PATH=pci-0000:6a:00.0-usb-0:1:1.0
 #
 # 2. For the arms, replace <LEADER_ID_VENDOR_ID>, <LEADER_ID_MODEL_ID>, <LEADER_ID_SERIAL_SHORT>,
 #    <FOLLOWER_ID_VENDOR_ID>, <FOLLOWER_ID_MODEL_ID>, <FOLLOWER_ID_SERIAL_SHORT>, with the actual
 #    respective values from step 1.
 #
 #    For the cameras, replace <WRIST_ID_PATH> and <STATIC_ID_PATH> below with the actual
-#    ID_PATH values from step 1.
+#    ID_PATH values from step 1. Comment out the camera lines if no cameras are connected.
 #
 # 3. Copy this file (without the .example suffix) to /etc/udev/rules.d/:
 #
@@ -64,9 +62,7 @@
 #
 #      sudo udevadm control --reload-rules && sudo udevadm trigger
 #
-# 5. Verify:
-#
-#      ls -l /dev/so101_leader /dev/so101_follower /dev/cam_wrist /dev/cam_overhead
+# 5. Verify: run `pixi run list-hw-devices` again and check the symlinks section.
 #
 #    If you install ffmpeg (sudo apt install ffmpeg), you can verify cameras by streaming the video using your new device name.
 #

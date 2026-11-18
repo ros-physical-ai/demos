@@ -33,9 +33,9 @@ If JSON and YAML are both in play for the same arm, plan to update them together
 
 ## Prerequisites
 
-- SO-ARM101 follower arm (and optionally a leader arm) connected via USB.
-- LeRobot installed (`pip install lerobot` or via the pixi environment).
-- Identify the serial ports for each arm (e.g. `/dev/so101_follower`, `/dev/so101_leader`).
+- SO-ARM101 follower arm (and optionally a leader arm) connected via USB and powered.
+- [Udev rules](udev-rules.md) installed, so `/dev/so101_follower` and `/dev/so101_leader` exist and your user is in `dialout`.
+- LeRobot, provided by the Pixi environment. For a manual install, drop the `pixi run` prefix below.
 
 ## Step 1 — Run LeRobot Calibration
 
@@ -45,7 +45,7 @@ Follow the official LeRobot SO-101 calibration instructions:
 ### Follower arm
 
 ```bash
-lerobot-calibrate \
+pixi run lerobot-calibrate \
     --robot.type=so101_follower \
     --robot.port=/dev/so101_follower \
     --robot.id=follower_arm
@@ -56,7 +56,7 @@ lerobot-calibrate \
 LeRobot treats the leader as a **teleoperator**, not a `robot` type. Use `--teleop.*` (not `--robot.*`); `so101_leader` is only valid for `--teleop.type`.
 
 ```bash
-lerobot-calibrate \
+pixi run lerobot-calibrate \
     --teleop.type=so101_leader \
     --teleop.port=/dev/so101_leader \
     --teleop.id=leader_arm
@@ -86,7 +86,7 @@ LeRobot writes a JSON file per arm under:
 If you want to make those values explicit in this project, copy the relevant fields into a `joint_config_file`, for example:
 
 - [`pai_bringup/config/hardware/follower.yaml`](../../pai_bringup/config/hardware/follower.yaml)
-- [`pai_bringup/config/hardware/leader.yaml`](../../pai_bringup/config/hardware/follower.yaml)
+- [`pai_bringup/config/hardware/leader.yaml`](../../pai_bringup/config/hardware/leader.yaml)
 
 Use a `joint_config_file` only if you want to keep a versioned per-robot configuration in the repo, override existing motor settings, or set additional driver parameters.
 
