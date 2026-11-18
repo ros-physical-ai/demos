@@ -28,3 +28,6 @@ outputs
 
 # wandb
 wandb
+
+# Per-application compose overrides
+**/.env

@@ -1,0 +1,72 @@
+# Rosetta contract for the AIC cable-insertion simulator.
+#
+# Schema: rosetta 0.2.0. Full field reference:
+# https://iblnkn.github.io/rosetta/reference/contract.html
+
+robot_type: aic
+robot_interface: ros2
+
+# Frame clock. Camera and adapter rate, inside the controller's 10-30 Hz
+# command band.
+fps: 20
+
+observations:
+  observation.images.left:
+    channel:
+      topic: /left_camera/image
+      type: sensor_msgs/msg/Image
+      qos: { reliability: best_effort, history: keep_last, depth: 10 }
+    align: { strategy: hold, timeline: header }
+    # Source is 1152x1024; the resize changes the aspect ratio the same way
+    # at training and deployment.
+    apply: [resize: [480, 480]]
+
+  observation.images.center:
+    channel:
+      topic: /center_camera/image
+      type: sensor_msgs/msg/Image
+      qos: { reliability: best_effort, history: keep_last, depth: 10 }
+    align: { strategy: hold, timeline: header }
+    apply: [resize: [480, 480]]
+
+  observation.images.right:
+    channel:
+      topic: /right_camera/image
+      type: sensor_msgs/msg/Image
+      qos: { reliability: best_effort, history: keep_last, depth: 10 }
+    align: { strategy: hold, timeline: header }
+    apply: [resize: [480, 480]]
+
+  observation.state:
+    channel:
+      topic: /joint_states
+      type: sensor_msgs/msg/JointState
+      qos: { reliability: reliable, history: keep_last, depth: 50 }
+    align: { strategy: hold, timeline: header }
+    # The six arm joints, radians. Gripper finger joints stay fixed during a task.
+    select:
+      [
+        position.shoulder_pan_joint,
+        position.shoulder_lift_joint,
+        position.elbow_joint,
+        position.wrist_1_joint,
+        position.wrist_2_joint,
+        position.wrist_3_joint,
+      ]
+
+actions:
+  action:
+    channel:
+      topic: /aic_controller/pose_commands
+      type: aic_control_interfaces/msg/MotionUpdate
+      qos: { reliability: reliable, history: keep_last, depth: 10 }
+      dtype: float64
+      decoder: pai_aic.codecs:decode_motion_update
+      encoder: pai_aic.codecs:encode_motion_update
+      # A zero twist stops the arm.
+      safety: zeros
+    # Arrival time on the recorder's clock, so any command publisher aligns
+    # whatever clock stamps its header.
+    align: { strategy: hold, timeline: receive }
+    # Twist in the tool frame (gripper/tcp): m/s then rad/s.
+    select: [linear_x, linear_y, linear_z, angular_x, angular_y, angular_z]

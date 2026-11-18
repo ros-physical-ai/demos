@@ -1,0 +1,4 @@
+# Options for every `colcon` invocation from this directory.
+# CMAKE_BUILD_TYPE is an env var; a CLI --cmake-args would replace this list.
+build:
+  symlink-install: true

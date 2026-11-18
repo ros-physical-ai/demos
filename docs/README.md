@@ -8,9 +8,10 @@ hardware, teleoperation, demos — lives with that application under
 
 ## Applications
 
-| Application                              | Guide                                                                  |
-| ---------------------------------------- | ---------------------------------------------------------------------- |
-| [SO-ARM101](../apps/so_arm101/README.md) | Installation, development, quick start, hardware, teleoperation, demos |
+| Application                                  | Guide                                                                       |
+| -------------------------------------------- | --------------------------------------------------------------------------- |
+| [SO-ARM101](../apps/so_arm101/README.md)     | Installation, development, quick start, hardware, teleoperation, demos      |
+| [AIC cable insertion](../apps/aic/README.md) | Installation, simulator container, Record → Train → Deploy on the AIC scene |
 
 ## Repository-wide
 

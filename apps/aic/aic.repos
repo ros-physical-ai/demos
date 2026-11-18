@@ -1,0 +1,7 @@
+# AIC monorepo, pruned on import to the message package the host builds.
+# Paired with the aic_eval image digest in compose.yaml; bump both together.
+repositories:
+  aic:
+    type: git
+    url: https://github.com/intrinsic-dev/aic.git
+    version: 6546127c1c15d5786f59c91400f5fc5ad6894448

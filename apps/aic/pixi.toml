@@ -1,0 +1,191 @@
+[workspace]
+authors = ["Franco Cipollone <franco.cipollone@ekumenlabs.com>"]
+# Kilted matches the aic_eval image. The host runs rmw_zenoh_cpp peers of the
+# router inside that image, so both sides share one zenoh release.
+channels = ["robostack-kilted", "conda-forge"]
+name = "aic"
+# The aic_eval image publishes an amd64 manifest only.
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[environments]
+dev = ["dev"]
+ci = ["ci"]
+
+[feature.dev.tasks]
+# Distinct from `build`: pixi refuses the same task name with different commands across environments.
+build-debug = { cmd = ["colcon", "build", "--symlink-install", "--base-paths", ".", "../../common"], env = { CMAKE_BUILD_TYPE = "Debug" } }
+
+[feature.ci.activation.env]
+CMAKE_INSTALL_MODE = "COPY"
+
+[tasks]
+
+# Lint
+lint = { cmd = "pre-commit run --all-files" }
+
+# Install dependencies
+# Bring external repos via vcstool: the shared pipeline first, then the AIC
+# monorepo. The prune step hides every AIC package except the message package
+# the host needs; the simulator comes from the container image.
+install-source-deps = """
+  mkdir -p external &&
+  vcs import external --recursive < ../../common/common.repos &&
+  vcs import external < aic.repos &&
+  bash scripts/prune_aic_source.sh
+"""
+# Longer uv download timeout (PyTorch wheels are huge).
+install-ml-deps = { cmd = "bash ../../common/scripts/install_ml_deps.sh", env = { UV_HTTP_TIMEOUT = "600" } }
+install-deps = { depends-on = ["install-source-deps", "install-ml-deps"] }
+
+# Build
+# colcon options live in colcon_defaults.yaml (read from this directory).
+# --base-paths scopes discovery to this application plus the shared tree.
+build = { cmd = ["colcon", "build", "--base-paths", ".", "../../common"], env = { CMAKE_BUILD_TYPE = "Release" } }
+clean = { cmd = "rm -rf build install log" }
+
+# Drift guard: host-built AIC interfaces match the simulator image.
+check-interfaces = { cmd = "bash scripts/check_interfaces.sh" }
+
+# Simulator (container)
+# Docker Engine with the compose plugin is a host prerequisite.
+sim-up = { cmd = "docker compose up -d" }
+sim-up-gpu = { cmd = "docker compose -f compose.yaml -f compose.gpu.yaml up -d" }
+sim-down = { cmd = "docker compose down" }
+sim-logs = { cmd = "docker compose logs -f sim" }
+# Host-side check that the running simulator publishes what the contract needs.
+sim-smoke = { cmd = "bash scripts/sim_smoke.sh" }
+reset-scene = { cmd = "docker compose exec sim bash /scripts/reset_scene.sh" }
+
+# Pipeline (host). Every step assumes the simulator is up.
+teleop = { cmd = ["ros2", "run", "pai_aic", "teleop", "--ros-args", "-p", "use_sim_time:=true"] }
+record = { cmd = ["ros2", "launch", "pai_aic", "record.launch.py", "bag_base_dir:=datasets/aic/bags"] }
+record-keys = { cmd = ["ros2", "run", "rosetta", "episode_keyboard_node"] }
+port-bags = { cmd = [
+  "ros2",
+  "run",
+  "rosetta",
+  "rosetta_port",
+  "--raw-dir",
+  "datasets/aic/bags",
+  "--contract",
+  "$(ros2 pkg prefix pai_aic)/share/pai_aic/config/rosetta/aic.yaml",
+  "--repo-id",
+  "aic_cable_insertion",
+  "--root",
+  "datasets",
+] }
+train = { cmd = [
+  "lerobot-train",
+  "--dataset.repo_id=aic_cable_insertion",
+  "--dataset.root=datasets/aic_cable_insertion",
+  "--policy.type=act",
+  "--output_dir=outputs/train/aic_act",
+  "--job_name=aic_act",
+  "--policy.device=cuda",
+  "--policy.push_to_hub=false",
+] }
+deploy = { cmd = [
+  "ros2",
+  "launch",
+  "pai_aic",
+  "deploy.launch.py",
+  "pretrained_name_or_path:=outputs/train/aic_act/checkpoints/last/pretrained_model",
+] }
+
+[dependencies]
+# Lint/Format
+pre-commit = "*"
+
+# Build deps
+colcon-common-extensions = ">=0.3.0,<0.4"
+cmake = ">=3.30.5,<4"
+ninja = ">=1.13.1,<2"
+# Conda C/C++ toolchain so the compiler matches conda's `ld` already on PATH.
+c-compiler = "*"
+cxx-compiler = "*"
+pkg-config = "*"
+vcstool = "*"
+ffmpeg = "*"
+pytest = "*"
+# prettier (pre-commit) needs a recent Node.
+nodejs = ">=18"
+
+# Common base deps
+# robostack-kilted publishes py312 builds.
+python = "3.12.*"
+pip = "*"
+# setuptools 80 dropped `develop`, which colcon --symlink-install needs for ament_python packages.
+setuptools = "<80"
+# LeRobot's declared upper bound is <2.3.
+numpy = ">=2.0,<2.3"
+# Pinned to <26 to satisfy lerobot packaging constraint (packaging>=24.2,<26.0)
+packaging = ">=24.2,<26"
+# Conda pillow links the environment's libtiff; the pip wheel fails with
+# libtiff.so.6: undefined symbol: jpeg12_write_raw_data, version LIBJPEG_8.0.
+pillow = ">=10,<13"
+
+# ROS dependencies
+ros-kilted-ros-core = "*"
+ros-kilted-ament-cmake = "*"
+ros-kilted-ament-index-python = "*"
+ros-kilted-rclpy = "*"
+ros-kilted-launch = "*"
+ros-kilted-launch-ros = "*"
+ros-kilted-rosidl-default-generators = "*"
+ros-kilted-rosidl-runtime-py = "*"
+# Zenoh middleware (the router runs inside the simulator container)
+ros-kilted-rmw-zenoh-cpp = "*"
+# Message packages: aic_control_interfaces, rosetta, rosetta_interfaces
+ros-kilted-builtin-interfaces = "*"
+ros-kilted-geometry-msgs = "*"
+ros-kilted-std-msgs = "*"
+ros-kilted-trajectory-msgs = "*"
+ros-kilted-sensor-msgs = "*"
+ros-kilted-action-msgs = "*"
+ros-kilted-control-msgs = "*"
+ros-kilted-nav-msgs = "*"
+ros-kilted-std-srvs = "*"
+ros-kilted-tf2-msgs = "*"
+ros-kilted-rosgraph-msgs = "*"
+ros-kilted-lifecycle-msgs = "*"
+ros-kilted-rcl-interfaces = "*"
+ros-kilted-diagnostic-msgs = "*"
+# From rosetta
+ros-kilted-rosbag2 = "*"
+ros-kilted-rosbag2-py = "*"
+ros-kilted-rosbag2-storage-mcap = "*"
+ros-kilted-cv-bridge = "*"
+ros-kilted-ros2cli = "*"
+ros-kilted-ros2topic = "*"
+ros-kilted-ros2action = "*"
+ros-kilted-ros2service = "*"
+ros-kilted-ros2launch = "*"
+ros-kilted-ros2pkg = "*"
+
+[pypi-dependencies]
+huggingface-hub = "*"
+# Upper bound only: LeRobot's pi0_fast imports scipy.fftpack.idct, dropped in SciPy 2.0.
+scipy = ">=1.11.0,<2"
+lerobot = { version = "==0.6.0", extras = ["dataset", "async", "training"] }
+
+[activation]
+scripts = ["scripts/activate.sh"]
+
+[activation.env]
+# Ensures the linker knows where to look for conda managed packages
+LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LIBRARY_PATH}"
+LD_LIBRARY_PATH = "${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}"
+# CMake needs this to find ROS 2 packages installed by robostack
+CMAKE_PREFIX_PATH = "${CONDA_PREFIX}"
+ROS_DISTRO = "kilted"
+# Force ROS 2 to use Zenoh middleware
+RMW_IMPLEMENTATION = "rmw_zenoh_cpp"
+# The simulator container runs on the default domain; a ROS_DOMAIN_ID
+# inherited from the shell would hide its topics.
+ROS_DOMAIN_ID = "0"
+# uv/PyPI: large wheels (e.g. torch) need a longer per-request timeout than the default 30s
+UV_HTTP_TIMEOUT = "600"
+# Ignore the user site-packages dir (~/.local/lib/pythonX.Y/site-packages) so stray
+# pip --user installs don't leak into the pixi environment.
+PYTHONNOUSERSITE = "1"

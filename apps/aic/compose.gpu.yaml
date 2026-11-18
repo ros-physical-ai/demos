@@ -1,0 +1,5 @@
+# NVIDIA overlay. Requires nvidia-container-toolkit on the host.
+#   docker compose -f compose.yaml -f compose.gpu.yaml up -d
+services:
+  sim:
+    gpus: all

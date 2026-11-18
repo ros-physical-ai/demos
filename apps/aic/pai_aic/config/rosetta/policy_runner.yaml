@@ -1,0 +1,30 @@
+# Policy runner parameters for the AIC application.
+# deploy.launch.py passes this file to rosetta's policy_runner_launch.py.
+# Parameters not listed here take the node's declared default.
+
+policy_runner:
+  ros__parameters:
+    # Inference device: "cuda", "xpu", "mps", "cpu", or e.g. "cuda:0".
+    # Falls back to "cpu" with a warning if unavailable.
+    policy_device: "cuda"
+
+    # Policy architecture. Must match the checkpoint.
+    policy_type: "act"
+
+    # Actions requested per inference chunk. Larger chunks are less reactive.
+    actions_per_chunk: 30
+
+    # Queue fill ratio at which to request the next chunk (0.0 - 1.0).
+    chunk_size_threshold: 0.95
+
+    # How to blend an arriving chunk with the one still executing.
+    aggregate_fn_name: "weighted_average"
+
+    # Run until stopped. Override per-goal with RunPolicy's max_duration_s.
+    default_max_duration_s: 0.0
+
+    # Start the gRPC policy server locally at configure time.
+    launch_local_server: true
+
+    # Covers a first-launch download of weights from the HF Hub.
+    server_startup_timeout_sec: 120.0

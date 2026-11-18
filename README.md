@@ -8,9 +8,10 @@ This repository hosts several physical-AI applications. Each one is a
 self-contained Pixi workspace with its own manifest, lockfile, build tree,
 and **ROS 2 distribution** — pick one and work inside it.
 
-| Application | Directory                            | ROS 2        | Simulator               | Status |
-| ----------- | ------------------------------------ | ------------ | ----------------------- | ------ |
-| SO-ARM101   | [`apps/so_arm101/`](apps/so_arm101/) | Lyrical Luth | Gazebo (conda) / MuJoCo | Active |
+| Application         | Directory                            | ROS 2        | Simulator               | Status |
+| ------------------- | ------------------------------------ | ------------ | ----------------------- | ------ |
+| SO-ARM101           | [`apps/so_arm101/`](apps/so_arm101/) | Lyrical Luth | Gazebo (conda) / MuJoCo | Active |
+| AIC cable insertion | [`apps/aic/`](apps/aic/)             | Kilted Kaiju | Gazebo (container)      | Active |
 
 ```bash
 cd apps/so_arm101
@@ -36,10 +37,11 @@ environment belongs to an application.
 Each application documents itself under `apps/<name>/docs/`; [`docs/`](docs/README.md)
 holds only what applies repository-wide.
 
-| Guide                                          | What it covers                                            |
-| ---------------------------------------------- | --------------------------------------------------------- |
-| [SO-ARM101 Overview](apps/so_arm101/README.md) | Installation, quick start, packages, hardware, demos, MCP |
-| [Contributing](docs/contributing.md)           | Linting and pre-commit hooks                              |
+| Guide                                          | What it covers                                               |
+| ---------------------------------------------- | ------------------------------------------------------------ |
+| [SO-ARM101 Overview](apps/so_arm101/README.md) | Installation, quick start, packages, hardware, demos, MCP    |
+| [AIC Overview](apps/aic/README.md)             | Installation, simulator container, pipeline on the AIC scene |
+| [Contributing](docs/contributing.md)           | Linting and pre-commit hooks                                 |
 
 ## External demos
 

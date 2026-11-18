@@ -1,0 +1,47 @@
+# The AIC simulator: Gazebo, the impedance controller, the sensor adapter and
+# the zenoh router, all from the published image. Host nodes reach the router
+# on localhost:7447 through host networking.
+#
+# Scene variables come from `.env` (copy `.env.example`); every variable has
+# the `trial_1` value from aic_engine's sample config as its default.
+#
+# Paired with the AIC source SHA in aic.repos; bump both together.
+name: pai-aic
+services:
+  sim:
+    image: ghcr.io/intrinsic-dev/aic/aic_eval@sha256:9aa2ffdbb946d38edde1bac7b5f02a44cfbea26e3b04a9c74e09f14c97472923
+    network_mode: host
+    environment:
+      DISPLAY: ${DISPLAY:-:0}
+      AIC_CABLE_TYPE: ${AIC_CABLE_TYPE:-sfp_sc_cable}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./scripts/reset_scene.sh:/scripts/reset_scene.sh:ro
+    # Arguments to aic_gz_bringup.launch.py; the image entrypoint forwards them.
+    command: >
+      use_sim_time:=true
+      gazebo_gui:=${AIC_GAZEBO_GUI:-true}
+      launch_rviz:=false
+      ground_truth:=false
+      start_aic_engine:=false
+      spawn_task_board:=true
+      task_board_x:=${AIC_TASK_BOARD_X:-0.15}
+      task_board_y:=${AIC_TASK_BOARD_Y:--0.2}
+      task_board_z:=${AIC_TASK_BOARD_Z:-1.14}
+      task_board_yaw:=${AIC_TASK_BOARD_YAW:-3.1415}
+      nic_card_mount_0_present:=${AIC_NIC_CARD_MOUNT_0_PRESENT:-true}
+      nic_card_mount_0_translation:=${AIC_NIC_CARD_MOUNT_0_TRANSLATION:-0.036}
+      sc_port_0_present:=${AIC_SC_PORT_0_PRESENT:-true}
+      sc_port_0_translation:=${AIC_SC_PORT_0_TRANSLATION:-0.042}
+      sc_port_0_yaw:=${AIC_SC_PORT_0_YAW:-0.1}
+      lc_mount_rail_0_present:=${AIC_LC_MOUNT_RAIL_0_PRESENT:-true}
+      lc_mount_rail_0_translation:=${AIC_LC_MOUNT_RAIL_0_TRANSLATION:-0.02}
+      sfp_mount_rail_0_present:=${AIC_SFP_MOUNT_RAIL_0_PRESENT:-true}
+      sfp_mount_rail_0_translation:=${AIC_SFP_MOUNT_RAIL_0_TRANSLATION:-0.03}
+      sc_mount_rail_0_present:=${AIC_SC_MOUNT_RAIL_0_PRESENT:-true}
+      sc_mount_rail_0_translation:=${AIC_SC_MOUNT_RAIL_0_TRANSLATION:--0.02}
+      lc_mount_rail_1_present:=${AIC_LC_MOUNT_RAIL_1_PRESENT:-true}
+      lc_mount_rail_1_translation:=${AIC_LC_MOUNT_RAIL_1_TRANSLATION:--0.01}
+      spawn_cable:=true
+      cable_type:=${AIC_CABLE_TYPE:-sfp_sc_cable}
+      attach_cable_to_gripper:=true

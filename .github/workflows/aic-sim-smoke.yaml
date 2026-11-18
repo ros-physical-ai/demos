@@ -1,0 +1,44 @@
+name: AIC simulator smoke
+
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: apps/aic
+    env:
+      AIC_GAZEBO_GUI: "false"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          manifest-path: apps/aic/pixi.toml
+          cache: true
+          frozen: true
+
+      - name: Import and prune source dependencies
+        run: pixi run -e ci install-source-deps
+
+      - name: Build
+        run: pixi run -e ci build
+
+      - name: Start the simulator (headless, no GPU)
+        run: pixi run -e ci sim-up
+
+      - name: Smoke check
+        run: pixi run -e ci sim-smoke
+
+      - name: Simulator logs
+        if: always()
+        run: docker compose logs sim | tail -n 200
+
+      - name: Stop the simulator
+        if: always()
+        run: pixi run -e ci sim-down

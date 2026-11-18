@@ -1,0 +1,47 @@
+name: CI (AIC)
+
+on:
+  pull_request:
+    paths:
+      - "apps/aic/**"
+      - "common/**"
+      - ".github/workflows/aic.yaml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/aic/**"
+      - "common/**"
+      - ".github/workflows/aic.yaml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: apps/aic
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          manifest-path: apps/aic/pixi.toml
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+          frozen: true
+
+      - name: Import and prune source dependencies
+        run: pixi run -e ci install-source-deps
+
+      - name: Build
+        run: pixi run -e ci build
+
+      - name: Interface drift guard
+        run: pixi run -e ci check-interfaces
+
+      - name: Unit tests
+        run: pixi run -e ci python -m pytest pai_aic/test -q
