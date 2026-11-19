@@ -11,7 +11,7 @@ ci = ["ci"]
 
 [feature.dev.tasks]
 # Distinct from `build`: pixi refuses the same task name with different commands across environments.
-build-debug = { cmd = ["colcon", "build", "--symlink-install"], env = { CMAKE_BUILD_TYPE = "Debug" } }
+build-debug = { cmd = ["env", "-u", "?", "colcon", "build", "--symlink-install"], env = { CMAKE_BUILD_TYPE = "Debug" } }
 
 [feature.ci.activation.env]
 CMAKE_INSTALL_MODE = "COPY"
@@ -30,7 +30,7 @@ install-deps = { depends-on = ["install-source-deps", "install-ml-deps"] }
 
 # Build
 # cmake-args live in colcon_defaults.yaml (read from the workspace root).
-build = { cmd = ["colcon", "build"], env = { CMAKE_BUILD_TYPE = "Release" } }
+build = { cmd = ["env", "-u", "?", "colcon", "build"], env = { CMAKE_BUILD_TYPE = "Release" } }
 clean = { cmd = "rm -rf build install log" }
 
 # Hardware setup
