@@ -12,12 +12,12 @@ Documentation index for the [ROS Physical AI Demos](../README.md) repository.
 
 ## Hardware setup
 
-For running on a physical SO-ARM101.
+For running on a physical SO-ARM101. Complete the guides in the order listed.
 
 | Guide                                  | What it covers                                                            |
 | -------------------------------------- | ------------------------------------------------------------------------- |
+| [Udev Rules](hardware/udev-rules.md)   | Serial port permissions and stable device symlinks for arms and cameras   |
 | [Calibration](hardware/calibration.md) | Servo calibration via LeRobot, `joint_config_file`, and known limitations |
-| [Udev Rules](hardware/udev-rules.md)   | Stable device symlinks for arms and cameras                               |
 | [Cameras](hardware/cameras.md)         | Wrist/static camera configuration, calibration files, and TF frames       |
 
 ## Teleoperation

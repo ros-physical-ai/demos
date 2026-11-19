@@ -54,11 +54,11 @@ With Pixi:
 pixi run so-arm-real usb_port:=/dev/so101_follower
 ```
 
-Before running on real hardware, complete the one-time hardware setup:
+Before running on real hardware, complete the one-time hardware setup in this order:
 
-- [Servo calibration](hardware/calibration.md) — required so encoder zero aligns with the expected physical pose.
-- [Udev rules](hardware/udev-rules.md) — stable device symlinks for arms and cameras.
-- [Cameras](hardware/cameras.md) — wrist/static camera configuration and overrides.
+1. [Udev rules](hardware/udev-rules.md) — `dialout` permissions and the `/dev/so101_follower` and `/dev/so101_leader` symlinks that the later steps use.
+2. [Servo calibration](hardware/calibration.md) — calibrate each arm so encoder zero aligns with the expected physical pose.
+3. [Cameras](hardware/cameras.md) — wrist/static camera configuration and overrides.
 
 ## Leader arm teleoperation
 
